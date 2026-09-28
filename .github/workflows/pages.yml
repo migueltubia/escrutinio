@@ -1,0 +1,42 @@
+name: Publicar web
+run-name: >-
+  ${{ github.event_name == 'workflow_dispatch' && 'Publicar web · manual' || 'Publicar web · cambios en main' }}
+
+# Publica la carpeta web/ en GitHub Pages tal cual: es estática y no hay que compilar nada.
+# Se ejecuta al subir cambios de la web a main y a mano desde la pestaña Actions. Las actualizaciones
+# de datos («Actualizar datos») publican por su cuenta, con los datos que acaban de calcular.
+#
+# Requisito, una sola vez: Settings > Pages > Build and deployment > Source: «GitHub Actions».
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "web/**"
+      - ".github/workflows/pages.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  publicar:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.despliegue.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/upload-pages-artifact@v5
+        with:
+          path: web
+
+      - id: despliegue
+        uses: actions/deploy-pages@v5

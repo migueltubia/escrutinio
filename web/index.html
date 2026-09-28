@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#fcfcfb" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#1a1a19" media="(prefers-color-scheme: dark)">
+  <title>Escrutinio · Votaciones parlamentarias</title>
+  <meta name="description" content="Qué vota cada partido y cada diputado en el Pleno del Congreso desde 2012, y en parlamentos autonómicos, juntas generales y ayuntamientos. Datos oficiales, con buscador, comparación entre partidos y exportación a CSV.">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Escrutinio · Votaciones parlamentarias">
+  <meta property="og:description" content="Qué vota cada partido y cada diputado en el Congreso desde 2012, y en parlamentos autonómicos y ayuntamientos. Datos oficiales.">
+  <meta property="og:url" content="https://migueltubia.github.io/escrutinio/">
+  <meta property="og:locale" content="es_ES">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="top">
+    <h1>Escrutinio <span>· votaciones del Congreso</span></h1>
+    <nav class="tabs" id="tabs">
+      <a href="#/resumen" data-tab="resumen">Resumen</a>
+      <a href="#/votaciones" data-tab="votaciones">Votaciones</a>
+      <a href="#/iniciativas" data-tab="iniciativas">Iniciativas</a>
+      <a href="#/temas" data-tab="temas">Temas</a>
+      <a href="#/grupos" data-tab="grupos">Grupos</a>
+      <a href="#/comparar" data-tab="comparar">Comparar</a>
+      <a href="#/coaliciones" data-tab="analisis">Análisis</a>
+      <a href="#/causas" data-tab="activismo">Activismo</a>
+      <a href="#/ayuda" data-tab="ayuda">Ayuda</a>
+    </nav>
+    <button type="button" class="boton-ambito" id="botonAmbito" aria-haspopup="dialog" aria-controls="panelAmbito">Ámbito</button>
+    <a class="ayuda-cabecera" href="#/ayuda" aria-label="Ayuda" title="Ayuda">?</a>
+    <a class="enlace-github" href="https://github.com/migueltubia/escrutinio" target="_blank" rel="noopener" aria-label="Código en GitHub" title="Código en GitHub"><svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg></a>
+    <button class="tema-toggle" id="toggleTema" title="Cambiar tema claro/oscuro">◐</button>
+  </header>
+  <main id="vista"><div class="vacio">Cargando…</div></main>
+  <div class="panel-fondo" id="panelFondo"></div>
+  <aside class="panel" id="panel" aria-hidden="true"></aside>
+  <div class="tooltip" id="tooltip"></div>
+  <!-- Selector de ámbito: qué instituciones se analizan (ambito.js). -->
+  <div class="amb-fondo" id="ambitoFondo"></div>
+  <div class="amb-panel" id="panelAmbito" role="dialog" aria-modal="true" aria-label="Elegir el ámbito" aria-hidden="true"></div>
+  <!-- Móvil: barra de secciones abajo; «Más» abre una hoja con Comparar, Análisis y Activismo. -->
+  <nav class="barra-movil" id="barraMovil" aria-label="Secciones">
+    <a href="#/resumen" data-tab="resumen"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/><path d="M10 20v-6h4v6"/></svg><span>Resumen</span></a>
+    <a href="#/votaciones" data-tab="votaciones"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 12l3 3 5-6"/></svg><span>Votaciones</span></a>
+    <a href="#/iniciativas" data-tab="iniciativas"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6"/><path d="M8 13h8M8 17h6"/></svg><span>Iniciativas</span></a>
+    <a href="#/temas" data-tab="temas"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12V4a1 1 0 0 1 1-1h8l9 9-9 9z"/><circle cx="7.5" cy="7.5" r="1.5"/></svg><span>Temas</span></a>
+    <a href="#/grupos" data-tab="grupos"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0"/><circle cx="17" cy="9" r="2.5"/><path d="M16.5 14a5 5 0 0 1 5 5"/></svg><span>Grupos</span></a>
+    <button type="button" id="botonMas" data-tab="mas" aria-expanded="false" aria-controls="hojaMas"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="5" cy="12" r="1.3"/><circle cx="12" cy="12" r="1.3"/><circle cx="19" cy="12" r="1.3"/></svg><span>Más</span></button>
+  </nav>
+  <div class="hoja-fondo" id="hojaFondo"></div>
+  <div class="hoja" id="hojaMas" role="dialog" aria-label="Más secciones">
+    <h3>Comparar</h3>
+    <a href="#/comparar">Comparar grupos por temas</a>
+    <h3>Análisis</h3>
+    <a href="#/coaliciones">Coaliciones ganadoras</a>
+    <a href="#/mapa">Mapa ideológico y polarización</a>
+    <a href="#/disciplina">Disciplina y ausencias</a>
+    <a href="#/enmiendas">Enmiendas</a>
+    <h3>Activismo</h3>
+    <a href="#/causas">Mis causas</a>
+    <a href="#/viene">Qué viene</a>
+    <h3>Ayuda</h3>
+    <a href="#/ayuda">Qué es y cómo se usa</a>
+    <a href="https://github.com/migueltubia/escrutinio" target="_blank" rel="noopener">Código en GitHub</a>
+  </div>
+  <!-- Todo es local: se abre con doble clic, sin servidor. -->
+  <script src="vendor/sql-wasm.js"></script>
+  <script src="vendor/sql-wasm-binario.js"></script>
+  <script src="datos/indice.js"></script>
+  <script src="ambito.js"></script>
+  <script src="app.js"></script>
+  <script src="analisis.js"></script>
+  <script src="comparar.js"></script>
+  <script src="ayuda.js"></script>
+  <script src="inicio.js"></script>
+</body>
+</html>

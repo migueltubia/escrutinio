@@ -1,0 +1,9 @@
+# Texto con fin de línea LF en el repositorio (el runner de Actions es Linux).
+* text=auto eol=lf
+
+# Bases SQLite troceadas: binarias.
+*.sqlite binary
+
+# Datos de la web: SQLite en base64 dentro de un .js; generados, sin diff legible.
+web/datos/**/*.js -diff linguist-generated
+web/vendor/** -diff linguist-vendored

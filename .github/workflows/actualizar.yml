@@ -1,0 +1,119 @@
+name: Actualizar datos
+run-name: >-
+  ${{ github.event_name == 'workflow_dispatch' && 'Actualizar datos · manual'
+  || github.event.schedule == '20 4 * * 0' && 'Actualizar datos · semanal'
+  || 'Actualizar datos · diaria' }}${{ (inputs.informe || github.event.schedule == '20 4 * * 0') && ' · con informe' || '' }}
+
+# Cada día (lunes a sábado, a las 04:20 UTC y a las 22:40 UTC):
+# descarga las votaciones y las iniciativas nuevas, las procesa, genera con DeepSeek las fichas de lo
+# nuevo y publica la web con los datos del día. En el repositorio guarda solo las fichas generadas
+# (data/llm, texto pequeño), que es lo que no se puede volver a descargar.
+# Cada domingo, además: redacta el informe de análisis de la portada y guarda en el repositorio la
+# base troceada (data/bd) y los datos de la web (web/datos). Así el historial de git no suma cada día
+# una copia binaria de la base. Lanzado a mano, lo guarda todo.
+#
+# Configuración en Settings > Secrets and variables > Actions:
+#   Secret   DEEPSEEK_API_KEY   clave de la API de DeepSeek (sin ella se actualiza todo menos las fichas nuevas)
+#   Variable DEEPSEEK_MODEL     modelo (opcional; por defecto deepseek-flash)
+#
+# La misma actualización puede lanzarla cualquier persona desde su equipo, con la clave en un fichero
+# .env: README, «Actualizar los datos: en la nube o en local». Los dos caminos parten del mismo
+# repositorio y dejan en él el resultado.
+
+on:
+  schedule:
+    # 04:20 UTC (06:20 en verano y 05:20 en invierno, hora peninsular): recoge los plenos del día
+    # anterior. 22:40 UTC: recoge las votaciones del mismo día (los martes se vota hasta las 21:00, hora
+    # peninsular) y cubre el caso de que GitHub retrase o descarte la de la mañana, que le pasa al cron.
+    # Las dos empiezan fuera de las horas punta de DeepSeek (01:00-04:00 y 06:00-10:00 UTC, de lunes a
+    # viernes, a precio doble). Una pasada sin novedades gasta poco; el grupo de concurrencia impide que
+    # se solapen.
+    - cron: "20 4 * * 1-6"   # diaria, mañana
+    - cron: "40 22 * * 1-6"  # diaria, noche
+    - cron: "20 4 * * 0"     # semanal (domingo)
+  workflow_dispatch:
+    inputs:
+      limite_fichas:
+        description: "Máximo de fichas nuevas en esta ejecución"
+        default: "400"
+      informe:
+        description: "Regenerar el informe de análisis con DeepSeek"
+        type: boolean
+        default: false
+      limite_actas:
+        description: "Máximo de diarios de sesiones y actas autonómicas y locales que leer con DeepSeek"
+        default: "40"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: actualizar-datos
+  cancel-in-progress: false
+
+jobs:
+  actualizar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    env:
+      # Semanal (domingo) o manual: se guarda en el repositorio la base y los datos de la web.
+      COMPLETA: ${{ github.event_name != 'schedule' || github.event.schedule == '20 4 * * 0' }}
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+
+      - name: Herramientas PDF (actas autonómicas)
+        run: sudo apt-get update && sudo apt-get install -y poppler-utils
+
+      - name: Actualizar
+        env:
+          DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
+          DEEPSEEK_MODEL: ${{ vars.DEEPSEEK_MODEL }}
+          PYTHONUNBUFFERED: "1"
+        run: |
+          python -m escrutinio actualizar \
+            --limite-fichas "${{ inputs.limite_fichas || '400' }}" \
+            --limite-actas "${{ inputs.limite_actas || '40' }}" \
+            ${{ (inputs.informe || github.event.schedule == '20 4 * * 0') && '--informe' || '' }}
+
+      # La web se publica con los datos recién calculados, también los días que no se guardan en git.
+      # Se prepara antes de guardar: así sale con el mismo código que ha calculado los datos.
+      - uses: actions/upload-pages-artifact@v5
+        with:
+          path: web
+
+      - name: Guardar cambios en el repositorio
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/llm
+          if [ "$COMPLETA" = "true" ]; then git add data/bd web/datos; fi
+          if git diff --cached --quiet; then
+            echo "Sin cambios que guardar"
+          else
+            git commit -m "Actualización automática de datos parlamentarios ($(date -u +%F))"
+            # Lo que no se guarda (data/bd y web/datos los días normales) se aparta: con cambios sin
+            # guardar, git no deja traer los commits subidos mientras se actualizaba.
+            git stash push --include-untracked --quiet || true
+            git pull --rebase origin main
+            git push
+          fi
+
+  publicar:
+    needs: actualizar
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    concurrency:
+      group: pages
+      cancel-in-progress: false
+    environment:
+      name: github-pages
+      url: ${{ steps.despliegue.outputs.page_url }}
+    steps:
+      - id: despliegue
+        uses: actions/deploy-pages@v5

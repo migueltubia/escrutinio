@@ -1,0 +1,17 @@
+# Base de trabajo: se reconstruye con «python -m escrutinio unir» desde data/bd/
+data/escrutinio.sqlite
+data/escrutinio.sqlite-*
+# Intermedios y cachés que se regeneran solos
+data/raw/
+data/logs/
+data/llm/pendientes/
+*.tmp
+__pycache__/
+*.pyc
+
+# Diarios y actas pendientes de extraer con IA (se regeneran) y respuestas ya importadas
+data/llm/actas/pendientes/
+data/llm/actas/respuestas/
+
+# Clave de DeepSeek y demás variables de quien actualiza desde su equipo (copiar de .env.ejemplo)
+.env

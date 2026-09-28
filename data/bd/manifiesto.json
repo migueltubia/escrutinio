@@ -1,0 +1,860 @@
+{
+ "comun": {
+  "huella": "74218995d7ae42a7659681df307d99ac3a4eac3d7fa9de825e6cf3de1471a8f1",
+  "bytes": 385024
+ },
+ "congreso/leg10": {
+  "huella": "aefaab59a6768c0775fc8609eed09ef78f7b54a4f824c9ecf5d039f3e45412bb",
+  "votaciones": 5836,
+  "iniciativas": 2467,
+  "fichas": 952,
+  "bytes": 13041664
+ },
+ "congreso/leg11": {
+  "huella": "77dabbfc0ed6a4cd6eb316ca2aea8b7ee7fd972d0ca5f93ba1715b085c062d58",
+  "votaciones": 35,
+  "iniciativas": 342,
+  "fichas": 35,
+  "bytes": 401408
+ },
+ "congreso/leg12": {
+  "huella": "bf9c46b1c757b56731bcc9ac018d7438ee820c928091192691a6243640454441",
+  "votaciones": 2307,
+  "iniciativas": 2000,
+  "fichas": 522,
+  "bytes": 5509120
+ },
+ "congreso/leg13": {
+  "huella": "0c91b849ebf2933d2cb304a4b0856eafd8379712c475733c60d90bc22382d3cb",
+  "votaciones": 15,
+  "iniciativas": 285,
+  "fichas": 15,
+  "bytes": 319488
+ },
+ "congreso/leg14": {
+  "huella": "2ce4ec4d73ad18ca7bfa889869191e563c2a63a34440634f9f173815f899d86e",
+  "votaciones": 6583,
+  "iniciativas": 2492,
+  "fichas": 805,
+  "bytes": 13950976
+ },
+ "congreso/leg15": {
+  "huella": "549a2e52578a1c9051465e66b6722cb145a44bde515cbac94479e78431438a7a",
+  "votaciones": 2152,
+  "iniciativas": 1880,
+  "fichas": 919,
+  "bytes": 7077888
+ },
+ "parl-AN/leg9": {
+  "huella": "f04071ebc0df6cd9ee277a594d9a27b42b4b4aae2b7dbe3cf92e06b0e6da8742",
+  "votaciones": 499,
+  "iniciativas": 257,
+  "fichas": 257,
+  "bytes": 815104
+ },
+ "parl-AN/leg10": {
+  "huella": "ee8ad45937d25e96e7434ffee1fa1516e711ba79c06ad73aa46e9c42993da171",
+  "votaciones": 1680,
+  "iniciativas": 376,
+  "fichas": 376,
+  "bytes": 2031616
+ },
+ "parl-AN/leg11": {
+  "huella": "00da99363ee728b808c96657a22f9932b9dc43ccc0e886fc4beb584ae705851d",
+  "votaciones": 710,
+  "iniciativas": 214,
+  "fichas": 214,
+  "bytes": 1093632
+ },
+ "parl-AN/leg12": {
+  "huella": "c8d53d7d656e71ff9e53ed92171579e2768ec460d5b6a2c61c6b54e9311927e4",
+  "votaciones": 1756,
+  "iniciativas": 401,
+  "fichas": 401,
+  "bytes": 2187264
+ },
+ "parl-AN/leg13": {
+  "huella": "69e37afe19161790f60a4bca37014a322a6c76b3cf812d138648059859ce1b2f",
+  "votaciones": 5,
+  "iniciativas": 3,
+  "fichas": 3,
+  "bytes": 159744
+ },
+ "parl-AR/leg10": {
+  "huella": "9def545c92053e3ddc4b04da42183b5612875b4fcf905bc02af1c7ab3de6fd0b",
+  "votaciones": 1594,
+  "iniciativas": 510,
+  "fichas": 0,
+  "bytes": 1077248
+ },
+ "parl-AR/leg11": {
+  "huella": "143cf8b90d14fc01bc4f406b77f1a898cfc3a035f8a23e512ea4f0d48cdebabf",
+  "votaciones": 1500,
+  "iniciativas": 540,
+  "fichas": 0,
+  "bytes": 987136
+ },
+ "parl-AR/leg12": {
+  "huella": "f0121b9725b19bbe0d719c771becdfee3afa4ac7675ead555714bce478286c64",
+  "votaciones": 31,
+  "iniciativas": 30,
+  "fichas": 0,
+  "bytes": 163840
+ },
+ "parl-AS/leg10": {
+  "huella": "2ae465c4b62ec9d50f2c52001e5dc51c0b1266a08b6ba81117e6f75f07a3cd69",
+  "votaciones": 1594,
+  "iniciativas": 677,
+  "fichas": 677,
+  "bytes": 1990656
+ },
+ "parl-AS/leg11": {
+  "huella": "bb4012bf235a5516dec89940d876a2ec5a9307e2ea16deb97f18d4f5fdef0f0c",
+  "votaciones": 2097,
+  "iniciativas": 432,
+  "fichas": 432,
+  "bytes": 1949696
+ },
+ "parl-AS/leg12": {
+  "huella": "55dd28dba1e10a9400233e77147fdc0b64051f436b3e20d93e0dc8c7d598c525",
+  "votaciones": 1383,
+  "iniciativas": 254,
+  "fichas": 254,
+  "bytes": 1015808
+ },
+ "parl-IB/leg8": {
+  "huella": "57746731612645c190a5acba35deb4db66aa45acdcec7d2c206b3ab9d72d90b7",
+  "votaciones": 859,
+  "iniciativas": 322,
+  "fichas": 0,
+  "bytes": 688128
+ },
+ "parl-IB/leg9": {
+  "huella": "a2ff320ac051d5f4475c5cc337e6b4c8bc044398be05b482ef944c1cd24d6f39",
+  "votaciones": 4323,
+  "iniciativas": 301,
+  "fichas": 0,
+  "bytes": 2277376
+ },
+ "parl-IB/leg10": {
+  "huella": "35f105c056847ad9daab3370ae845ed4b64e5e239c5fb00bcc47873047583a2e",
+  "votaciones": 4537,
+  "iniciativas": 347,
+  "fichas": 0,
+  "bytes": 2478080
+ },
+ "parl-IB/leg11": {
+  "huella": "7bf9022c30cb1f5317bcb7e409d08f38006e55900960c84481edc0bf9e95ed86",
+  "votaciones": 2655,
+  "iniciativas": 305,
+  "fichas": 0,
+  "bytes": 1544192
+ },
+ "parl-CN/leg4": {
+  "huella": "37162f386f981c88cd885acafbd0b79c13c1076243b731c2dbb4473773ef1849",
+  "votaciones": 1022,
+  "iniciativas": 702,
+  "fichas": 0,
+  "bytes": 864256
+ },
+ "parl-CN/leg5": {
+  "huella": "7f4120b6a58442d3ccef33bb46bb8aaf2dfb726dca641d1f20cf24d705e5b50c",
+  "votaciones": 1294,
+  "iniciativas": 678,
+  "fichas": 0,
+  "bytes": 1040384
+ },
+ "parl-CN/leg6": {
+  "huella": "42b0f4b223c15cdf35542d5ab160b862988cc2cb5905746c6fe9dcbe2b569571",
+  "votaciones": 1059,
+  "iniciativas": 521,
+  "fichas": 35,
+  "bytes": 827392
+ },
+ "parl-CN/leg7": {
+  "huella": "a41197f4f278b082c40d1896d86c7b9abc36d0be561801aae1402ec611a25423",
+  "votaciones": 717,
+  "iniciativas": 446,
+  "fichas": 331,
+  "bytes": 786432
+ },
+ "parl-CN/leg8": {
+  "huella": "27f678e0bced23a4aba5fd2e94f25515ce5252e690c0b27cdb8387b9a285d702",
+  "votaciones": 1196,
+  "iniciativas": 600,
+  "fichas": 376,
+  "bytes": 1069056
+ },
+ "parl-CN/leg9": {
+  "huella": "3d1d198caea730ddf69ee527d60fcc8a4da651003192cb2e6c70f1792d2952b9",
+  "votaciones": 2603,
+  "iniciativas": 858,
+  "fichas": 428,
+  "bytes": 1769472
+ },
+ "parl-CN/leg10": {
+  "huella": "11ac5c1a7020716c6e0319a9dc2e8ffc174b5152bf8ccae329292ee50d440798",
+  "votaciones": 1085,
+  "iniciativas": 757,
+  "fichas": 414,
+  "bytes": 1208320
+ },
+ "parl-CN/leg11": {
+  "huella": "8406db43d49c1be4d02dd8fcc52edc0e332327fa9ec3fc8901e3a3b0e5846bb6",
+  "votaciones": 883,
+  "iniciativas": 689,
+  "fichas": 418,
+  "bytes": 1077248
+ },
+ "parl-CB/leg8": {
+  "huella": "bff7608a23e59c4089afcfaca4a2ec791af9159ef8c03e426107dd9632bc6562",
+  "votaciones": 395,
+  "iniciativas": 548,
+  "fichas": 0,
+  "bytes": 659456
+ },
+ "parl-CB/leg9": {
+  "huella": "e3443a2d29df11d6f6009b5952815d195197bbdcde97e9ed3ee8a7561a138b20",
+  "votaciones": 808,
+  "iniciativas": 550,
+  "fichas": 0,
+  "bytes": 921600
+ },
+ "parl-CB/leg10": {
+  "huella": "e199e025a497844df5c210801a6195ffe586a0bdde6a15a5ef2b900d1545346d",
+  "votaciones": 1121,
+  "iniciativas": 669,
+  "fichas": 0,
+  "bytes": 1056768
+ },
+ "parl-CB/leg11": {
+  "huella": "8718f607fa79e367c0320249dcada87338d1833d98f07f918dd45113b4e96a77",
+  "votaciones": 1049,
+  "iniciativas": 698,
+  "fichas": 0,
+  "bytes": 1126400
+ },
+ "parl-CL/leg9": {
+  "huella": "062486399c78f9051fdda8092795fdd2fdfc86f9f49bea6a6781d5946e6c62bd",
+  "votaciones": 1372,
+  "iniciativas": 580,
+  "fichas": 580,
+  "bytes": 1708032
+ },
+ "parl-CL/leg10": {
+  "huella": "03e7d0ecf7601ed5a3b0027cb37d63c1a13e89338fd4ae552e32e386ee2b71be",
+  "votaciones": 360,
+  "iniciativas": 229,
+  "fichas": 229,
+  "bytes": 716800
+ },
+ "parl-CL/leg11": {
+  "huella": "502f2fd802f2e3b2aae98ee3b91617e60139d5faab4d668907d3d09437f1f6eb",
+  "votaciones": 1046,
+  "iniciativas": 381,
+  "fichas": 381,
+  "bytes": 1376256
+ },
+ "parl-CL/leg12": {
+  "huella": "ded69506ae4bbbebfab4888f6e6ddd359cbb5f9b453e1f36393cefbb1a934c2d",
+  "votaciones": 7,
+  "iniciativas": 7,
+  "fichas": 3,
+  "bytes": 159744
+ },
+ "parl-CM/leg8": {
+  "huella": "a3809bccc962335d25c378fe4d1d90e47fe9c1f3dd5677285829aecae4755789",
+  "votaciones": 358,
+  "iniciativas": 160,
+  "fichas": 0,
+  "bytes": 376832
+ },
+ "parl-CM/leg9": {
+  "huella": "fe59afea34c8cbcd870d836a0c11be9befe02a53022fdfd8f3c9c7a64f27fd8d",
+  "votaciones": 508,
+  "iniciativas": 262,
+  "fichas": 0,
+  "bytes": 475136
+ },
+ "parl-CM/leg10": {
+  "huella": "29b5fc7c2c80611b56591186e7bdcee555d19ba8bf6416729675a021e89db423",
+  "votaciones": 1078,
+  "iniciativas": 345,
+  "fichas": 0,
+  "bytes": 839680
+ },
+ "parl-CM/leg11": {
+  "huella": "6295e2ca1389971fca8d7108a265a9b9826c5dd82bd77f8eab8b7e6ce1f8f945",
+  "votaciones": 823,
+  "iniciativas": 211,
+  "fichas": 0,
+  "bytes": 647168
+ },
+ "parl-CT/leg12": {
+  "huella": "49d3e0fcd570deb1ee6463d87b72e931ef8ee26b81ea7c117d17a31690e56721",
+  "votaciones": 3877,
+  "iniciativas": 434,
+  "fichas": 434,
+  "bytes": 2015232
+ },
+ "parl-CT/leg14": {
+  "huella": "e9fd9e8e14a55bf67d8f1f862fd7e63e1fbb32c8da80dd1eae19344230c5e45e",
+  "votaciones": 4492,
+  "iniciativas": 524,
+  "fichas": 524,
+  "bytes": 2207744
+ },
+ "parl-CT/leg15": {
+  "huella": "e91bbd77aa475b27378bc04f34650468b82106c1d18db7e482a256f753756346",
+  "votaciones": 3471,
+  "iniciativas": 397,
+  "fichas": 393,
+  "bytes": 1769472
+ },
+ "parl-VC/leg5": {
+  "huella": "242be78d0fb6eea214452d688e78860b542cdda751cd20b6af1e4e89f4548024",
+  "votaciones": 296,
+  "iniciativas": 254,
+  "fichas": 0,
+  "bytes": 1060864
+ },
+ "parl-VC/leg6": {
+  "huella": "ffaa22a10d87c63c779ddf4d50ae5e90cb5cf791eb6c4aca7b97d92577151948",
+  "votaciones": 324,
+  "iniciativas": 271,
+  "fichas": 0,
+  "bytes": 1941504
+ },
+ "parl-VC/leg7": {
+  "huella": "807847161bc89d1bbd292cfd9c540a0e03e5372b749dabcef398dd963b0b6031",
+  "votaciones": 417,
+  "iniciativas": 363,
+  "fichas": 0,
+  "bytes": 512000
+ },
+ "parl-VC/leg8": {
+  "huella": "79f9d6eed2a6383201db3ae106dd9cdcf90831913b63fe418ce72dfd04ff95ae",
+  "votaciones": 592,
+  "iniciativas": 475,
+  "fichas": 0,
+  "bytes": 1646592
+ },
+ "parl-VC/leg9": {
+  "huella": "a1fa3b621a819e76fa8158c53b87e453157dc75429e0015edc9165052d386129",
+  "votaciones": 498,
+  "iniciativas": 434,
+  "fichas": 0,
+  "bytes": 606208
+ },
+ "parl-VC/leg10": {
+  "huella": "703ae785414c9842f8d873c95905ff43e726d29aeacacc08ec8c46689f709e66",
+  "votaciones": 566,
+  "iniciativas": 316,
+  "fichas": 57,
+  "bytes": 880640
+ },
+ "parl-VC/leg11": {
+  "huella": "e9b655bffe4a0cfcb3bc7b9f680886761ffcddb99732764d8df965f5193e699e",
+  "votaciones": 339,
+  "iniciativas": 280,
+  "fichas": 0,
+  "bytes": 430080
+ },
+ "parl-EX/leg9": {
+  "huella": "05375cab573c708cb2cbaadce5c6679c7904dfa281036295b06026283f83ed50",
+  "votaciones": 1972,
+  "iniciativas": 607,
+  "fichas": 608,
+  "bytes": 2383872
+ },
+ "parl-EX/leg10": {
+  "huella": "d671f25832233714725d6cd53964f91b5aae5ab2110bff1b46e1d471b5407f7e",
+  "votaciones": 1097,
+  "iniciativas": 368,
+  "fichas": 371,
+  "bytes": 1413120
+ },
+ "parl-EX/leg11": {
+  "huella": "7da9e7572767b314c83d1193975dbdf05aa56ea0c43df0991712253efae45e49",
+  "votaciones": 460,
+  "iniciativas": 284,
+  "fichas": 284,
+  "bytes": 831488
+ },
+ "parl-EX/leg12": {
+  "huella": "e67bf1dbbe61ed74499fb97e78448ecfe7ca2f63cac577f35709fd309e4fbf2a",
+  "votaciones": 96,
+  "iniciativas": 44,
+  "fichas": 39,
+  "bytes": 290816
+ },
+ "parl-GA/leg10": {
+  "huella": "b4f4aaac77ab2747791cfed93b204e6cf0ade41c2f9ba899c6a9ef730eea0b63",
+  "votaciones": 1375,
+  "iniciativas": 1013,
+  "fichas": 1013,
+  "bytes": 1785856
+ },
+ "parl-GA/leg11": {
+  "huella": "1e6a0c8a395319b01616f57b7b36e7868738a0e4a4b340b8cf395685ff10a93c",
+  "votaciones": 945,
+  "iniciativas": 709,
+  "fichas": 709,
+  "bytes": 1236992
+ },
+ "parl-GA/leg12": {
+  "huella": "c22a5eb41f05c2fedf2f0eb87cfcd882251a9c1c6d8f101ba5e1579093b4413b",
+  "votaciones": 640,
+  "iniciativas": 455,
+  "fichas": 451,
+  "bytes": 856064
+ },
+ "parl-MC/leg9": {
+  "huella": "aa8b34f036bee97648e451e3fcc70b68447e247771d7ff774281f4bcbb68e80b",
+  "votaciones": 68,
+  "iniciativas": 30,
+  "fichas": 0,
+  "bytes": 188416
+ },
+ "parl-MC/leg10": {
+  "huella": "edd5c976e2c309a3fe9cd95ac6d5911fcb8c2e5341b067e3783af5d74a5181c5",
+  "votaciones": 433,
+  "iniciativas": 158,
+  "fichas": 0,
+  "bytes": 471040
+ },
+ "parl-MC/leg11": {
+  "huella": "cfa44137b6143bce466c0a91d40cda5f78728bd4d0327e05549bb6c191ce502b",
+  "votaciones": 864,
+  "iniciativas": 383,
+  "fichas": 0,
+  "bytes": 835584
+ },
+ "parl-NC/leg9": {
+  "huella": "f6cdb990a397512bbac8194c7e6cf49294ff4092bd58446733512adab0c37f6a",
+  "votaciones": 1346,
+  "iniciativas": 494,
+  "fichas": 0,
+  "bytes": 1032192
+ },
+ "parl-NC/leg10": {
+  "huella": "a8b94ee3b665cdfb4c37a365f59cae6e73f7c6ed451979aa5098e066329dd775",
+  "votaciones": 1023,
+  "iniciativas": 422,
+  "fichas": 0,
+  "bytes": 851968
+ },
+ "parl-NC/leg11": {
+  "huella": "89e15d6c81d7eb30366b4a98f62008da8406cdb4fb30539e405c3d59357c9d2c",
+  "votaciones": 766,
+  "iniciativas": 368,
+  "fichas": 0,
+  "bytes": 708608
+ },
+ "parl-PV/leg10": {
+  "huella": "4093605cf6a7fa50a982cfe990e382deb59cf83157613e03ba18bcce395bc6aa",
+  "votaciones": 1979,
+  "iniciativas": 619,
+  "fichas": 0,
+  "bytes": 1703936
+ },
+ "parl-PV/leg11": {
+  "huella": "234f005645877d985a9b3f1054d63edbafd4da147914699653f50ae02d971180",
+  "votaciones": 1145,
+  "iniciativas": 482,
+  "fichas": 0,
+  "bytes": 1081344
+ },
+ "parl-PV/leg12": {
+  "huella": "f1f55135fc77dae4904a2df778290f1d0f0ab5d177eee4a2376a3738387cd257",
+  "votaciones": 1479,
+  "iniciativas": 533,
+  "fichas": 81,
+  "bytes": 1396736
+ },
+ "parl-PV/leg13": {
+  "huella": "bb05414f6196d5b030eaeb197e0fe98d7b64c6f3d5faa614df37fec8af091755",
+  "votaciones": 793,
+  "iniciativas": 308,
+  "fichas": 218,
+  "bytes": 925696
+ },
+ "parl-RI/leg9": {
+  "huella": "45b9848d240212edcf4cfa03bfafd47c85caa8fe111512f6bdac3bdcdd486744",
+  "votaciones": 366,
+  "iniciativas": 294,
+  "fichas": 294,
+  "bytes": 737280
+ },
+ "parl-RI/leg10": {
+  "huella": "bce0a8cfc84e9960e40ad48bea641139b0d9a95766a29eb46cbf5295ff805492",
+  "votaciones": 494,
+  "iniciativas": 334,
+  "fichas": 334,
+  "bytes": 901120
+ },
+ "parl-RI/leg11": {
+  "huella": "d27f90c7b8c3efc8ea97f03e2d5dd249a79f533a146d5608ed0730b2f4bc7bb6",
+  "votaciones": 588,
+  "iniciativas": 361,
+  "fichas": 351,
+  "bytes": 966656
+ },
+ "jjgg-alava/leg5": {
+  "huella": "195c6bb57d313d8d1d4ac7ba95c87c1c8e3c207743c47aff9a00ec1c8716cd5a",
+  "votaciones": 0,
+  "iniciativas": 424,
+  "fichas": 0,
+  "bytes": 491520
+ },
+ "jjgg-alava/leg6": {
+  "huella": "c66ca0271276e38c9fc7f81510c4401f1960d66684128aa4cda99e3bb6814175",
+  "votaciones": 536,
+  "iniciativas": 503,
+  "fichas": 346,
+  "bytes": 1032192
+ },
+ "jjgg-alava/leg7": {
+  "huella": "be5fab7f0fbe77b06942a1878f7b718343fd68cae6208889483e99ef75953b5d",
+  "votaciones": 473,
+  "iniciativas": 522,
+  "fichas": 345,
+  "bytes": 1052672
+ },
+ "jjgg-alava/leg8": {
+  "huella": "d00ffa7775c7a551e502310c043164d773b40b9102154e83439ee7ac71eaca55",
+  "votaciones": 385,
+  "iniciativas": 363,
+  "fichas": 241,
+  "bytes": 753664
+ },
+ "jjgg-alava/leg9": {
+  "huella": "3856914318d4ccf6e161f228db2e5b630bbe0a8480989b1b704ee2787f48abba",
+  "votaciones": 671,
+  "iniciativas": 548,
+  "fichas": 435,
+  "bytes": 1097728
+ },
+ "jjgg-alava/leg10": {
+  "huella": "832d0791286cd6f0312e3708d591c3c2369b4d662fd84968590efa9976804e54",
+  "votaciones": 655,
+  "iniciativas": 567,
+  "fichas": 407,
+  "bytes": 1110016
+ },
+ "jjgg-alava/leg11": {
+  "huella": "0d1383b42a2050b0b8f1a6c1847fbf25376ed1db51922cbfd6e37a972ec371f3",
+  "votaciones": 858,
+  "iniciativas": 647,
+  "fichas": 415,
+  "bytes": 1298432
+ },
+ "jjgg-alava/leg12": {
+  "huella": "1514ffe51ae1079771efd529ff8f27099a9f897f5fcc2f176710dfec6099a6e8",
+  "votaciones": 547,
+  "iniciativas": 587,
+  "fichas": 311,
+  "bytes": 987136
+ },
+ "jjgg-bizkaia/leg6": {
+  "huella": "3883a950f86a3bc16a35300f3b4f551273c6b555df628b98917f0656fa81e72e",
+  "votaciones": 363,
+  "iniciativas": 104,
+  "fichas": 0,
+  "bytes": 413696
+ },
+ "jjgg-bizkaia/leg7": {
+  "huella": "09d4dbf01739de6139fb0f99412826ce189997263b57c39d24fe1ed5da54c730",
+  "votaciones": 300,
+  "iniciativas": 83,
+  "fichas": 0,
+  "bytes": 380928
+ },
+ "jjgg-bizkaia/leg8": {
+  "huella": "3da627d0ea02d93dbdfbf06eef519ae8805250775f66116dda4b1fea4c7bb16c",
+  "votaciones": 408,
+  "iniciativas": 148,
+  "fichas": 0,
+  "bytes": 471040
+ },
+ "jjgg-bizkaia/leg9": {
+  "huella": "0333ab6970ed19bb348f3c295c45b348127c453d6e93aeffc47a777c0b71da00",
+  "votaciones": 602,
+  "iniciativas": 205,
+  "fichas": 61,
+  "bytes": 643072
+ },
+ "jjgg-bizkaia/leg10": {
+  "huella": "dd253b9f653df39b458d2304095f67ec1ee3ff8786b397b2dbb1144d59722292",
+  "votaciones": 634,
+  "iniciativas": 212,
+  "fichas": 8,
+  "bytes": 618496
+ },
+ "jjgg-bizkaia/leg11": {
+  "huella": "292d124c53b41020e44beb8ecc0bdf2e94776da3488bbbecaaacf787cb019c9c",
+  "votaciones": 440,
+  "iniciativas": 197,
+  "fichas": 2,
+  "bytes": 532480
+ },
+ "jjgg-bizkaia/leg12": {
+  "huella": "a4d04d35c0684e284d2f99bcf151d721c7ddee03754134bb6996dda247586d89",
+  "votaciones": 327,
+  "iniciativas": 136,
+  "fichas": 7,
+  "bytes": 409600
+ },
+ "jjgg-gipuzkoa/leg7": {
+  "huella": "19ced68ecef3e49d53ae4897a7324eb697555f8ef31424d76f97ff4de27b895f",
+  "votaciones": 45,
+  "iniciativas": 108,
+  "fichas": 44,
+  "bytes": 245760
+ },
+ "jjgg-gipuzkoa/leg8": {
+  "huella": "4e2e2207e0691bb78d0f261936064fe9b668df44eb35d87db567a2a4ad4d8157",
+  "votaciones": 149,
+  "iniciativas": 219,
+  "fichas": 85,
+  "bytes": 393216
+ },
+ "jjgg-gipuzkoa/leg9": {
+  "huella": "8dd3dcc4828afe6486923b3edcb96d1caeb5a8c10169711e6d40da197222a25c",
+  "votaciones": 184,
+  "iniciativas": 455,
+  "fichas": 172,
+  "bytes": 598016
+ },
+ "jjgg-gipuzkoa/leg10": {
+  "huella": "236b420c5e2bb701a2a8fa5f68fdf283ca05b494230b92f0f435a0b8fdbd46a3",
+  "votaciones": 118,
+  "iniciativas": 269,
+  "fichas": 111,
+  "bytes": 417792
+ },
+ "jjgg-gipuzkoa/leg11": {
+  "huella": "29aa7f3680122bb2653df7c360763c8bb2c8a88c2be37a06bf8a977a961efb72",
+  "votaciones": 134,
+  "iniciativas": 264,
+  "fichas": 133,
+  "bytes": 438272
+ },
+ "jjgg-gipuzkoa/leg12": {
+  "huella": "f1820f3917e1d38e1c40f71d64814824eb07b70ced7006ff8e2d4e1b4098c0c1",
+  "votaciones": 188,
+  "iniciativas": 257,
+  "fichas": 63,
+  "bytes": 409600
+ },
+ "cabildo-lanzarote/leg12": {
+  "huella": "ef9e59bcd47dace62655419e2cc8cced0836c110a18aa7a352ae2ac4203424e8",
+  "votaciones": 43,
+  "iniciativas": 39,
+  "fichas": 20,
+  "bytes": 188416
+ },
+ "consell-mallorca/leg10": {
+  "huella": "63683143fbb3c14f03978b27626c04cb907047c08458be0ed555449b529b2abe",
+  "votaciones": 9,
+  "iniciativas": 7,
+  "fichas": 7,
+  "bytes": 159744
+ },
+ "ayto-alicante/leg6": {
+  "huella": "86067b594956c78b8e5ee521fa91a540bcb98d9d1b768c16bab58a843796c343",
+  "votaciones": 735,
+  "iniciativas": 706,
+  "fichas": 706,
+  "bytes": 1024000
+ },
+ "ayto-alicante/leg7": {
+  "huella": "323eb7fae103fc8bcbe73622c5941dfc52af3aa6b02d24e81796eff26ba9befc",
+  "votaciones": 474,
+  "iniciativas": 465,
+  "fichas": 465,
+  "bytes": 745472
+ },
+ "ayto-alicante/leg8": {
+  "huella": "1c44e54148f315a830f012064caa79ca6f4c6295e509b107cfd96aa137998a5a",
+  "votaciones": 571,
+  "iniciativas": 564,
+  "fichas": 564,
+  "bytes": 933888
+ },
+ "ayto-alicante/leg9": {
+  "huella": "0bc977022aecf48b6adaeb9ce02cec270187d0bcd5e51db1d9fedded3541c8a3",
+  "votaciones": 977,
+  "iniciativas": 948,
+  "fichas": 948,
+  "bytes": 1556480
+ },
+ "ayto-alicante/leg10": {
+  "huella": "2224358219c623eae0a37ab605f6c64c31d2f9d5114332a26529cb0c0dc34a94",
+  "votaciones": 735,
+  "iniciativas": 686,
+  "fichas": 686,
+  "bytes": 1298432
+ },
+ "ayto-alicante/leg11": {
+  "huella": "d3f96bfa8be78ffc2f236451da3ed657fb3ae61853162d4d2751b33d71ecfbb0",
+  "votaciones": 945,
+  "iniciativas": 874,
+  "fichas": 874,
+  "bytes": 1560576
+ },
+ "ayto-alicante/leg12": {
+  "huella": "cf242d20c33ef41f4cd3c2812a77c1360c35e0efebfd89b17cf87900350a1423",
+  "votaciones": 619,
+  "iniciativas": 607,
+  "fichas": 607,
+  "bytes": 1069056
+ },
+ "ayto-l-hospitalet-de-llobregat/leg12": {
+  "huella": "671d0a51c1cbd2ef75b8bc25f95a2accfa08000aa100df45f64b971842dce338",
+  "votaciones": 22,
+  "iniciativas": 22,
+  "fichas": 22,
+  "bytes": 176128
+ },
+ "ayto-cordoba/leg9": {
+  "huella": "1e759f5608a28fd034aaa7ca0e82fc9b09c1854dbb561a970c040d4b769713a2",
+  "votaciones": 1211,
+  "iniciativas": 986,
+  "fichas": 986,
+  "bytes": 1523712
+ },
+ "ayto-cordoba/leg10": {
+  "huella": "8334af56a59c56f699f60c7f1a9b5d09f4d2d39c53493a4564c94d99a2f28abd",
+  "votaciones": 1213,
+  "iniciativas": 896,
+  "fichas": 896,
+  "bytes": 1585152
+ },
+ "ayto-cordoba/leg11": {
+  "huella": "59994ceb598f5130e6c5eee33bd17485b3df7bd93a3a7db7c73f7c998bb65318",
+  "votaciones": 1124,
+  "iniciativas": 880,
+  "fichas": 880,
+  "bytes": 1646592
+ },
+ "ayto-cordoba/leg12": {
+  "huella": "402227baadfcafb2b14a888e2d8edfa385d71d412202f819fc881088f0ee6259",
+  "votaciones": 966,
+  "iniciativas": 830,
+  "fichas": 830,
+  "bytes": 1470464
+ },
+ "ayto-salt/leg12": {
+  "huella": "baddcb05eec188602221e5a47a59b8fd4f95a25b8a4626cff5653a881fc5db53",
+  "votaciones": 8,
+  "iniciativas": 8,
+  "fichas": 8,
+  "bytes": 159744
+ },
+ "ayto-malaga/leg11": {
+  "huella": "72c74b23fd391cd3d65ccae6eef10a1ae97aa5cd92970ed0adc46547931ea40c",
+  "votaciones": 1688,
+  "iniciativas": 1491,
+  "fichas": 1491,
+  "bytes": 2215936
+ },
+ "ayto-malaga/leg12": {
+  "huella": "474848d6ee0b43ebecc5dd7226b5b08f1c8de69deffd884ed6ddf4d22f1041c0",
+  "votaciones": 1273,
+  "iniciativas": 1114,
+  "fichas": 1114,
+  "bytes": 1732608
+ },
+ "ayto-gijon/leg10": {
+  "huella": "7fea0bcb5d185356704658793086ce9f9e9519cd54ca4b9cdd07353742d4d6ac",
+  "votaciones": 535,
+  "iniciativas": 535,
+  "fichas": 535,
+  "bytes": 700416
+ },
+ "ayto-gijon/leg11": {
+  "huella": "ee318975acbb53ef7ead05a49f4c7208a785958bf9ca8f3dada2a0916b41158e",
+  "votaciones": 617,
+  "iniciativas": 521,
+  "fichas": 521,
+  "bytes": 851968
+ },
+ "ayto-gijon/leg12": {
+  "huella": "cc90f8be61e5f3b9c39da3a9db17d1653c2e32cd4c94bfd75510b4deccef3244",
+  "votaciones": 459,
+  "iniciativas": 431,
+  "fichas": 431,
+  "bytes": 700416
+ },
+ "ayto-laspalmas/leg12": {
+  "huella": "0231904276644893102b43dacd09a81de94de6a588b9973e1e75a47da6109f8f",
+  "votaciones": 287,
+  "iniciativas": 204,
+  "fichas": 204,
+  "bytes": 516096
+ },
+ "ayto-valencia/leg10": {
+  "huella": "c02c59a31f54273ca3f4d0e0495e5f355a144f9c0df4516a21a7154e7265214b",
+  "votaciones": 57,
+  "iniciativas": 57,
+  "fichas": 57,
+  "bytes": 196608
+ },
+ "ayto-valencia/leg11": {
+  "huella": "c929f03efc2b4f16b560240511abdc620dd4a06c75032c32acf266e13fd8a914",
+  "votaciones": 480,
+  "iniciativas": 478,
+  "fichas": 478,
+  "bytes": 602112
+ },
+ "ayto-valencia/leg12": {
+  "huella": "aaeaa075a0a2864d3bf236430516d772d2eaa52aa120376a8c4cd6492d83de80",
+  "votaciones": 213,
+  "iniciativas": 205,
+  "fichas": 205,
+  "bytes": 352256
+ },
+ "ayto-valladolid/leg10": {
+  "huella": "a79f4e6eaec7bd66e8b50d98510779bff082f7a9c9d0a4b5810ed7fdda7ef285",
+  "votaciones": 838,
+  "iniciativas": 415,
+  "fichas": 585,
+  "bytes": 1155072
+ },
+ "ayto-valladolid/leg11": {
+  "huella": "deda20175ac8d94e1df57a1e4ab27509c5c4b593754e7b52709ef5738114f99c",
+  "votaciones": 790,
+  "iniciativas": 422,
+  "fichas": 435,
+  "bytes": 1130496
+ },
+ "ayto-valladolid/leg12": {
+  "huella": "0e43ef0ea67d4766a7586e6fbc41bd5ef0e6bacb5f271c23ef5d14183ef60a9f",
+  "votaciones": 506,
+  "iniciativas": 207,
+  "fichas": 207,
+  "bytes": 647168
+ },
+ "ayto-zaragoza/leg10": {
+  "huella": "37745fc18628d88ee8fc766a65426eb00f80cd6eda680e103c6de6bf37434e55",
+  "votaciones": 3302,
+  "iniciativas": 2633,
+  "fichas": 2633,
+  "bytes": 5226496
+ },
+ "ayto-zaragoza/leg11": {
+  "huella": "b657a45d01369ecaf23cc001861c4655f9b38161bf8ac6d8091e09e38b33876c",
+  "votaciones": 2605,
+  "iniciativas": 1634,
+  "fichas": 1634,
+  "bytes": 4055040
+ },
+ "ayto-zaragoza/leg12": {
+  "huella": "3692ab7ea41a87e30bbe01e47a8f530044d47d55bf187a9b1195ced350149a7c",
+  "votaciones": 1299,
+  "iniciativas": 836,
+  "fichas": 836,
+  "bytes": 1888256
+ }
+}

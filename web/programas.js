@@ -135,6 +135,17 @@ VISTAS.programas = async (ruta) => {
     }
   }
 
+  // 0. La cifra rápida: qué parte de lo que prometió cada partido coincide con lo que votó.
+  const conCifra = [...porPartido.entries()].map(([s, o]) => ({ s, ...coinciden(o), a: (o.impulsado || 0) + (o.apoyado || 0) }))
+    .filter((x) => x.n).sort((a, b) => b.p - a.p);
+  if (conCifra.length) {
+    cont.append(el("div", { class: "card", style: "margin-bottom:16px" }, el("h3", {}, "¿Votan lo que prometieron?"),
+      el("p", { class: "small muted" }, "De los compromisos de cada programa que tuvieron una votación en un sentido claro, qué parte coincide con lo que votó el partido (impulsados o apoyados, frente a contradichos). Entre paréntesis, cuántos compromisos cuentan: con pocos, la cifra dice poco. Clic en un partido para ver sus compromisos; filtra por el estado «Contradicho» para ver dónde no coincide."),
+      barrasH(conCifra.map((x) => ({ label: x.s, color: colorSiglas(x.s), barColor: colorSiglas(x.s), v: Math.round(100 * x.p),
+        valorTexto: `${Math.round(100 * x.p)}% (de ${fmt(x.n)})`, tip: () => `${fmt(x.a)} de ${fmt(x.n)} compromisos coinciden con su voto`,
+        onclick: () => ir({ g: x.s }) })), { max: 100 })));
+  }
+
   // 1. Los programas, frente a frente.
   cont.append(el("div", { class: "card" }, el("h3", {}, "Los programas"),
     el("p", { class: "small muted" }, "Cuántos compromisos tiene cada programa y cuántos son verificables (un programa más concreto tiene más). «Coinciden» es la parte de los compromisos con votación en un sentido claro que quedaron impulsados o apoyados, frente a contradichos. Con los filtros de tema y acción, solo esos compromisos."),
@@ -239,16 +250,28 @@ function filaRelacionada(r, c, d) {
       r.votada ? el("a", { href: "#", onclick: (e) => { e.preventDefault(); abrir(`i:${r.legislatura}:${r.expediente}`); } }, textoCorto(r.titulo, 120))
         : r.titulo ? textoCorto(r.titulo, 120) : el("span", { class: "muted" }, r.expediente),
       autor ? el("span", { class: "muted" }, ` · presentada por ${autor.siglas}`) : null, " ", badgeResultado(r.resultado_final)),
-    votos.map((v) => {
-      const g = gobiernoEn(infoLeg(v.legislatura).cuerpo || "congreso", v.fecha);
-      const enGobierno = g && (g.partido === c.partido || lista(g.socios).includes(c.partido));
-      const coincide = r.sentido !== "relacionada" && (v.apoyo === "si" || v.apoyo === "no") ? (v.apoyo === "si") === (r.sentido === "misma") : null;
-      return el("div", { class: "small" }, `${c.partido} ${VOTO_PROGRAMA[v.apoyo] || "no consta"}`,
-        el("span", { class: "muted" }, ` · ${META.tipos_votacion[v.tipo_votacion] || v.tipo_votacion}, ${fecha(v.fecha)} · ${enGobierno ? "en el Gobierno" : "en la oposición"}`), " ",
-        coincide === null ? null : el("span", { class: `badge ${coincide ? "ok" : "ko"}` }, coincide ? "coincide con el programa" : "no coincide con el programa"));
-    }),
+    votos.map((v) => lineaVoto(v, r.sentido, c.partido)),
     r.justificacion ? el("div", { class: "small muted" }, r.justificacion) : null);
 }
+
+// Lo que votó el partido en una votación decisiva y si coincide con su programa (según el sentido de la iniciativa
+// respecto al compromiso), con si estaba en el Gobierno o en la oposición.
+function lineaVoto(v, sentido, partido) {
+  const g = gobiernoEn(infoLeg(v.legislatura).cuerpo || "congreso", v.fecha);
+  const enGobierno = g && (g.partido === partido || lista(g.socios).includes(partido));
+  const coincide = sentido !== "relacionada" && (v.apoyo === "si" || v.apoyo === "no") ? (v.apoyo === "si") === (sentido === "misma") : null;
+  return el("div", { class: "small" }, `${partido} ${VOTO_PROGRAMA[v.apoyo] || "no consta"}`,
+    el("span", { class: "muted" }, ` · ${META.tipos_votacion[v.tipo_votacion] || v.tipo_votacion}, ${fecha(v.fecha)} · ${enGobierno ? "en el Gobierno" : "en la oposición"}`), " ",
+    coincide === null ? null : el("span", { class: `badge ${coincide ? "ok" : "ko"}` }, coincide ? "coincide con el programa" : "no coincide con el programa"));
+}
+
+// Votaciones decisivas de fondo de una iniciativa con lo que votó un partido (apoyo a la iniciativa).
+const votosPartido = (leg, exp, partido) => q(`SELECT v.legislatura, v.id, v.fecha, v.tipo_votacion,
+    CASE WHEN v.asentimiento=1 THEN 'si' ELSE ${SQL_APOYO} END AS apoyo
+  FROM votacion v
+  LEFT JOIN grupo gr ON gr.legislatura=v.legislatura AND gr.siglas=?
+  LEFT JOIN voto_grupo g ON g.votacion_id=v.id AND g.grupo=gr.codigo
+  WHERE v.legislatura=? AND v.expediente=? AND v.decisiva=1 AND v.tipo_votacion IN (${FONDO_SQL}) ORDER BY v.fecha`, [partido, +leg, exp]);
 
 // Bloque del detalle de una iniciativa: qué partidos llevaban en su programa algo relacionado. Solo descarga los
 // programas si la iniciativa aparece en alguno (programa_iniciativa, en comun.js).
@@ -258,9 +281,14 @@ async function bloqueProgramas(leg, exp) {
   const cs = API.programasIniciativa({ leg, exp });
   if (!cs.length) return null;
   return el("section", {}, el("h3", {}, "En los programas electorales"),
-    el("ul", { class: "relacionadas" }, cs.map((c) => el("li", {},
-      el("div", {}, swatch(colorSiglas(c.partido)), el("b", {}, c.partido), " · ", SENTIDO_COMPROMISO[c.sentido] || c.sentido, " · ",
-        el("a", { href: `${c.url}#page=${c.pagina}`, target: "_blank", rel: "noopener" }, `${eleccionTexto(c.eleccion)}, p. ${c.pagina}`)),
-      el("div", {}, c.texto)))),
+    el("p", { class: "small muted" }, "Partidos que llevaban en su programa algo relacionado, si esta iniciativa iba en la dirección de su compromiso y si lo que votaron coincide con él."),
+    el("ul", { class: "relacionadas" }, cs.map((c) => {
+      const votos = votosPartido(leg, exp, c.partido);
+      return el("li", {},
+        el("div", {}, swatch(colorSiglas(c.partido)), el("b", {}, c.partido), " · ", SENTIDO_COMPROMISO[c.sentido] || c.sentido, " · ",
+          el("a", { href: `${c.url}#page=${c.pagina}`, target: "_blank", rel: "noopener" }, `${eleccionTexto(c.eleccion)}, p. ${c.pagina}`)),
+        el("div", {}, c.texto),
+        votos.length ? votos.map((v) => lineaVoto(v, c.sentido, c.partido)) : el("div", { class: "small muted" }, "Todavía no se ha votado."));
+    })),
     el("p", { class: "small" }, el("a", { href: "#/programas" }, "Programas electorales: lo que prometió cada partido frente a lo que votó →")));
 }

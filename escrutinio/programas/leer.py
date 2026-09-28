@@ -21,6 +21,7 @@ import json
 import re
 import unicodedata
 from collections import Counter
+from concurrent.futures import ThreadPoolExecutor
 from datetime import date
 
 from ..catalogos import CODIGOS_TEMA, TEMAS
@@ -30,6 +31,7 @@ from . import registro
 VERSION_PROMPT = "compromisos-v1"
 MODELO = "deepseek-v4-pro"
 MAX_TROZO = 40_000
+HILOS = 4  # trozos que se piden a la vez
 TIPOS_ACCION = {
     "legislar": "aprobar o reformar una ley",
     "derogar": "derogar una norma o parte de ella",
@@ -172,6 +174,19 @@ def leer_compromisos(id_):
     return [json.loads(l) for l in ruta.read_text(encoding="utf-8").splitlines() if l.strip()]
 
 
+def _respuesta(desde, paginas, ruta, modelo):
+    """Respuesta de un trozo: la de la caché o, si no está, la de DeepSeek (que se guarda). (respuesta, nueva)."""
+    if ruta.exists():
+        return json.loads(ruta.read_text(encoding="utf-8")), False
+    datos, modelo_real, uso = deepseek.chat_json(SISTEMA, "Fragmento del programa (páginas "
+                                                 f"{desde}–{desde + len(paginas) - 1}):\n\n" + "\n".join(paginas),
+                                                 modelo, max_tokens=64_000)
+    respuesta = {"compromisos": datos.get("compromisos") or [], "modelo": f"deepseek:{modelo_real}",
+                 "tokens_entrada": uso.get("prompt_tokens", 0), "tokens_salida": uso.get("completion_tokens", 0)}
+    ruta.write_text(json.dumps(respuesta, ensure_ascii=False), encoding="utf-8")
+    return respuesta, True
+
+
 def _leer_programa(e, modelo, log):
     """Lee un programa trozo a trozo. Devuelve (compromisos, tokens de entrada, de salida, descartados)."""
     cache = registro.TEXTOS_DIR / "trozos" / e["id"] / VERSION_PROMPT
@@ -179,35 +194,36 @@ def _leer_programa(e, modelo, log):
     partes = trozos(registro.texto(e["id"]))
     compromisos, t_in, t_out, descartados = [], 0, 0, 0
     usados = set()
-    for k, (desde, paginas) in enumerate(partes, 1):
-        ruta = cache / f"{hashlib.sha1(chr(12).join(paginas).encode()).hexdigest()[:16]}.json"  # por contenido
-        if ruta.exists():
-            respuesta = json.loads(ruta.read_text(encoding="utf-8"))
-        else:
-            datos, modelo_real, uso = deepseek.chat_json(SISTEMA, "Fragmento del programa (páginas "
-                                                         f"{desde}–{desde + len(paginas) - 1}):\n\n" + "\n".join(paginas),
-                                                         modelo, max_tokens=64_000)
-            respuesta = {"compromisos": datos.get("compromisos") or [], "modelo": f"deepseek:{modelo_real}",
-                         "tokens_entrada": uso.get("prompt_tokens", 0), "tokens_salida": uso.get("completion_tokens", 0)}
-            ruta.write_text(json.dumps(respuesta, ensure_ascii=False), encoding="utf-8")
-            t_in += respuesta["tokens_entrada"]
-            t_out += respuesta["tokens_salida"]
-        for bruto in respuesta["compromisos"]:
-            c = validar(bruto)
-            sitio = localizar(bruto.get("cita", ""), paginas, desde) if c else None
-            if not sitio:
-                descartados += 1
-                continue
-            c["pagina"], c["cita"] = sitio
-            # El id sale de la cita: si se relee y sale la misma cita, los emparejamientos y validaciones siguen valiendo.
-            base = f"{e['id']}:{hashlib.sha1(c['cita'].lower().encode()).hexdigest()[:8]}"
-            c["id"], n = base, 2
-            while c["id"] in usados:
-                c["id"], n = f"{base}-{n}", n + 1
-            usados.add(c["id"])
-            compromisos.append({"id": c.pop("id"), **c, "modelo": respuesta["modelo"]})
-        log(f"    trozo {k}/{len(partes)} (págs. {desde}–{desde + len(paginas) - 1}): {len(compromisos)} compromisos")
+    # Los trozos se piden a la vez (HILOS) y se procesan en orden. Si uno falla, los demás terminan y quedan en la caché.
+    with ThreadPoolExecutor(HILOS) as hilos:
+        futuros = [hilos.submit(_respuesta, desde, paginas, cache / f"{hashlib.sha1(chr(12).join(paginas).encode()).hexdigest()[:16]}.json",
+                                modelo) for desde, paginas in partes]  # la caché va por el contenido del trozo
+        for k, ((desde, paginas), futuro) in enumerate(zip(partes, futuros), 1):
+            respuesta, nueva = futuro.result()
+            if nueva:
+                t_in += respuesta["tokens_entrada"]
+                t_out += respuesta["tokens_salida"]
+            _anadir(e, respuesta, paginas, desde, compromisos, usados)
+            log(f"    trozo {k}/{len(partes)} (págs. {desde}–{desde + len(paginas) - 1}): {len(compromisos)} compromisos")
+    descartados = sum(len(futuro.result()[0]["compromisos"]) for futuro in futuros) - len(compromisos)
     return compromisos, t_in, t_out, descartados
+
+
+def _anadir(e, respuesta, paginas, desde, compromisos, usados):
+    """Añade los compromisos válidos de un trozo cuya cita está en el programa, con su página y su id."""
+    for bruto in respuesta["compromisos"]:
+        c = validar(bruto)
+        sitio = localizar(bruto.get("cita", ""), paginas, desde) if c else None
+        if not sitio:
+            continue
+        c["pagina"], c["cita"] = sitio
+        # El id sale de la cita: si se relee y sale la misma cita, los emparejamientos y validaciones siguen valiendo.
+        base = f"{e['id']}:{hashlib.sha1(c['cita'].lower().encode()).hexdigest()[:8]}"
+        c["id"], n = base, 2
+        while c["id"] in usados:
+            c["id"], n = f"{base}-{n}", n + 1
+        usados.add(c["id"])
+        compromisos.append({"id": c.pop("id"), **c, "modelo": respuesta["modelo"]})
 
 
 def leer(ids=None, reintentar=False, limite=None, modelo=None, releer=False, log=print):

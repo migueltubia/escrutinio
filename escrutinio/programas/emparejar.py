@@ -17,6 +17,7 @@ import json
 import math
 import re
 from collections import Counter
+from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime, timezone
 
 from ..analisis import debates_generales
@@ -29,6 +30,7 @@ VERSION_PROMPT = "emparejar-v1"
 EMPAREJAMIENTOS_DIR = registro.PROGRAMAS_DIR / "emparejamientos"
 CANDIDATAS = 10
 POR_LLAMADA = 5
+HILOS = 4  # lotes que se piden a la vez
 RELACIONES = ("misma", "contraria", "relacionada", "ninguna")
 
 SISTEMA = """Eres un analista parlamentario neutral. Recibes compromisos concretos tomados de programas electorales
@@ -141,38 +143,29 @@ def emparejar(con, ids=None, limite=None, modelo=None, log=print):
         log(f"  {e['id']}: {len(pendientes)} compromisos con candidatas nuevas (legislatura {leg})")
         t_in = t_out = 0
         salida = EMPAREJAMIENTOS_DIR / f"{e['id']}.jsonl"
-        for i in range(0, len(pendientes), POR_LLAMADA):
-            lote = pendientes[i : i + POR_LLAMADA]
+        lotes = [pendientes[i : i + POR_LLAMADA] for i in range(0, len(pendientes), POR_LLAMADA)]
+
+        def preguntar(lote):
             entrada = [{"id": f"c{k + 1}", "compromiso": c["texto"],
                         "candidatas": [{"n": n + 1, "tipo": d["tipo"], "titulo": d["titulo"], "resumen": d["resumen"]}
                                        for n, (_s, d) in enumerate(nuevas)]}
                        for k, (c, nuevas) in enumerate(lote)]
-            try:
-                datos, modelo_real, uso = deepseek.chat_json(SISTEMA, json.dumps(entrada, ensure_ascii=False), modelo)
-            except deepseek.ErrorIA as err:
-                log(f"    ! lote {i // POR_LLAMADA + 1}: {err}")
-                continue
-            t_in += uso.get("prompt_tokens", 0)
-            t_out += uso.get("completion_tokens", 0)
-            respuestas = {r.get("id"): r for r in datos.get("compromisos") or [] if isinstance(r, dict)}
-            ahora = datetime.now(timezone.utc).isoformat(timespec="seconds")
-            lineas = []
-            for k, (c, nuevas) in enumerate(lote):
-                decididas = {x.get("n"): x for x in (respuestas.get(f"c{k + 1}") or {}).get("candidatas") or []
-                             if isinstance(x, dict) and x.get("relacion") in RELACIONES}
-                for n, (s, d) in enumerate(nuevas):
-                    x = decididas.get(n + 1)
-                    if not x:  # sin respuesta para esa candidata: se volverá a preguntar
-                        continue
-                    lineas.append({"compromiso": c["id"], "iniciativa": d["id"], "relacion": x["relacion"],
-                                   "justificacion": (x.get("justificacion") or "").strip() or None, "rango": n + 1,
-                                   "bm25": round(s, 2), "modelo": f"deepseek:{modelo_real}", "version_prompt": VERSION_PROMPT,
-                                   "creado": ahora})
-            with open(salida, "a", encoding="utf-8") as fh:
-                fh.writelines(json.dumps(l, ensure_ascii=False) + "\n" for l in lineas)
-            for l in lineas:
-                hechos[(l["compromiso"], l["iniciativa"])] = l
-            log(f"    {min(i + POR_LLAMADA, len(pendientes))}/{len(pendientes)}")
+            return deepseek.chat_json(SISTEMA, json.dumps(entrada, ensure_ascii=False), modelo)
+
+        # Los lotes se piden a la vez (HILOS) y se guardan en orden.
+        with ThreadPoolExecutor(HILOS) as hilos:
+            futuros = [hilos.submit(preguntar, lote) for lote in lotes]
+            for j, (lote, futuro) in enumerate(zip(lotes, futuros)):
+                i = j * POR_LLAMADA
+                try:
+                    datos, modelo_real, uso = futuro.result()
+                except deepseek.ErrorIA as err:
+                    log(f"    ! lote {j + 1}: {err}")
+                    continue
+                _guardar(lote, datos, modelo_real, salida, hechos)
+                t_in += uso.get("prompt_tokens", 0)
+                t_out += uso.get("completion_tokens", 0)
+                log(f"    {min(i + POR_LLAMADA, len(pendientes))}/{len(pendientes)}")
         total += len(pendientes)
         if t_in or t_out:
             e["tokens_emparejar_entrada"] = e.get("tokens_emparejar_entrada", 0) + t_in
@@ -181,3 +174,25 @@ def emparejar(con, ids=None, limite=None, modelo=None, log=print):
         if limite is not None and total >= limite:
             break
     return total
+
+
+def _guardar(lote, datos, modelo_real, salida, hechos):
+    """Escribe los pares decididos de un lote (también los «ninguna»); lo que no vino se volverá a preguntar."""
+    respuestas = {r.get("id"): r for r in datos.get("compromisos") or [] if isinstance(r, dict)}
+    ahora = datetime.now(timezone.utc).isoformat(timespec="seconds")
+    lineas = []
+    for k, (c, nuevas) in enumerate(lote):
+        decididas = {x.get("n"): x for x in (respuestas.get(f"c{k + 1}") or {}).get("candidatas") or []
+                     if isinstance(x, dict) and x.get("relacion") in RELACIONES}
+        for n, (s, d) in enumerate(nuevas):
+            x = decididas.get(n + 1)
+            if not x:
+                continue
+            lineas.append({"compromiso": c["id"], "iniciativa": d["id"], "relacion": x["relacion"],
+                           "justificacion": (x.get("justificacion") or "").strip() or None, "rango": n + 1,
+                           "bm25": round(s, 2), "modelo": f"deepseek:{modelo_real}", "version_prompt": VERSION_PROMPT,
+                           "creado": ahora})
+    with open(salida, "a", encoding="utf-8") as fh:
+        fh.writelines(json.dumps(l, ensure_ascii=False) + "\n" for l in lineas)
+    for l in lineas:
+        hechos[(l["compromiso"], l["iniciativa"])] = l

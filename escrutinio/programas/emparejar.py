@@ -166,13 +166,23 @@ def emparejar(con, ids=None, limite=None, modelo=None, log=print):
             for j, (lote, futuro) in enumerate(zip(lotes, futuros)):
                 i = j * POR_LLAMADA
                 try:
-                    datos, modelo_real, uso = futuro.result()
+                    respuestas = [(lote, *futuro.result())]
+                except deepseek.RespuestaTruncada as err:
+                    # No cupo (a veces razona hasta agotar el límite): se pregunta compromiso a compromiso.
+                    log(f"    · lote {j + 1}: {err}; se pregunta de uno en uno")
+                    respuestas = []
+                    for uno in ([x] for x in lote):
+                        try:
+                            respuestas.append((uno, *preguntar(uno)))
+                        except deepseek.ErrorIA as err1:
+                            log(f"    ! {uno[0][0]['id']}: {err1}")
                 except deepseek.ErrorIA as err:
                     log(f"    ! lote {j + 1}: {err}")
                     continue
-                _guardar(lote, datos, modelo_real, salida, hechos)
-                t_in += uso.get("prompt_tokens", 0)
-                t_out += uso.get("completion_tokens", 0)
+                for parte, datos, modelo_real, uso in respuestas:
+                    _guardar(parte, datos, modelo_real, salida, hechos)
+                    t_in += uso.get("prompt_tokens", 0)
+                    t_out += uso.get("completion_tokens", 0)
                 log(f"    {min(i + POR_LLAMADA, len(pendientes))}/{len(pendientes)}")
         total += len(pendientes)
         if t_in or t_out:

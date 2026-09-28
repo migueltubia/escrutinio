@@ -662,6 +662,53 @@ API.grupoPerfil = (p) => {
   return { porTema, media, propuestas, afinidad, decisivo, totalesDecisivas, cohesion, clave, legislaturas };
 };
 
+// Programa electoral del partido: compromisos, su estado según lo que votó y las iniciativas relacionadas.
+// Los programas van en comun.js; los títulos y votos de las iniciativas, en los ficheros de su legislatura.
+API.programa = (p) => {
+  const gs = lista(p.g);
+  const enG = `p.partido IN (${gs.map(() => "?").join(",")})`;
+  const [wl, al] = enSQL("p.legislatura", p.leg, { conv: Number });
+  const programas = q(`SELECT p.* FROM programa p WHERE ${enG} ${wl} ORDER BY p.fecha_eleccion DESC, p.partido`, [...gs, ...al]);
+  const base = `FROM compromiso c JOIN programa p ON p.id=c.programa LEFT JOIN compromiso_estado ce ON ce.compromiso=c.id
+    WHERE ${enG} ${wl}`;
+  // Las cifras y el reparto por tema siguen el filtro de tema; el de estado solo filtra la lista.
+  const [wt, at] = enSQL("c.tema", p.tema);
+  const resumen = q(`SELECT c.tema, COALESCE(ce.estado, 'generico') AS estado, COUNT(*) AS n ${base} ${wt} GROUP BY 1, 2`, [...gs, ...al, ...at]);
+  const [we, ae] = enSQL("COALESCE(ce.estado, 'generico')", p.estado);
+  const args = [...gs, ...al, ...at, ...ae];
+  const total = q1(`SELECT COUNT(*) AS n ${base} ${wt} ${we}`, args).n;
+  const pagina = Math.max(1, +(p.pagina || 1));
+  const tam = 25;
+  const compromisos = q(`SELECT c.*, p.partido, p.url, p.titulo AS programa_titulo, p.eleccion, ce.estado, ce.aprobada, ce.gobierno
+    ${base} ${wt} ${we} ORDER BY p.fecha_eleccion DESC, p.partido, c.orden LIMIT ? OFFSET ?`, [...args, tam, (pagina - 1) * tam]);
+  const ids = compromisos.map((c) => c.id);
+  const marcas = ids.map(() => "?").join(",");
+  // Las que aún no se han votado solo están en en_tramite (si siguen abiertas).
+  const relacionadas = ids.length ? q(`SELECT ci.*, COALESCE(i.titulo, t.titulo) AS titulo, i.titulo IS NOT NULL AS votada,
+      COALESCE(i.resultado_final, CASE WHEN t.expediente IS NOT NULL THEN 'en_tramite' END) AS resultado_final,
+      COALESCE(i.grupo_autor, t.grupo_autor) AS grupo_autor
+    FROM compromiso_iniciativa ci
+    LEFT JOIN iniciativa i ON i.legislatura=ci.legislatura AND i.expediente=ci.expediente
+    LEFT JOIN en_tramite t ON t.legislatura=ci.legislatura AND t.expediente=ci.expediente
+    WHERE ci.compromiso IN (${marcas}) ORDER BY ci.sentido='relacionada', ci.legislatura, ci.expediente`, ids) : [];
+  // Lo que votó el partido del programa en cada votación decisiva de fondo de cada iniciativa relacionada.
+  const votos = ids.length ? q(`SELECT ci.compromiso, v.legislatura, v.expediente, v.id, v.fecha, v.tipo_votacion, v.resultado,
+      v.asentimiento, CASE WHEN v.asentimiento=1 THEN 'si' ELSE ${SQL_APOYO} END AS apoyo
+    FROM compromiso_iniciativa ci
+    JOIN compromiso c ON c.id=ci.compromiso JOIN programa p ON p.id=c.programa
+    JOIN votacion v ON v.legislatura=ci.legislatura AND v.expediente=ci.expediente AND v.decisiva=1 AND v.tipo_votacion IN (${FONDO_SQL})
+    LEFT JOIN grupo gr ON gr.legislatura=v.legislatura AND gr.siglas=p.partido
+    LEFT JOIN voto_grupo g ON g.votacion_id=v.id AND g.grupo=gr.codigo
+    WHERE ci.compromiso IN (${marcas}) ORDER BY v.fecha`, ids) : [];
+  const legislaturas = q(`SELECT DISTINCT legislatura FROM grupo WHERE siglas IN (${gs.map(() => "?").join(",")}) ORDER BY 1`, gs).map((r) => r.legislatura);
+  const propuestas = q(`SELECT f.tema_principal AS tema, COUNT(*) AS n ${FROM_ASUNTO}
+    JOIN grupo gr ON gr.legislatura=i.legislatura AND gr.codigo=i.grupo_autor
+    WHERE gr.siglas IN (${gs.map(() => "?").join(",")}) AND i.legislatura IN (SELECT legislatura FROM programa p WHERE ${enG} ${wl})
+    GROUP BY 1`, [...gs, ...gs, ...al]);
+  const partidos = q("SELECT DISTINCT partido FROM programa ORDER BY 1").map((r) => r.partido);
+  return { programas, resumen, compromisos, relacionadas, votos, total, pagina, tam, legislaturas, propuestas, partidos };
+};
+
 const MESES = ["ene", "feb", "mar", "abr", "may", "jun", "jul", "ago", "sep", "oct", "nov", "dic"];
 function fecha(iso) {
   if (!iso) return "";
@@ -1710,7 +1757,10 @@ function matrizVotos(d, columnas, { marcas = null, alMarcar = null } = {}) {
 VISTAS.grupo = async (q) => {
   // Varios grupos se analizan juntos, como un bloque: se suman sus votos, iniciativas y afinidades.
   const gs = lista(q.g).length ? lista(q.g) : [todasSiglas()[0]];
-  const d = await api("grupoPerfil", { g: gs.join(","), leg: q.leg, familia: q.familia });
+  const programa = q.pestana === "programa";
+  const d = programa
+    ? await api("programa", { g: gs.join(","), leg: q.leg, tema: q.tema, estado: q.estado, pagina: q.pagina })
+    : await api("grupoPerfil", { g: gs.join(","), leg: q.leg, familia: q.familia });
   const nombres = [...new Set(META.legislaturas.flatMap((l) => (META.grupos[l.id] || []).filter((g) => gs.includes(g.siglas)).map((g) => g.nombre)))];
   const cont = el("div", {},
     el("p", { class: "small", style: "margin:0" }, el("a", { href: `#/grupos${q.leg ? "?leg=" + q.leg : ""}` }, "← Grupos")),
@@ -1718,11 +1768,26 @@ VISTAS.grupo = async (q) => {
     el("p", { class: "sub" }, gs.length > 1
       ? `Bloque de ${gs.length} grupos (${nombres.join(" · ")}): se suman sus votos, sus iniciativas y su afinidad con el resto. Presentes en las legislaturas ${d.legislaturas.map(romano).join(", ")}.`
       : `${nombres.join(" · ")}. Presente en las legislaturas ${d.legislaturas.map(romano).join(", ")}. «${gs[0]}» agrupa los grupos parlamentarios de ese partido en distintas legislaturas.`),
-    formFiltros([
+    el("div", { class: "segmentos", role: "group", "aria-label": "Qué ver del grupo" },
+      [["", "Cómo vota"], ["programa", "Programa electoral"]].map(([k, t]) => el("button", {
+        type: "button", class: "boton" + ((q.pestana || "") === k ? " activo" : ""), "aria-pressed": String((q.pestana || "") === k),
+        onclick: () => irA("grupo", { g: q.g, leg: q.leg, pestana: k }),
+      }, t))),
+    formFiltros(programa ? [
+      multiSelect("g", todasSiglas().map((s) => [s, s]), gs.join(","), "Grupo", "grupos"),
+      multiSelect("leg", optLegs(), q.leg, "Todas las legislaturas", "legislaturas"),
+      multiSelect("tema", optTemas(), q.tema, "Todos los temas", "temas"),
+      multiSelect("estado", Object.entries(ESTADO_COMPROMISO).map(([k, v]) => [k, v[0]]), q.estado, "Cualquier estado", "estados"),
+      el("input", { type: "hidden", name: "pestana", value: "programa" }),
+    ] : [
       multiSelect("g", todasSiglas().map((s) => [s, s]), gs.join(","), "Grupo", "grupos"),
       multiSelect("leg", optLegs(), q.leg, "Todas las legislaturas", "legislaturas"),
       multiSelect("familia", optFamiliasAnalisis(), q.familia, "Todo tipo de asunto", "categorías"),
     ], q, (f) => irA("grupo", f)));
+  if (programa) {
+    cont.append(...pestanaPrograma(d, q));
+    return cont;
+  }
 
   const total = d.porTema.reduce((o, r) => { for (const c of ["si", "no", "abst", "div", "n", "nv"]) o[c] += r[c]; return o; }, { si: 0, no: 0, abst: 0, div: 0, n: 0, nv: 0 });
   const legsFiltro = lista(q.leg).length ? lista(q.leg).map(Number) : d.legislaturas;
@@ -1802,6 +1867,133 @@ VISTAS.grupo = async (q) => {
       el("p", { class: "muted" }, "Ninguna con estos filtros.")));
   return cont;
 };
+
+// ------------------------------------------------------------------ programa electoral (pestaña del perfil de grupo)
+
+// Estado de cada compromiso según lo que votó el partido: [nombre, color, explicación]. En este orden se enseñan.
+const ESTADO_COMPROMISO = {
+  impulsado: ["Impulsado", "var(--si)", "Presentó una iniciativa en la dirección del compromiso (o la presentó el Gobierno mientras el partido gobernaba)."],
+  apoyado: ["Apoyado", "color-mix(in srgb, var(--si) 45%, var(--surface-1))", "Votó a favor de iniciativas de otros en la dirección del compromiso, o en contra de las que iban en la contraria."],
+  mixto: ["Mixto", "color-mix(in srgb, var(--si) 50%, var(--no) 50%)", "Votó en los dos sentidos en distintas iniciativas relacionadas."],
+  contradicho: ["Contradicho", "var(--no)", "Votó en contra de algo en la dirección del compromiso, o a favor de algo en la contraria."],
+  abstencion: ["Abstención", "var(--abs)", "Se abstuvo (o se dividió) en lo relacionado que se votó."],
+  sin_votacion: ["Sin votación", "var(--novota)", "No se ha votado nada relacionado en el Pleno. No quiere decir que no se haya cumplido."],
+  fuera_parlamento: ["No verificable en el Parlamento", "var(--grid)", "Depende del Gobierno (real decreto, presupuestos, gestión) o de otra Administración, y no ha pasado por el Pleno como decreto-ley."],
+  generico: ["Declaración general", "transparent", "Intención sin medida concreta: se muestra, pero no cuenta en las cifras."],
+};
+const SENTIDO_COMPROMISO = { misma: "En la dirección del compromiso", contraria: "En la dirección contraria", relacionada: "Trata lo mismo, sin dirección clara" };
+const ACCION_COMPROMISO = { legislar: "Legislar", derogar: "Derogar", financiar: "Financiar", crear_organismo: "Crear un organismo",
+  bajar_impuesto: "Bajar un impuesto", subir_impuesto: "Subir un impuesto", declaracion: "Declaración", otra: "Otra medida" };
+const RESPONSABLE_COMPROMISO = { parlamento: "Depende de las Cortes", gobierno: "Depende del Gobierno", otra_administracion: "Depende de otra Administración" };
+const VOTO_PROGRAMA = { si: "votó a favor", no: "votó en contra", abstencion: "se abstuvo", dividido: "se dividió" };
+const eleccionTexto = (e) => String(e || "").replace(/^generales-(\d{4})$/, "Elecciones generales de $1");
+const puntoEstado = (e) => el("i", { class: "punto-estado", style: `background:${ESTADO_COMPROMISO[e][1]}` });
+
+function pestanaPrograma(d, ruta) {
+  const nodos = [];
+  if (!d.programas.length) {
+    nodos.push(el("div", { class: "vacio" }, `Todavía no hay programa electoral de este partido en Escrutinio${lista(ruta.leg).length ? " para esas legislaturas" : ""}.`,
+      d.partidos.length ? el("div", { class: "small", style: "margin-top:8px" }, "Hay programas de: ",
+        d.partidos.map((s, i) => [i ? ", " : null, el("a", { href: "#/grupo?" + new URLSearchParams({ g: s, pestana: "programa" }) }, s)])) : null));
+    return nodos;
+  }
+  if (!META.cuerpos.includes("congreso")) {
+    nodos.push(el("div", { class: "aviso-fuentes" }, "Los programas se comparan con las votaciones del Congreso: elige «Nacional» en el ámbito para ver las iniciativas relacionadas y lo que votó el partido."));
+  }
+  nodos.push(el("div", { class: "card" }, el("h3", {}, d.programas.length > 1 ? "Programas" : "Programa"),
+    el("table", { class: "tabla" }, el("tbody", {}, d.programas.map((p) => el("tr", {},
+      el("td", { style: "white-space:nowrap" }, swatch(colorSiglas(p.partido)), p.partido),
+      el("td", {}, el("a", { href: p.url, target: "_blank", rel: "noopener" }, p.titulo),
+        el("div", { class: "small muted" }, [eleccionTexto(p.eleccion), `${fmt(p.paginas)} páginas`, p.legislatura ? `cubre la ${legTexto(p.legislatura)}` : null,
+          p.origen === "copia-prensa" ? "copia publicada por un medio (la web del partido no deja descargarlo)" : null].filter(Boolean).join(" · "))),
+      el("td", { class: "small" }, p.estado === "leido" ? `${fmt(p.compromisos)} compromisos, ${fmt(p.verificables)} verificables`
+        : p.estado === "pendiente" ? "Pendiente de leer" : "No se ha podido leer")))))));
+  if (!d.resumen.length) return nodos;
+
+  // Cifras: solo cuentan los compromisos verificables; «sin votación» no suma ni resta.
+  const por = {};
+  for (const r of d.resumen) por[r.estado] = (por[r.estado] || 0) + r.n;
+  const n = (e) => por[e] || 0;
+  const todos = Object.values(por).reduce((a, b) => a + b, 0);
+  const verificables = todos - n("generico");
+  const conSentido = n("impulsado") + n("apoyado") + n("contradicho");
+  nodos.push(el("div", { class: "grid g4", style: "margin-top:16px" },
+    stat("Compromisos verificables", fmt(verificables), `de ${fmt(todos)}; el resto son declaraciones generales`),
+    stat("Coinciden con su voto", conSentido ? `${pct(n("impulsado") + n("apoyado"), conSentido)}%` : "—",
+      `impulsados o apoyados, frente a contradichos (${fmt(conSentido)} compromisos con votación en un sentido claro)`),
+    stat("Mixtos o abstención", fmt(n("mixto") + n("abstencion")), "votó en los dos sentidos o se abstuvo en lo relacionado"),
+    stat("Sin votación en el Pleno", fmt(n("sin_votacion") + n("fuera_parlamento")), "no es incumplimiento: muchos dependen del Gobierno o de otra Administración")));
+
+  // Por tema: estado de los compromisos verificables y peso del tema en el programa y en lo que presentó el grupo.
+  const porTema = new Map();
+  for (const r of d.resumen) {
+    if (r.estado === "generico") continue;
+    const o = porTema.get(r.tema) || { n: 0 };
+    o[r.estado] = (o[r.estado] || 0) + r.n;
+    o.n += r.n;
+    porTema.set(r.tema, o);
+  }
+  const propuestas = new Map(d.propuestas.map((r) => [r.tema, r.n]));
+  const totalProp = d.propuestas.reduce((a, r) => a + r.n, 0);
+  const estados = Object.keys(ESTADO_COMPROMISO).filter((e) => e !== "generico");
+  const items = [...porTema.entries()].sort((a, b) => b[1].n - a[1].n).map(([t, o]) => ({
+    label: temaNombre(t), valorTexto: `${pct(o.n, verificables)}% / ${pct(propuestas.get(t) || 0, totalProp)}%`,
+    segs: estados.map((e) => ({ v: o[e] || 0, color: ESTADO_COMPROMISO[e][1], nombre: ESTADO_COMPROMISO[e][0] })),
+    tip: (s) => `${fmt(s.v)} compromisos`, onclick: () => irA("grupo", { ...ruta, tema: t, pagina: "" }),
+  }));
+  nodos.push(el("div", { class: "card", style: "margin-top:16px" }, el("h3", {}, "Por tema"),
+    el("p", { class: "small muted" }, "Compromisos verificables de cada tema, según lo que votó el partido. A la derecha, el peso del tema en el programa / en las iniciativas que presentó el grupo en la legislatura que cubre: si un tema pesa mucho más en el programa que en lo que presenta, se ve aquí. Clic en un tema para ver sus compromisos."),
+    el("div", { class: "legend" }, estados.map((e) => el("span", { title: ESTADO_COMPROMISO[e][2] }, el("i", { style: `background:${ESTADO_COMPROMISO[e][1]}` }), ESTADO_COMPROMISO[e][0]))),
+    barrasH(items, { segs: true })));
+
+  // Los compromisos, uno a uno, con sus iniciativas y votos.
+  nodos.push(el("div", { class: "card", style: "margin-top:16px" }, el("h3", {}, "Compromisos"),
+    el("p", { class: "small muted" }, "Cada compromiso con la cita del programa y su página, las iniciativas del Pleno que tratan lo mismo y lo que votó el partido en su votación decisiva. Clic en una iniciativa para ver su ficha y sus votaciones."),
+    d.compromisos.length ? el("div", {}, d.compromisos.map((c) => filaCompromiso(c, d))) : el("div", { class: "vacio" }, "Ninguno con estos filtros."),
+    d.total > d.tam ? paginacion(d.total, d.pagina, d.tam, (pagina) => irA("grupo", { ...ruta, pagina })) : null));
+  nodos.push(el("div", { class: "card", style: "margin-top:16px" }, el("h3", {}, "Cómo se calcula"), markdown(`
+- De cada programa se toman los **compromisos** con su cita literal y su página. Los que solo expresan una intención («impulsaremos», «apostaremos por») son **declaraciones generales**: se muestran, pero no cuentan en las cifras. Un programa más concreto tiene más compromisos verificables.
+- Cada compromiso se relaciona con las iniciativas del Pleno de la legislatura siguiente a las elecciones que tratan el mismo asunto, y se indica si van **en su dirección**, **en la contraria** o solo tratan lo mismo. Al decidirlo no se tiene en cuenta qué partido hizo la promesa ni quién presentó la iniciativa.
+- Se usa lo que votó el partido en la **votación decisiva** de cada iniciativa (en las enmiendas a la totalidad, votar sí es votar contra el proyecto). Apoyar algo en la dirección del compromiso o rechazar algo en la contraria **coincide con el programa**; lo inverso, no.
+- **Sin votación no es incumplimiento**: muchas promesas se cumplen o no por real decreto, por presupuestos o por gestión. De lo que depende del Gobierno solo se tienen en cuenta los decretos-leyes, que se convalidan en el Pleno.
+- Se indica si el partido estaba en el Gobierno o en la oposición en cada votación: votar contra una promesa propia por un acuerdo de coalición es un dato, no una anomalía.`)));
+  return nodos;
+}
+
+function filaCompromiso(c, d) {
+  const [nombre, , explicacion] = ESTADO_COMPROMISO[c.estado || "generico"];
+  const rels = d.relacionadas.filter((r) => r.compromiso === c.id);
+  const anio = (String(c.eleccion).match(/\d{4}/) || [""])[0];
+  return el("article", { class: "compromiso" },
+    el("div", { class: "small muted cabecera" },
+      el("span", { class: "badge", title: explicacion }, puntoEstado(c.estado || "generico"), nombre),
+      el("span", {}, [temaNombre(c.tema), ACCION_COMPROMISO[c.tipo_accion], c.verificable ? RESPONSABLE_COMPROMISO[c.responsable] : null].filter(Boolean).join(" · ")),
+      el("a", { href: `${c.url}#page=${c.pagina}`, target: "_blank", rel: "noopener", title: c.programa_titulo }, `Programa ${c.partido} ${anio}, p. ${c.pagina}`),
+      c.aprobada ? el("span", { class: "badge ok" }, "Salió adelante algo en su dirección") : null),
+    el("div", { class: "texto" }, c.texto),
+    el("blockquote", {}, `«${c.cita}»`),
+    rels.length ? el("ul", { class: "relacionadas" }, rels.map((r) => filaRelacionada(r, c, d)))
+      : c.verificable ? el("p", { class: "small muted", style: "margin:0" }, "Ninguna iniciativa del Pleno relacionada.") : null);
+}
+
+function filaRelacionada(r, c, d) {
+  const votos = d.votos.filter((v) => v.compromiso === c.id && v.legislatura === r.legislatura && v.expediente === r.expediente);
+  const autor = r.grupo_autor ? grupo(r.legislatura, r.grupo_autor) : null;
+  return el("li", {},
+    el("div", {}, el("span", { class: "sentido-rel" }, SENTIDO_COMPROMISO[r.sentido] || r.sentido), " · ",
+      r.votada ? el("a", { href: "#", onclick: (e) => { e.preventDefault(); abrir(`i:${r.legislatura}:${r.expediente}`); } }, textoCorto(r.titulo, 120))
+        : r.titulo ? textoCorto(r.titulo, 120) : el("span", { class: "muted" }, r.expediente),
+      autor ? el("span", { class: "muted" }, ` · presentada por ${autor.siglas}`) : null, " ", badgeResultado(r.resultado_final)),
+    votos.map((v) => {
+      const g = gobiernoEn(infoLeg(v.legislatura).cuerpo || "congreso", v.fecha);
+      const enGobierno = g && (g.partido === c.partido || lista(g.socios).includes(c.partido));
+      const coincide = r.sentido !== "relacionada" && (v.apoyo === "si" || v.apoyo === "no") ? (v.apoyo === "si") === (r.sentido === "misma") : null;
+      return el("div", { class: "small" }, `${c.partido} ${VOTO_PROGRAMA[v.apoyo] || "no consta"}`,
+        el("span", { class: "muted" }, ` · ${META.tipos_votacion[v.tipo_votacion] || v.tipo_votacion}, ${fecha(v.fecha)} · ${enGobierno ? "en el Gobierno" : "en la oposición"}`), " ",
+        coincide === null ? null : el("span", { class: `badge ${coincide ? "ok" : "ko"}` }, coincide ? "coincide con el programa" : "no coincide con el programa"));
+    }),
+    r.justificacion ? el("div", { class: "small muted" }, r.justificacion) : null);
+}
 
 // ------------------------------------------------------------------ panel de detalle
 

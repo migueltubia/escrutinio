@@ -86,6 +86,17 @@ CREATE TABLE en_tramite(legislatura INTEGER, expediente TEXT, prefijo TEXT, tipo
 ESQUEMA_COMUN = """
 CREATE TABLE gobierno(cuerpo TEXT, desde TEXT, hasta TEXT, presidente TEXT, partido TEXT, socios TEXT,
   PRIMARY KEY(cuerpo, desde));
+-- Programas electorales, sus compromisos, las iniciativas relacionadas y el estado de cada compromiso.
+CREATE TABLE programa(id TEXT PRIMARY KEY, eleccion TEXT, fecha_eleccion TEXT, cuerpo TEXT, legislatura INTEGER,
+  partido TEXT, titulo TEXT, origen TEXT, url TEXT, url_oficial TEXT, descargado TEXT, paginas INTEGER, estado TEXT,
+  leido TEXT, compromisos INTEGER, verificables INTEGER);
+CREATE TABLE compromiso(id TEXT PRIMARY KEY, programa TEXT, orden INTEGER, texto TEXT, cita TEXT, pagina INTEGER,
+  tema TEXT, etiquetas TEXT, tipo_accion TEXT, responsable TEXT, verificable INTEGER);
+CREATE INDEX ix_compromiso_programa ON compromiso(programa);
+CREATE TABLE compromiso_iniciativa(compromiso TEXT, legislatura INTEGER, expediente TEXT, sentido TEXT,
+  justificacion TEXT, origen TEXT, estado TEXT, PRIMARY KEY(compromiso, legislatura, expediente));
+CREATE TABLE compromiso_estado(compromiso TEXT PRIMARY KEY, estado TEXT, impulsa INTEGER, coherentes INTEGER,
+  incoherentes INTEGER, abstenciones INTEGER, aprobada INTEGER, gobierno INTEGER);
 """
 
 
@@ -121,6 +132,16 @@ def construir(con, destino, log=print):
 
     web.executemany("INSERT INTO ambito VALUES (?,?,?,?,?,?)", arbol(con_datos))
     web.executemany("INSERT INTO gobierno VALUES (?,?,?,?,?,?)", [g for g in GOBIERNOS if g[0] in con_datos])
+    copiar("programa", """SELECT id, eleccion, fecha_eleccion, cuerpo, legislatura, partido, titulo, origen, url, url_oficial,
+                                 descargado, paginas, estado, leido, compromisos, verificables FROM programa""")
+    n = copiar("compromiso", """SELECT id, programa, orden, texto, cita, pagina, tema, etiquetas, tipo_accion, responsable,
+                                   verificable FROM compromiso""")
+    copiar("compromiso_iniciativa", """SELECT compromiso, legislatura, expediente, sentido, justificacion, origen, estado
+                                      FROM compromiso_iniciativa WHERE estado<>'rechazado'""")
+    copiar("compromiso_estado", """SELECT compromiso, estado, impulsa, coherentes, incoherentes, abstenciones, aprobada, gobierno
+                                  FROM compromiso_estado""")
+    if n:
+        log(f"  compromisos de programas electorales: {n}")
     copiar("tema", "SELECT codigo, nombre, subtemas FROM tema")
     copiar("tipo_expediente", "SELECT prefijo, nombre, familia, fuerza_ley FROM tipo_expediente")
     copiar("grupo", "SELECT legislatura, codigo, nombre, siglas, color, diputados FROM grupo")
@@ -269,7 +290,8 @@ def en_tramite(con, web):
 
 DATOS_DIR = WEB_DIR / "datos"
 INDICE = DATOS_DIR / "indice.js"
-TABLAS_COMUN = ("meta", "legislatura", "cuerpo", "ambito", "gobierno", "tema", "tipo_expediente", "informe_ia", "diputado")
+TABLAS_COMUN = ("meta", "legislatura", "cuerpo", "ambito", "gobierno", "tema", "tipo_expediente", "informe_ia", "diputado",
+                "programa", "compromiso", "compromiso_iniciativa", "compromiso_estado")
 _POR_VOTACION = "votacion_id IN (SELECT id FROM votacion WHERE legislatura=?)"
 TABLAS_LEG = (
     ("grupo", "legislatura=?"), ("votacion", "legislatura=?"), ("voto_grupo", _POR_VOTACION),

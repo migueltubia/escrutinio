@@ -2,7 +2,11 @@
 data/escrutinio.sqlite
 data/escrutinio.sqlite-*
 # Intermedios y cachés que se regeneran solos
-data/raw/
+data/raw/*
+# …salvo el texto de los programas electorales, que se versiona por si el partido retira el PDF
+!data/raw/programas/
+data/raw/programas/*
+!data/raw/programas/*.txt
 data/logs/
 data/llm/pendientes/
 *.tmp

@@ -138,12 +138,22 @@ El perfil de un partido (o de un bloque de varios): cómo vota, qué propone, co
 - **Con quién coincide**: afinidad con cada grupo y los temas en que más y menos coinciden.
 - **Cuándo su voto decidió el resultado**: votaciones en que bastaba con que se abstuviera para que salieran al revés.
 
+### Programa electoral
+Lo que prometió el partido en su programa y lo que votó después en el Pleno.
+- **Compromisos**: cada uno con la cita literal del programa y su página (el enlace abre el PDF en esa página). Los que solo expresan una intención son **declaraciones generales** y no cuentan en las cifras.
+- **Iniciativas relacionadas**: las del Pleno de la legislatura siguiente que tratan lo mismo, **en la dirección del compromiso**, **en la contraria** o sin dirección clara, con lo que votó el partido en la votación decisiva y si estaba en el Gobierno o en la oposición.
+- **Estado de cada compromiso**: *impulsado* (presentó algo en su dirección, o lo presentó el Gobierno mientras gobernaba), *apoyado* (votó a favor de algo en su dirección o en contra de algo en la contraria), *contradicho* (lo inverso), *mixto* (votos en los dos sentidos), *abstención*, *sin votación* y *no verificable en el Parlamento* (depende del Gobierno o de otra Administración).
+- **Por tema**: el estado de los compromisos de cada tema y, a la derecha, cuánto pesa el tema en el programa y en lo que presentó el grupo.
+
 ### Filtros
 - **Grupo**: con varios, se analizan juntos como un **bloque** (se suman sus votos, iniciativas y afinidades con el resto).
-- **Legislaturas** y **tipo de asunto**.
+- **Legislaturas** y **tipo de asunto**. En «Programa electoral», **tema** y **estado** del compromiso.
 
 ### Ten en cuenta
 - Las siglas agrupan los grupos de un mismo partido en distintas legislaturas.
+- **Sin votación no es incumplimiento**: muchas promesas se cumplen o no por real decreto, por presupuestos o por gestión, sin pasar por el Pleno.
+- Un programa más concreto tiene más compromisos verificables; conviene mirar cuántos tiene cada partido antes de comparar porcentajes.
+- Qué iniciativas tratan lo mismo que un compromiso se decide sin tener en cuenta qué partido lo prometió ni quién presentó la iniciativa, y se puede revisar a mano.
 `,
   },
   comparar: {
@@ -315,7 +325,7 @@ const SECCIONES_WEB = [
   ["votaciones", "Votaciones", "Cualquier votación del Pleno, con el voto de cada grupo y de cada diputado. Exporta a CSV."],
   ["iniciativas", "Iniciativas", "Una ficha por asunto votado: qué es, quién lo propone, de qué trata y cómo acabó."],
   ["temas", "Temas", "Éxito por tema y quién consigue sacar adelante qué. Cada tema tiene su análisis a fondo."],
-  ["grupos", "Grupos", "Afinidad entre grupos, quién decide las votaciones y el perfil de cada partido o bloque."],
+  ["grupos", "Grupos", "Afinidad entre grupos, quién decide las votaciones y el perfil de cada partido o bloque, con lo que prometió en su programa frente a lo que votó."],
   ["comparar", "Comparar grupos", "Dos o más partidos frente a frente, tema a tema: dónde votan igual, dónde no y cuánto apoya cada uno lo que presentan los demás."],
   ["coaliciones", "Coaliciones ganadoras", "Qué combinaciones de grupos aprueban y tumban cada cosa."],
   ["mapa", "Mapa ideológico", "Dónde se sitúa cada grupo según sus votos y cómo evoluciona la polarización."],
@@ -333,6 +343,7 @@ const ACTUALIZACIONES = [
   ["Tipo de las votaciones poco habituales", "Cada día", "Las que las reglas no reconocen se clasifican con una lista cerrada."],
   ["Votaciones de parlamentos autonómicos, juntas generales y ayuntamientos", "Cada día", "Cada institución, desde su propia web. Si una web no responde, esa institución se queda sin actualizar ese día y la portada lo avisa con ⚠. Varias webs no aceptan conexiones desde fuera de España, y la actualización se hace en servidores de GitHub que están fuera."],
   ["Cálculos: resultados, grupo decisivo, afinidades, coaliciones, mapa, disciplina, enmiendas", "Cada día", "Se recalculan enteros en cada actualización, con reglas fijas."],
+  ["Programas electorales: compromisos e iniciativas relacionadas", "Cada día", "Cada programa se lee una sola vez, cuando se incorpora. Cada día se buscan las iniciativas nuevas que tratan lo mismo que algún compromiso y se recalcula el estado de cada uno con los votos nuevos."],
   ["Análisis redactado de la portada", "Cada semana", "El domingo, a partir de las estadísticas calculadas."],
   ["Copia de los datos en el repositorio de GitHub", "Cada semana", "El domingo. La web publicada se actualiza cada día igualmente."],
   ["Legislaturas X a XIV", "No cambian", "Están cerradas. Solo cambiarían si el Congreso corrigiera sus datos."],

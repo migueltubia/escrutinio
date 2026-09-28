@@ -10,12 +10,14 @@
 5. Votaciones autonómicas y locales: cada conector territorial trae lo nuevo desde su última
    votación guardada; con DeepSeek, además, se leen los diarios de sesiones y actas pendientes (con
    un límite por ejecución). Un conector que falla no para a los demás ni al resto del ciclo.
-6. Se recalculan agregados, se regenera la web y se vuelve a trocear la base en data/bd/.
+6. Programas electorales: con DeepSeek, se leen los programas registrados pendientes y se relacionan
+   los compromisos con las iniciativas nuevas; con o sin clave, se recalcula su estado con los votos.
+7. Se recalculan agregados, se regenera la web y se vuelve a trocear la base en data/bd/.
 """
 
 import shutil
 
-from . import almacen, analisis, congreso_iniciativas, congreso_votaciones, db, exportar_web
+from . import almacen, analisis, congreso_iniciativas, congreso_votaciones, db, exportar_web, programas
 from .config import DB_PATH, LEGISLATURAS, LLM_DIR, RAW_DIR
 from .llm import deepseek, fichas_io
 from .procesar import procesar
@@ -79,6 +81,7 @@ def actualizar(limite_fichas=400, ia=True, informe=False, territorial=True, limi
 
     log("== Agregados, web y base troceada")
     analisis.analizar(con, log)
+    programas.actualizar(con, ia=ia, log=log)
     exportar_web.exportar(con, log)
     almacen.partir(con, log)
     pendientes = len(fichas_io.items_pendientes(con)) + len(fichas_io.items_en_tramite(con))

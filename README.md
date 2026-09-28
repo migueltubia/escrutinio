@@ -44,7 +44,7 @@ GitHub Pages.
 | Resumen | Cifras generales, lo que se vota frente a lo que se aprueba, actividad mensual y análisis de las cifras |
 | Votaciones / Iniciativas | Buscador con filtros (también derrotas del Gobierno), detalle con voto nominal, grupo decisivo, quién gobernaba y exportación a CSV |
 | Temas → ficha de tema | Cómo vota cada grupo en el tema, quién propone y quién lo consigue, afinidad, evolución por legislatura y matriz votación a votación |
-| Grupos → perfil de grupo | Su voto por tema, sus iniciativas, con quién coincide y en qué, y cuándo su voto decidió el resultado |
+| Grupos → perfil de grupo | Su voto por tema, sus iniciativas, con quién coincide y en qué, y cuándo su voto decidió el resultado. Pestaña «Programa electoral»: lo que prometió frente a lo que votó (ver «Programas electorales») |
 | Comparar | Dos o más grupos frente a frente en los mismos asuntos: en cuántos votan igual, cuánto apoya cada uno lo que presentan los demás, a quién apoya cada uno, tema a tema y legislatura a legislatura, y asunto a asunto |
 | Análisis · Coaliciones ganadoras | Qué combinaciones de grupos aprueban y tumban cada cosa |
 | Análisis · Mapa ideológico y polarización | Posición de los grupos según sus votos (MDS sobre la afinidad) y polarización por trimestre |
@@ -130,6 +130,8 @@ python -m escrutinio territorial-probar <conector> --limite 30                # 
 python -m escrutinio actas-deepseek --limite 40      # votaciones de diarios de sesiones y actas (DEEPSEEK_API_KEY)
 python -m escrutinio actas-exportar --limite 20      # textos pendientes para procesarlos por otra vía
 python -m escrutinio actas-importar "data/llm/actas/respuestas/*.json" --modelo <modelo>
+python -m escrutinio programas-descargar / programas-estado    # programas electorales (ver «Programas electorales»)
+python -m escrutinio programas-leer / programas-emparejar / programas-calcular
 ```
 
 ## Actualizar los datos: en la nube o en local
@@ -311,6 +313,65 @@ completan en alrededor de un mes. Todas las peticiones a DeepSeek piden responde
 España. Control de calidad: reclasificadas a ciegas 60 fichas al azar, el tema principal coincide
 en el 93% (98% contando secundarios). El resultado calculado con los totales se contrasta con el
 oficial: en convalidaciones y votaciones de conjunto solo discrepa una votación, marcada con aviso.
+
+## Programas electorales: lo que prometen frente a lo que votan
+
+Implementa las fases 0 y 1 de `Programas y votos lo que dicen frente a lo que votan.md` y la pestaña
+«Programa electoral» del perfil de grupo: los compromisos del programa de cada partido, cada uno con su
+cita literal y su página, enlazados con las iniciativas del Pleno que tratan lo mismo y con lo que votó
+el partido en ellas. Empieza por las generales de 2023 (PSOE, PP, VOX y Sumar) frente a la XV
+legislatura; los programas se añaden en `escrutinio/programas/registro.py` (`PROGRAMAS`).
+
+Cada programa se descarga, se lee y se guarda **una sola vez**. Lo que manda son los ficheros de
+`data/llm/programas/`, versionados como las fichas, y la base se reconstruye desde ellos (`unir`,
+`web` y `actualizar` los cargan):
+
+| Fichero | Contenido |
+| --- | --- |
+| `data/llm/programas/registro.jsonl` | Una línea por documento: partido, elección, URL, `sha256`, páginas, estado (`pendiente`, `leido`, `error`), modelo, versión del prompt, compromisos y tokens gastados |
+| `data/raw/programas/<id>.txt` | Texto extraído del PDF, con un salto de página entre páginas. Se versiona (el PDF no) para que las citas sigan siendo comprobables aunque el partido retire el programa |
+| `data/llm/programas/<id>.jsonl` | Una línea por compromiso: texto, cita literal, página, tema, tipo de acción, de quién depende y si es verificable |
+| `data/llm/programas/emparejamientos/<id>.jsonl` | Una línea por par compromiso–iniciativa decidido, también los que no tienen que ver, para no volver a preguntarlos |
+| `data/llm/programas/validaciones.jsonl` | Lo revisado a mano (persona, fecha, motivo): manda sobre lo propuesto y nunca se recalcula |
+
+```bash
+python -m escrutinio programas-descargar     # descarga y registra; si el sha256 no cambia, no hace nada
+python -m escrutinio programas-estado        # qué está leído, qué falta, qué falló y el gasto estimado
+python -m escrutinio programas-leer          # compromisos de los pendientes, con DeepSeek (modelo Pro)
+python -m escrutinio programas-emparejar     # candidatas nuevas de cada compromiso, con DeepSeek
+python -m escrutinio programas-calcular      # recarga todo y recalcula el estado, sin DeepSeek
+python -m escrutinio programas-releer --id generales-2023-pp --version compromisos-v2   # solo a propósito
+```
+
+Cómo se hace, paso a paso:
+
+1. **Descarga y registro** (sin DeepSeek). Si un partido corrige el PDF, entra como documento nuevo
+   con su propia línea y la lectura anterior se conserva. Un PDF escaneado queda como `error`.
+2. **Compromisos** (DeepSeek, una vez por programa). El texto va por trozos de unas 40 páginas. La
+   cita tiene que aparecer tal cual en el programa, o el compromiso se descarta; la página sale de
+   dónde está la cita, no de lo que responda el modelo. Las frases vagas quedan como no verificables.
+   Si la lectura se corta, los trozos ya respondidos están en la caché local y no se vuelven a pagar.
+3. **Candidatas** (sin DeepSeek). Las 10 iniciativas con ficha más parecidas de la legislatura
+   siguiente, del mismo tema, con BM25 sobre título, resumen y etiquetas.
+4. **Relación** (DeepSeek, modelo rápido). Recibe el compromiso y las candidatas sin partido, sin
+   autor y sin votos, y dice si cada una va en su dirección, en la contraria, trata lo mismo sin
+   dirección o no tiene que ver. Solo se preguntan las candidatas nuevas.
+5. **Estado** (reglas, en cada actualización). Con el apoyo del partido en la votación decisiva de
+   cada iniciativa (enmiendas a la totalidad invertidas; lo aprobado por asentimiento cuenta como
+   apoyo): *impulsado* si presentó algo en su dirección (o lo presentó el Gobierno mientras
+   gobernaba), *apoyado*, *contradicho*, *mixto*, *abstención*, *sin votación* y *no verificable en el
+   Parlamento* (lo que depende del Gobierno o de otra Administración solo se comprueba con los
+   decretos-leyes). Sin votación no es incumplimiento, y la web lo dice.
+
+La actualización diaria lee los programas registrados que estén pendientes, decide las candidatas
+nuevas (hasta 300 compromisos por ejecución) y recalcula el estado. Descargar un programa nuevo es
+siempre a mano. En la web, los programas van en `web/datos/comun.js`.
+
+Pendiente, según el plan: validar a mano la muestra del piloto (y la vista de revisión para hacerlo
+rápido), el resto de partidos y elecciones, las intervenciones en el Pleno, los programas autonómicos
+y el contraste con la Chapel Hill Expert Survey. El programa del PSOE se descarga de la copia que
+publicó un medio, porque psoe.es está tras una protección contra robots que no se intenta saltar; el
+registro guarda también la URL oficial.
 
 ## Fuentes y limitaciones
 

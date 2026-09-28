@@ -26,7 +26,9 @@ from ..texto import tokens
 from . import registro
 from .leer import leer_compromisos
 
-VERSION_PROMPT = "emparejar-v1"
+# v2: la v1 marcaba como «relacionada» cualquier iniciativa del mismo ámbito (pensiones, empleo) aunque su propia
+# justificación dijera que trataba otra cuestión.
+VERSION_PROMPT = "emparejar-v2"
 EMPAREJAMIENTOS_DIR = registro.PROGRAMAS_DIR / "emparejamientos"
 CANDIDATAS = 10
 POR_LLAMADA = 5
@@ -39,10 +41,16 @@ SISTEMA = """Eres un analista parlamentario neutral. Recibes compromisos concret
 - misma: si la iniciativa saliera adelante, se avanzaría en lo que el compromiso promete.
 - contraria: va en sentido opuesto al compromiso (por ejemplo, el compromiso promete derogar la ley X y la iniciativa
   la amplía o la refuerza; el compromiso promete bajar un impuesto y la iniciativa lo sube).
-- relacionada: trata el mismo asunto concreto, pero no se puede decir que vaya a favor ni en contra.
-- ninguna: no trata el mismo asunto concreto. Compartir el tema general no basta.
+- relacionada: trata EXACTAMENTE la misma medida concreta que el compromiso (la misma ley, el mismo impuesto, la misma
+  prestación, el mismo organismo, el mismo colectivo y la misma cuestión), pero no se puede decir si va a favor o en
+  contra. Es un caso raro.
+- ninguna: todo lo demás. Compartir el ámbito general no basta: si el compromiso trata del Fondo de Reserva de las
+  pensiones y la iniciativa de la revalorización de las pensiones, o el compromiso de un pacto por el empleo y la
+  iniciativa de la inclusión laboral de las personas con discapacidad, la relación es «ninguna».
 Sé estricto: ante la duda entre misma o contraria y relacionada, elige relacionada; ante la duda entre relacionada y
-ninguna, elige ninguna. Justifica cada relación que no sea «ninguna» en una frase neutra y descriptiva.
+ninguna, elige ninguna. Si al justificar tienes que decir que la iniciativa trata otra cuestión, otra medida u otro
+aspecto, la relación es «ninguna». La mayoría de las candidatas no tienen que ver con el compromiso: lo normal es que
+casi todas sean «ninguna». Justifica cada relación que no sea «ninguna» en una frase neutra y descriptiva.
 Responde SOLO con un objeto json: {"compromisos": [{"id": "c1", "candidatas": [{"n": 1, "relacion": "misma",
 "justificacion": "La proposición deroga la ley que el compromiso promete derogar."}]}]}"""
 

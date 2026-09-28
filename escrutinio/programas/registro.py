@@ -34,8 +34,9 @@ MIN_CARACTERES_PAGINA = 200  # por debajo, de media, el PDF está escaneado (sin
 
 # Programas que se recogen: (id, elección, fecha, institución de Escrutinio, partido con las siglas de sus
 # grupos, título, URL que se descarga, origen, URL oficial). El partido cubre la legislatura que empieza
-# tras la elección. Si la web del partido no deja descargar (psoe.es está tras una protección contra
-# robots, que no se intenta saltar), se usa la copia que publicó un medio y se guarda también la oficial.
+# tras la elección. Si la web del partido no deja descargarlo (psoe.es está tras una protección contra
+# robots, que no se intenta saltar) o ya no lo enlaza (Junts, EH Bildu), se usa la copia que publicó un
+# medio y, si se conoce, se guarda también la URL oficial.
 PROGRAMAS = [
     ("generales-2023-psoe", "generales-2023", "2023-07-23", "congreso", "PSOE",
      "Programa electoral. Elecciones generales 23 de julio de 2023",
@@ -50,6 +51,18 @@ PROGRAMAS = [
     ("generales-2023-sumar", "generales-2023", "2023-07-23", "congreso", "Sumar",
      "Un programa para ti",
      "https://movimientosumar.es/transparencia/wp-content/uploads/sites/6/2023/12/un-programa-para-ti.pdf", "web-partido", None),
+    ("generales-2023-erc", "generales-2023", "2023-07-23", "congreso", "ERC",
+     "Defensa Catalunya! Eleccions espanyoles 2023",
+     "https://defensacatalunya.esquerrarepublicana.cat/documents/e2023-programa.pdf", "web-partido", None),
+    ("generales-2023-junts", "generales-2023", "2023-07-23", "congreso", "Junts",
+     "Per Catalunya. Programa electoral, eleccions generals 2023",
+     "https://img.beteve.cat/wp-content/uploads/2023/07/programa-junts-per-catalunya-eleccions-generals-2023.pdf", "copia-prensa", None),
+    ("generales-2023-bildu", "generales-2023", "2023-07-23", "congreso", "Bildu",
+     "Compromiso de Euskal Herria Bildu. Elecciones generales 2023",
+     "https://www.elnacional.cat/uploads/s1/42/81/42/33/programa-electoral-eh-bildu-eleccions-generals-2023.pdf", "copia-prensa", None),
+    ("generales-2023-pnv", "generales-2023", "2023-07-23", "congreso", "PNV",
+     "Con voz propia. Programa electoral 23-J",
+     "https://www.eaj-pnv.eus/es/adjuntos-documentos/20945/pdf/con-voz-propia-programa-electoral-23-j", "web-partido", None),
 ]
 
 
@@ -117,7 +130,7 @@ def descargar(ids=None, forzar=False, log=print):
     """Descarga y registra los programas del catálogo. Lo que ya está registrado con el mismo sha256 no cambia."""
     entradas = leer_registro()
     PDF_DIR.mkdir(parents=True, exist_ok=True)
-    nuevos = 0
+    nuevos = []
     for p in catalogo(ids):
         cache = PDF_DIR / f"{p['id']}.pdf"
         if forzar or not cache.exists():
@@ -155,11 +168,12 @@ def descargar(ids=None, forzar=False, log=print):
             "motivo": "sin capa de texto (escaneado): decidir aparte si merece la pena el OCR" if escaneado else None,
         }
         entradas.append(entrada)
-        nuevos += 1
+        nuevos.append(entrada)
         log(f"  {id_}: registrado ({paginas} páginas, {caracteres:_} caracteres, {entrada['estado']})".replace("_", "."))
-    guardar_registro(entradas)
-    log(f"Programas nuevos en el registro: {nuevos}")
-    return nuevos
+    if nuevos:  # se vuelve a leer el registro: otra lectura en marcha puede haberlo actualizado mientras tanto
+        guardar_registro(leer_registro() + nuevos)
+    log(f"Programas nuevos en el registro: {len(nuevos)}")
+    return len(nuevos)
 
 
 # ---------------------------------------------------------------- estado

@@ -260,7 +260,7 @@ def leer(ids=None, reintentar=False, limite=None, modelo=None, releer=False, log
                  tokens_entrada=e.get("tokens_entrada", 0) + t_in, tokens_salida=e.get("tokens_salida", 0) + t_out)
         registro.actualizar_entrada(e)
         log(f"  {e['id']}: {len(compromisos)} compromisos ({e['verificables']} verificables); "
-            f"{descartados} descartados porque la cita no está tal cual en el texto")
+            f"{descartados} descartados (la cita no está tal cual en el texto o falta algún campo)")
     return len(cola)
 
 

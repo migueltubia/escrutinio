@@ -138,22 +138,34 @@ El perfil de un partido (o de un bloque de varios): cómo vota, qué propone, co
 - **Con quién coincide**: afinidad con cada grupo y los temas en que más y menos coinciden.
 - **Cuándo su voto decidió el resultado**: votaciones en que bastaba con que se abstuviera para que salieran al revés.
 
-### Programa electoral
-Lo que prometió el partido en su programa y lo que votó después en el Pleno.
-- **Compromisos**: cada uno con la cita literal del programa y su página (el enlace abre el PDF en esa página). Los que solo expresan una intención son **declaraciones generales** y no cuentan en las cifras.
-- **Iniciativas relacionadas**: las del Pleno de la legislatura siguiente que tratan lo mismo, **en la dirección del compromiso**, **en la contraria** o sin dirección clara, con lo que votó el partido en la votación decisiva y si estaba en el Gobierno o en la oposición.
-- **Estado de cada compromiso**: *impulsado* (presentó algo en su dirección, o lo presentó el Gobierno mientras gobernaba), *apoyado* (votó a favor de algo en su dirección o en contra de algo en la contraria), *contradicho* (lo inverso), *mixto* (votos en los dos sentidos), *abstención*, *sin votación* y *no verificable en el Parlamento* (depende del Gobierno o de otra Administración).
-- **Por tema**: el estado de los compromisos de cada tema y, a la derecha, cuánto pesa el tema en el programa y en lo que presentó el grupo.
-
 ### Filtros
 - **Grupo**: con varios, se analizan juntos como un **bloque** (se suman sus votos, iniciativas y afinidades con el resto).
-- **Legislaturas** y **tipo de asunto**. En «Programa electoral», **tema** y **estado** del compromiso.
+- **Legislaturas** y **tipo de asunto**.
 
 ### Ten en cuenta
 - Las siglas agrupan los grupos de un mismo partido en distintas legislaturas.
+- Lo que prometió en su programa frente a lo que votó está en [Programas](#/programas).
+`,
+  },
+  programas: {
+    titulo: "Programas electorales",
+    texto: `
+Lo que prometió cada partido en su programa electoral y lo que votó después en el Pleno.
+
+### Cómo se lee
+- **Los programas**: cuántos compromisos tiene cada uno, cuántos son verificables y qué parte de los que tuvieron votación en un sentido claro **coincide** con lo que votó el partido.
+- **Qué pasó con lo que prometieron**: el estado de los compromisos verificables de cada partido: *impulsado* (presentó algo en su dirección, o lo presentó el Gobierno mientras gobernaba), *apoyado* (votó a favor de algo en su dirección o en contra de algo en la contraria), *contradicho* (lo inverso), *mixto* (votos en los dos sentidos), *abstención*, *sin votación* y *no verificable en el Parlamento* (depende del Gobierno o de otra Administración).
+- **Tema a tema**: dónde coincide más y menos cada partido con su voto, y cuánto pesa cada tema en su programa frente a lo que presentó en el Congreso.
+- **Compromisos**: cada uno con la cita literal del programa y su página (el enlace abre el PDF en esa página), las iniciativas del Pleno que tratan lo mismo (**en su dirección**, **en la contraria** o sin dirección clara) y lo que votó el partido, en el Gobierno o en la oposición.
+
+### Filtros
+- **Partido**, **elección** (y la legislatura que cubre), **tema** (los mismos que en las votaciones), **tipo de acción** (legislar, derogar, bajar un impuesto…) y **estado** del compromiso. El estado solo filtra la lista de compromisos.
+
+### Ten en cuenta
 - **Sin votación no es incumplimiento**: muchas promesas se cumplen o no por real decreto, por presupuestos o por gestión, sin pasar por el Pleno.
 - Un programa más concreto tiene más compromisos verificables; conviene mirar cuántos tiene cada partido antes de comparar porcentajes.
 - Qué iniciativas tratan lo mismo que un compromiso se decide sin tener en cuenta qué partido lo prometió ni quién presentó la iniciativa, y se puede revisar a mano.
+- Los partidos que votan dentro del Grupo Mixto no tienen un voto de grupo propio con el que comparar.
 `,
   },
   comparar: {
@@ -325,8 +337,9 @@ const SECCIONES_WEB = [
   ["votaciones", "Votaciones", "Cualquier votación del Pleno, con el voto de cada grupo y de cada diputado. Exporta a CSV."],
   ["iniciativas", "Iniciativas", "Una ficha por asunto votado: qué es, quién lo propone, de qué trata y cómo acabó."],
   ["temas", "Temas", "Éxito por tema y quién consigue sacar adelante qué. Cada tema tiene su análisis a fondo."],
-  ["grupos", "Grupos", "Afinidad entre grupos, quién decide las votaciones y el perfil de cada partido o bloque, con lo que prometió en su programa frente a lo que votó."],
+  ["grupos", "Grupos", "Afinidad entre grupos, quién decide las votaciones y el perfil de cada partido o bloque."],
   ["comparar", "Comparar grupos", "Dos o más partidos frente a frente, tema a tema: dónde votan igual, dónde no y cuánto apoya cada uno lo que presentan los demás."],
+  ["programas", "Programas electorales", "Lo que prometió cada partido en su programa frente a lo que votó después, compromiso a compromiso y tema a tema."],
   ["coaliciones", "Coaliciones ganadoras", "Qué combinaciones de grupos aprueban y tumban cada cosa."],
   ["mapa", "Mapa ideológico", "Dónde se sitúa cada grupo según sus votos y cómo evoluciona la polarización."],
   ["disciplina", "Disciplina y ausencias", "Quién rompe la disciplina de voto, quién falta y qué votaciones cambiaron por las ausencias."],

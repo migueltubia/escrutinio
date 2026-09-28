@@ -44,8 +44,9 @@ GitHub Pages.
 | Resumen | Cifras generales, lo que se vota frente a lo que se aprueba, actividad mensual y análisis de las cifras |
 | Votaciones / Iniciativas | Buscador con filtros (también derrotas del Gobierno), detalle con voto nominal, grupo decisivo, quién gobernaba y exportación a CSV |
 | Temas → ficha de tema | Cómo vota cada grupo en el tema, quién propone y quién lo consigue, afinidad, evolución por legislatura y matriz votación a votación |
-| Grupos → perfil de grupo | Su voto por tema, sus iniciativas, con quién coincide y en qué, y cuándo su voto decidió el resultado. Pestaña «Programa electoral»: lo que prometió frente a lo que votó (ver «Programas electorales») |
+| Grupos → perfil de grupo | Su voto por tema, sus iniciativas, con quién coincide y en qué, y cuándo su voto decidió el resultado |
 | Comparar | Dos o más grupos frente a frente en los mismos asuntos: en cuántos votan igual, cuánto apoya cada uno lo que presentan los demás, a quién apoya cada uno, tema a tema y legislatura a legislatura, y asunto a asunto |
+| Programas | Lo que prometió cada partido en su programa frente a lo que votó: los programas frente a frente, el estado de sus compromisos, tema a tema y compromiso a compromiso con su cita y las iniciativas relacionadas (ver «Programas electorales»). El detalle de cada iniciativa dice qué partidos llevaban algo relacionado en su programa |
 | Análisis · Coaliciones ganadoras | Qué combinaciones de grupos aprueban y tumban cada cosa |
 | Análisis · Mapa ideológico y polarización | Posición de los grupos según sus votos (MDS sobre la afinidad) y polarización por trimestre |
 | Análisis · Disciplina y ausencias | Diputados que votan distinto a su grupo, votos no emitidos y votaciones que habrían cambiado con los ausentes |
@@ -316,11 +317,14 @@ oficial: en convalidaciones y votaciones de conjunto solo discrepa una votación
 
 ## Programas electorales: lo que prometen frente a lo que votan
 
-Implementa las fases 0 y 1 de `Programas y votos lo que dicen frente a lo que votan.md` y la pestaña
-«Programa electoral» del perfil de grupo: los compromisos del programa de cada partido, cada uno con su
+Implementa las fases 0 y 1 de `Programas y votos lo que dicen frente a lo que votan.md` y la sección
+«Programas» de la web: los compromisos del programa de cada partido, cada uno con su
 cita literal y su página, enlazados con las iniciativas del Pleno que tratan lo mismo y con lo que votó
 el partido en ellas. Empieza por las generales de 2023 (PSOE, PP, VOX y Sumar) frente a la XV
-legislatura; los programas se añaden en `escrutinio/programas/registro.py` (`PROGRAMAS`).
+legislatura, y están registrados los de ERC, Junts, EH Bildu y PNV, pendientes de leer. Los programas
+se añaden en `escrutinio/programas/registro.py` (`PROGRAMAS`). Los partidos que votan dentro del Grupo
+Mixto (BNG, CC, UPN, y Podemos desde diciembre de 2023) no tienen voto propio de grupo con el que
+comparar: harían falta sus diputados uno a uno.
 
 Cada programa se descarga, se lee y se guarda **una sola vez**. Lo que manda son los ficheros de
 `data/llm/programas/`, versionados como las fichas, y la base se reconstruye desde ellos (`unir`,
@@ -369,9 +373,9 @@ siempre a mano. En la web, los programas van en `web/datos/comun.js`.
 
 Pendiente, según el plan: validar a mano la muestra del piloto (y la vista de revisión para hacerlo
 rápido), el resto de partidos y elecciones, las intervenciones en el Pleno, los programas autonómicos
-y el contraste con la Chapel Hill Expert Survey. El programa del PSOE se descarga de la copia que
-publicó un medio, porque psoe.es está tras una protección contra robots que no se intenta saltar; el
-registro guarda también la URL oficial.
+y el contraste con la Chapel Hill Expert Survey. Los programas del PSOE, Junts y EH Bildu se descargan de
+la copia que publicó un medio: psoe.es está tras una protección contra robots que no se intenta saltar,
+y las webs de Junts y EH Bildu ya no enlazan el de 2023.
 
 ## Fuentes y limitaciones
 

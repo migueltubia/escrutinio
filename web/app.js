@@ -89,11 +89,13 @@ async function abrirCatalogo() {
       return r ? r.values.map((v) => Object.fromEntries(r.columns.map((c, i) => [c, v[i]]))) : [];
     } catch { return null; } // datos generados con una versión anterior, sin catálogo territorial
   };
-  const ficheros = indice.ficheros.filter((f) => f.nombre !== "comun").map((f) => ({ ...f, cuerpo: f.cuerpo || "congreso" }));
+  // programas.js no es de ninguna institución: se carga aparte, solo cuando hace falta (programas.js).
+  const ficheros = indice.ficheros.filter((f) => f.nombre !== "comun" && f.nombre !== "programas").map((f) => ({ ...f, cuerpo: f.cuerpo || "congreso" }));
   CATALOGO = {
     generado: indice.generado,
     avisos: indice.avisos || {},  // instituciones que no respondieron en la última actualización
     ficheros,
+    programas: indice.ficheros.find((f) => f.nombre === "programas") || null,
     ambitos: filas("SELECT * FROM ambito ORDER BY orden, nombre") ||
       [{ codigo: "es", padre: null, nombre: "Toda España" }, { codigo: "congreso", padre: "es", nombre: "Congreso de los Diputados", nivel: "nacional", cuerpo: "congreso" }],
     cuerpos: Object.fromEntries((filas("SELECT * FROM cuerpo") ||
@@ -1979,12 +1981,13 @@ function tablaOtras(otras, actual) {
 async function panelIniciativa(leg, exp) {
   const d = await api("iniciativa", { leg, exp });
   const i = d.iniciativa;
+  const programas = await bloqueProgramas(leg, exp);
   return el("div", {},
     el("div", { class: "muted small" }, [infoLeg(leg).cuerpo !== "congreso" ? infoLeg(leg).cuerpo_nombre : null, `Leg. ${romano(leg)}`, i.tipo].filter(Boolean).join(" · ")),
     el("h2", {}, i.titulo),
     el("section", {}, bloqueFicha(d.ficha)),
     el("section", {}, bloqueIniciativa(i)),
-    bloqueProgramas(leg, exp),
+    programas,
     el("section", {}, el("h3", {}, `Votaciones (${d.votaciones.length})`), el("p", { class: "small muted" }, "★ votación decisiva"),
       el("div", { class: "lista" }, d.votaciones.map(filaVotacion))));
 }

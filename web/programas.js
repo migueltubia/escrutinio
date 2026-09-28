@@ -3,6 +3,28 @@
 // Los programas, sus compromisos y el estado de cada uno van en comun.js; los títulos y los votos de las
 // iniciativas relacionadas, en los ficheros de su legislatura (hace falta el Congreso en el ámbito).
 
+// Los compromisos van en su propio fichero (datos/programas.js), que se descarga la primera vez que hace falta.
+// Cada cambio de ámbito rehace la base en memoria: entonces se vuelven a adjuntar sus tablas, sin descargar nada.
+let PROGRAMAS_BD = null;
+async function cargarProgramas() {
+  const f = CATALOGO.programas;
+  if (!f) return false;
+  if (q1("SELECT 1 AS x FROM sqlite_master WHERE type='table' AND name='compromiso'")) return true;
+  if (!PROGRAMAS_BD) {
+    await cargarScript(conVersion(f));
+    PROGRAMAS_BD = await descomprimir(DATOS().programas);
+    delete DATOS().programas;
+  }
+  const trozo = new SQL.Database(PROGRAMAS_BD);
+  DB.exec(`ATTACH DATABASE '/${trozo.filename}' AS p`);
+  const objetos = q("SELECT type, name, sql FROM p.sqlite_master WHERE sql IS NOT NULL ORDER BY type='index'");
+  for (const o of objetos) DB.exec(o.sql);
+  for (const o of objetos.filter((x) => x.type === "table")) DB.exec(`INSERT INTO main."${o.name}" SELECT * FROM p."${o.name}"`);
+  DB.exec("DETACH DATABASE p");
+  trozo.close();
+  return true;
+}
+
 // Estado de cada compromiso según lo que votó el partido: [nombre, color, explicación]. En este orden se enseñan.
 const ESTADO_COMPROMISO = {
   impulsado: ["Impulsado", "var(--si)", "Presentó una iniciativa en la dirección del compromiso (o la presentó el Gobierno mientras el partido gobernaba)."],
@@ -80,6 +102,7 @@ API.programasIniciativa = (p) => q(`SELECT c.id, c.texto, c.pagina, ci.sentido, 
   WHERE ci.legislatura=? AND ci.expediente=? ORDER BY ci.sentido='relacionada', p.partido, c.orden`, [+p.leg, p.exp]);
 
 VISTAS.programas = async (ruta) => {
+  if (!(await cargarProgramas())) return el("div", { class: "vacio" }, "Todavía no hay programas electorales.");
   const d = await api("programas", { g: ruta.g, leg: ruta.leg, tema: ruta.tema, accion: ruta.accion, estado: ruta.estado, pagina: ruta.pagina });
   const ir = (cambios) => irA("programas", { ...ruta, pagina: "", ...cambios });
   const cont = el("div", {},
@@ -227,8 +250,11 @@ function filaRelacionada(r, c, d) {
     r.justificacion ? el("div", { class: "small muted" }, r.justificacion) : null);
 }
 
-// Bloque del detalle de una iniciativa: qué partidos llevaban en su programa algo relacionado.
-function bloqueProgramas(leg, exp) {
+// Bloque del detalle de una iniciativa: qué partidos llevaban en su programa algo relacionado. Solo descarga los
+// programas si la iniciativa aparece en alguno (programa_iniciativa, en comun.js).
+async function bloqueProgramas(leg, exp) {
+  if (!q1("SELECT 1 AS x FROM programa_iniciativa WHERE legislatura=? AND expediente=?", [+leg, exp])) return null;
+  await cargarProgramas();
   const cs = API.programasIniciativa({ leg, exp });
   if (!cs.length) return null;
   return el("section", {}, el("h3", {}, "En los programas electorales"),

@@ -28,6 +28,7 @@ ficheros `.js`, que la página carga con etiquetas `<script>`. Van troceados igu
 | --- | --- |
 | `web/datos/indice.js` | Lista de ficheros de datos con su institución, su huella y la fecha de generación |
 | `web/datos/comun.js` | Catálogos, instituciones y árbol de ámbitos, gobiernos, diputados, informe y los índices de la base |
+| `web/datos/programas.js` | Compromisos de los programas electorales, sus iniciativas relacionadas y su estado. Solo se descarga al entrar en «Programas» o al abrir una iniciativa que aparece en algún programa |
 | `web/datos/<institución>/legNN.js` | Votaciones, voto nominal, iniciativas, fichas y afinidades de la legislatura NN de esa institución (`congreso/leg15.js`, `parl-AS/leg12.js`…) |
 
 En el navegador se juntan en una sola SQLite en memoria, pero **solo los de las instituciones del
@@ -369,7 +370,8 @@ Cómo se hace, paso a paso:
 
 La actualización diaria lee los programas registrados que estén pendientes, decide las candidatas
 nuevas (hasta 300 compromisos por ejecución) y recalcula el estado. Descargar un programa nuevo es
-siempre a mano. En la web, los programas van en `web/datos/comun.js`.
+siempre a mano. En la web, la lista de programas va en `web/datos/comun.js` y los compromisos, en `web/datos/programas.js`,
+que solo se descarga cuando hace falta.
 
 Pendiente, según el plan: validar a mano la muestra del piloto (y la vista de revisión para hacerlo
 rápido), el resto de partidos y elecciones, las intervenciones en el Pleno, los programas autonómicos

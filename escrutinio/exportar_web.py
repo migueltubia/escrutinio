@@ -6,8 +6,9 @@ cargan con <script>. En el navegador, sql.js (SQLite en WebAssembly) la abre en 
 hace sus consultas SQL directamente sobre ella.
 
 Igual que data/bd/, va troceada: web/datos/comun.js (catálogos, instituciones y árbol de ámbitos,
-diputados, informe) y un <institución>/legNN.js por legislatura de cada institución, más indice.js
-con la lista, la institución y la huella de cada uno. La web solo descarga los ficheros del ámbito
+diputados, informe, lista de programas electorales) y un <institución>/legNN.js por legislatura de cada
+institución, más indice.js con la lista, la institución y la huella de cada uno. Los compromisos de los
+programas electorales van en programas.js, que la web solo descarga cuando hace falta. La web solo descarga los ficheros del ámbito
 elegido. Solo se reescriben los que cambian, así que cada semana en git solo cambian las
 legislaturas en curso y el índice.
 
@@ -86,15 +87,22 @@ CREATE TABLE en_tramite(legislatura INTEGER, expediente TEXT, prefijo TEXT, tipo
 ESQUEMA_COMUN = """
 CREATE TABLE gobierno(cuerpo TEXT, desde TEXT, hasta TEXT, presidente TEXT, partido TEXT, socios TEXT,
   PRIMARY KEY(cuerpo, desde));
--- Programas electorales, sus compromisos, las iniciativas relacionadas y el estado de cada compromiso.
+-- Programas electorales (pocas filas) e iniciativas que aparecen relacionadas con algún compromiso: con esto
+-- la web sabe si hace falta cargar programas.js sin descargarlo.
 CREATE TABLE programa(id TEXT PRIMARY KEY, eleccion TEXT, fecha_eleccion TEXT, cuerpo TEXT, legislatura INTEGER,
   partido TEXT, titulo TEXT, origen TEXT, url TEXT, url_oficial TEXT, descargado TEXT, paginas INTEGER, estado TEXT,
   leido TEXT, compromisos INTEGER, verificables INTEGER);
+CREATE TABLE programa_iniciativa(legislatura INTEGER, expediente TEXT, PRIMARY KEY(legislatura, expediente));
+"""
+# Compromisos de los programas, sus iniciativas relacionadas y su estado: van en programas.js, que la web
+# solo descarga al entrar en «Programas» o al abrir una iniciativa que aparece en algún programa.
+ESQUEMA_PROGRAMAS = """
 CREATE TABLE compromiso(id TEXT PRIMARY KEY, programa TEXT, orden INTEGER, texto TEXT, cita TEXT, pagina INTEGER,
   tema TEXT, etiquetas TEXT, tipo_accion TEXT, responsable TEXT, verificable INTEGER);
 CREATE INDEX ix_compromiso_programa ON compromiso(programa);
 CREATE TABLE compromiso_iniciativa(compromiso TEXT, legislatura INTEGER, expediente TEXT, sentido TEXT,
   justificacion TEXT, origen TEXT, estado TEXT, PRIMARY KEY(compromiso, legislatura, expediente));
+CREATE INDEX ix_compromiso_iniciativa ON compromiso_iniciativa(legislatura, expediente);
 CREATE TABLE compromiso_estado(compromiso TEXT PRIMARY KEY, estado TEXT, impulsa INTEGER, coherentes INTEGER,
   incoherentes INTEGER, abstenciones INTEGER, aprobada INTEGER, gobierno INTEGER);
 """
@@ -108,7 +116,7 @@ def construir(con, destino, log=print):
     if destino.exists():
         destino.unlink()
     web = sqlite3.connect(destino)
-    web.executescript(ESQUEMA + ESQUEMA_COMUN)
+    web.executescript(ESQUEMA + ESQUEMA_COMUN + ESQUEMA_PROGRAMAS)
 
     def copiar(tabla, sql, args=()):
         filas = con.execute(sql, args).fetchall()
@@ -140,6 +148,8 @@ def construir(con, destino, log=print):
                                       FROM compromiso_iniciativa WHERE estado<>'rechazado'""")
     copiar("compromiso_estado", """SELECT compromiso, estado, impulsa, coherentes, incoherentes, abstenciones, aprobada, gobierno
                                   FROM compromiso_estado""")
+    copiar("programa_iniciativa", """SELECT DISTINCT legislatura, expediente FROM compromiso_iniciativa
+                                    WHERE estado<>'rechazado'""")
     if n:
         log(f"  compromisos de programas electorales: {n}")
     copiar("tema", "SELECT codigo, nombre, subtemas FROM tema")
@@ -291,7 +301,8 @@ def en_tramite(con, web):
 DATOS_DIR = WEB_DIR / "datos"
 INDICE = DATOS_DIR / "indice.js"
 TABLAS_COMUN = ("meta", "legislatura", "cuerpo", "ambito", "gobierno", "tema", "tipo_expediente", "informe_ia", "diputado",
-                "programa", "compromiso", "compromiso_iniciativa", "compromiso_estado")
+                "programa", "programa_iniciativa")
+TABLAS_PROGRAMAS = ("compromiso", "compromiso_iniciativa", "compromiso_estado")
 _POR_VOTACION = "votacion_id IN (SELECT id FROM votacion WHERE legislatura=?)"
 TABLAS_LEG = (
     ("grupo", "legislatura=?"), ("votacion", "legislatura=?"), ("voto_grupo", _POR_VOTACION),
@@ -334,6 +345,7 @@ def _trocear(completa, tmp):
 
     cuerpo = None
     trozo("comun", ESQUEMA + ESQUEMA_COMUN, [(t, "1=1") for t in TABLAS_COMUN])
+    trozo("programas", ESQUEMA_PROGRAMAS, [(t, "1=1") for t in TABLAS_PROGRAMAS])
     for leg, cuerpo, numero in web.execute("SELECT id, cuerpo, numero FROM legislatura ORDER BY id").fetchall():
         trozo(f"{cuerpo}/leg{numero}", _ESQUEMA_SIN_INDICES, TABLAS_LEG, (leg,))
     web.close()

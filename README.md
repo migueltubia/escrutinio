@@ -321,8 +321,9 @@ oficial: en convalidaciones y votaciones de conjunto solo discrepa una votación
 Implementa las fases 0 y 1 de `Programas y votos lo que dicen frente a lo que votan.md` y la sección
 «Programas» de la web: los compromisos del programa de cada partido, cada uno con su
 cita literal y su página, enlazados con las iniciativas del Pleno que tratan lo mismo y con lo que votó
-el partido en ellas. Empieza por las generales de 2023 (PSOE, PP, VOX y Sumar) frente a la XV
-legislatura, y están registrados los de ERC, Junts, EH Bildu y PNV, pendientes de leer. Los programas
+el partido en ellas. Están los programas de las generales de 2023 de los partidos con grupo propio en la XV
+legislatura: PSOE, PP, VOX, Sumar, ERC, Junts, EH Bildu y PNV (los de ERC y Junts, en catalán: la cita se
+guarda en la lengua del programa y el compromiso, en castellano). Los programas
 se añaden en `escrutinio/programas/registro.py` (`PROGRAMAS`). Los partidos que votan dentro del Grupo
 Mixto (BNG, CC, UPN, y Podemos desde diciembre de 2023) no tienen voto propio de grupo con el que
 comparar: harían falta sus diputados uno a uno.

@@ -28,7 +28,8 @@ from ..catalogos import CODIGOS_TEMA, TEMAS
 from ..llm import deepseek
 from . import registro
 
-VERSION_PROMPT = "compromisos-v1"
+# v2: la cita, en la lengua del programa (catalán, euskera, gallego…), sin traducir. En castellano da lo mismo que v1.
+VERSION_PROMPT = "compromisos-v2"
 MODELO = "deepseek-v4-pro"
 MAX_TROZO = 40_000
 HILOS = 4  # trozos que se piden a la vez
@@ -56,7 +57,9 @@ Para cada compromiso devuelve:
 - texto: el compromiso en una sola frase, en infinitivo y sin sujeto ni nombre de partido («Derogar la Ley X»,
   «Bajar el IVA de los alimentos básicos al 0 %», «Crear una agencia estatal de salud pública»). Sin valoraciones.
 - cita: el fragmento del programa que contiene el compromiso, COPIADO LITERALMENTE carácter a carácter (una o dos
-  frases, como mucho 300 caracteres). No corrijas erratas, no resumas, no cambies el orden ni las mayúsculas.
+  frases, como mucho 300 caracteres). No corrijas erratas, no resumas, no cambies el orden ni las mayúsculas. Si el
+  programa está en catalán, euskera, gallego u otra lengua, la cita va en esa lengua, SIN TRADUCIR; el texto, las
+  etiquetas y todo lo demás, en castellano.
 - tema: código de la lista cerrada de temas.
 - etiquetas: de 0 a 3 términos concretos en minúsculas («alquiler de temporada», «ley de amnistía»).
 - tipo_accion: una de {json.dumps(TIPOS_ACCION, ensure_ascii=False)}

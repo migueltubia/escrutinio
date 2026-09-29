@@ -19,6 +19,7 @@ la lectura se corta a medias, al reintentar no se paga dos veces lo que ya estab
 import hashlib
 import json
 import re
+import threading
 import unicodedata
 from collections import Counter
 from concurrent.futures import ThreadPoolExecutor
@@ -32,7 +33,8 @@ from . import registro
 VERSION_PROMPT = "compromisos-v2"
 MODELO = "deepseek-v4-pro"
 MAX_TROZO = 40_000
-HILOS = 4  # trozos que se piden a la vez
+HILOS = 4  # trozos de un programa que se piden a la vez
+PROGRAMAS_A_LA_VEZ = 4
 TIPOS_ACCION = {
     "legislar": "aprobar o reformar una ley",
     "derogar": "derogar una norma o parte de ella",
@@ -244,7 +246,11 @@ def _anadir(e, respuesta, paginas, desde, compromisos, usados):
 
 
 def leer(ids=None, reintentar=False, limite=None, modelo=None, releer=False, log=print):
-    """Lee los programas pendientes (y, con reintentar, los que fallaron). Lo ya leído no se vuelve a leer."""
+    """Lee los programas pendientes (y, con reintentar, los que fallaron). Lo ya leído no se vuelve a leer.
+
+    Se leen varios programas a la vez (PROGRAMAS_A_LA_VEZ), cada uno con sus trozos en paralelo: en un programa
+    corto, el trozo más lento marca el paso y el resto de hilos quedaría parado.
+    """
     if not deepseek.disponible():
         raise SystemExit("Falta DEEPSEEK_API_KEY (en .env o como variable de entorno)")
     estados = ("pendiente", "error") if reintentar else ("pendiente",)
@@ -255,15 +261,18 @@ def leer(ids=None, reintentar=False, limite=None, modelo=None, releer=False, log
         log("No hay programas pendientes de leer")
         return 0
     modelo = modelo or MODELO
-    for e in cola[: limite or None]:
+    cerrojo = threading.Lock()  # el registro se reescribe entero: una actualización cada vez
+
+    def uno(e):
         log(f"  {e['id']}: leyendo con {modelo} ({VERSION_PROMPT})")
         try:
-            compromisos, t_in, t_out, descartados = _leer_programa(e, modelo, log)
+            compromisos, t_in, t_out, descartados = _leer_programa(e, modelo, lambda m: log(f"  {e['id']}{m}"))
         except deepseek.ErrorIA as err:
             e.update(estado="error", motivo=f"{type(err).__name__}: {err}")
-            registro.actualizar_entrada(e)
+            with cerrojo:
+                registro.actualizar_entrada(e)
             log(f"  ! {e['id']}: {err}")
-            continue
+            return
         if releer and ruta_compromisos(e["id"]).exists():  # la lectura anterior se conserva con su versión
             anterior = e.get("version_prompt") or "sin-version"
             ruta_compromisos(e["id"]).replace(registro.PROGRAMAS_DIR / f"{e['id']}.{anterior}.jsonl")
@@ -275,9 +284,13 @@ def leer(ids=None, reintentar=False, limite=None, modelo=None, releer=False, log
                  version_prompt=VERSION_PROMPT, compromisos=len(compromisos),
                  verificables=sum(c["verificable"] for c in compromisos), descartados=descartados,
                  tokens_entrada=e.get("tokens_entrada", 0) + t_in, tokens_salida=e.get("tokens_salida", 0) + t_out)
-        registro.actualizar_entrada(e)
+        with cerrojo:
+            registro.actualizar_entrada(e)
         log(f"  {e['id']}: {len(compromisos)} compromisos ({e['verificables']} verificables); "
             f"{descartados} descartados (la cita no está tal cual en el texto o falta algún campo)")
+
+    with ThreadPoolExecutor(PROGRAMAS_A_LA_VEZ) as programas:
+        list(programas.map(uno, cola[: limite or None]))
     return len(cola)
 
 

@@ -40,6 +40,13 @@ const ESTADO_COMPROMISO = {
 const SENTIDO_COMPROMISO = { misma: "En la dirección del compromiso", contraria: "En la dirección contraria", relacionada: "Trata lo mismo, sin dirección clara" };
 const ACCION_COMPROMISO = { legislar: "Legislar", derogar: "Derogar", financiar: "Financiar", crear_organismo: "Crear un organismo",
   bajar_impuesto: "Bajar un impuesto", subir_impuesto: "Subir un impuesto", declaracion: "Declaración", otra: "Otra medida" };
+// Qué quita y qué añade cada tipo de medida, en el orden de las columnas. Legislar y el resto no tienen signo: una ley
+// puede ampliar o recortar.
+const LADOS_ACCION = [
+  ["Quitan", ["bajar_impuesto", "derogar"]],
+  ["Añaden", ["subir_impuesto", "financiar", "crear_organismo"]],
+  ["Sin signo", ["legislar", "otra", "declaracion"]],
+];
 const RESPONSABLE_COMPROMISO = { parlamento: "Depende de las Cortes", gobierno: "Depende del Gobierno", otra_administracion: "Depende de otra Administración" };
 const VOTO_PROGRAMA = { si: "votó a favor", no: "votó en contra", abstencion: "se abstuvo", dividido: "se dividió" };
 // «generales-2023» -> «Generales de 2023»; «generales-2019-04» -> «Generales de abril de 2019».
@@ -108,7 +115,9 @@ API.programas = (p) => {
   // Efecto gobierno: estado de los compromisos según si el partido gobernaba en todas las votaciones relacionadas
   // (gobierno=1) o en ninguna (gobierno=0).
   const gobierno = q(`SELECT p.partido, ce.gobierno, ce.estado, COUNT(*) AS n ${base} AND ce.gobierno IS NOT NULL GROUP BY 1, 2, 3`, args);
-  return { programas, resumen, propuestas, compromisos, contradichos, relacionadas, votos, total, pagina, tam, opciones, gobierno };
+  // Tipo de medida de los compromisos verificables, por partido y tema: qué quiere añadir y qué quitar cada programa.
+  const acciones = q(`SELECT p.partido, c.tema, c.tipo_accion AS accion, COUNT(*) AS n ${base} AND COALESCE(ce.estado, 'generico')<>'generico' GROUP BY 1, 2, 3`, args);
+  return { programas, resumen, propuestas, compromisos, contradichos, relacionadas, votos, total, pagina, tam, opciones, gobierno, acciones };
 };
 
 // Compromisos relacionados con una iniciativa (para su ficha en el panel de detalle).
@@ -232,6 +241,41 @@ VISTAS.programas = async (ruta) => {
           return el("td", { class: "num", style: "white-space:nowrap" }, `${enProg}% / ${enInic}%`);
         })))))));
 
+  // 3b. Qué tipo de medidas propone cada partido: qué quiere quitar y qué añadir, en total y por tema. Clic en una
+  // cifra para ver esos compromisos.
+  const nAccion = new Map(), nLado = new Map();
+  const ladoDe = Object.fromEntries(LADOS_ACCION.slice(0, 2).flatMap(([lado, as]) => as.map((a) => [a, lado])));
+  for (const r of d.acciones) {
+    nAccion.set(r.partido + "|" + r.accion, (nAccion.get(r.partido + "|" + r.accion) || 0) + r.n);
+    if (ladoDe[r.accion]) nLado.set(`${r.partido}|${r.tema}|${ladoDe[r.accion]}`, (nLado.get(`${r.partido}|${r.tema}|${ladoDe[r.accion]}`) || 0) + r.n);
+  }
+  const columnas = LADOS_ACCION.map(([lado, as]) => [lado, as.filter((a) => partidos.some((s) => nAccion.get(s + "|" + a)))]).filter(([, as]) => as.length);
+  const cifra = (n, cambios, titulo) => n ? el("a", { href: "#", title: titulo, onclick: (e) => { e.preventDefault(); ir(cambios); } }, fmt(n)) : el("span", { class: "muted" }, "—");
+  const temasLado = temas.filter((t) => partidos.some((s) => nLado.get(`${s}|${t}|Quitan`) || nLado.get(`${s}|${t}|Añaden`)));
+  const accionesDe = (lado) => LADOS_ACCION.find(([l]) => l === lado)[1].join(",");
+  cont.append(el("div", { class: "card", style: "margin-top:16px" }, el("h3", {}, "Qué quiere quitar y qué añadir cada partido"),
+    el("p", { class: "small muted" }, "El tipo de medida de cada compromiso verificable. Quitan: derogar una norma o bajar un impuesto. Añaden: subir o crear un impuesto, dar dinero (ayudas, prestaciones, inversión) o crear un organismo o un plan. Legislar y el resto no tienen signo: una ley puede ampliar derechos o recortarlos. Quitar no es siempre el mismo lado: depende de qué se deroga o qué impuesto se baja. Clic en una cifra para ver esos compromisos."),
+    el("table", { class: "tabla" },
+      el("thead", {},
+        el("tr", {}, el("th", {}), columnas.map(([lado, as]) => el("th", { colspan: as.length, style: "text-align:center" }, lado)), el("th", {})),
+        el("tr", {}, el("th", {}, "Partido"), columnas.flatMap(([, as]) => as.map((a) => el("th", { class: "num" }, ACCION_COMPROMISO[a]))), el("th", { class: "num" }, "Verificables"))),
+      el("tbody", {}, partidos.map((s) => el("tr", {}, el("td", { style: "white-space:nowrap" }, swatch(colorSiglas(s)), s),
+        columnas.flatMap(([, as]) => as.map((a) => el("td", { class: "num" }, cifra(nAccion.get(s + "|" + a), { g: s, accion: a }, `${s}: ${ACCION_COMPROMISO[a].toLowerCase()}`)))),
+        el("td", { class: "num" }, fmt(porPartido.get(s).verificables)))))),
+    temasLado.length ? el("div", {}, el("h4", {}, "Por tema"),
+      el("p", { class: "small muted" }, "En cada tema, cuántos compromisos quitan (−) y cuántos añaden (+)."),
+      el("table", { class: "tabla" },
+        el("thead", {}, el("tr", {}, el("th", {}, "Tema"), partidos.map((s) => el("th", { class: "num" }, swatch(colorSiglas(s)), s)))),
+        el("tbody", {}, temasLado.map((t) => el("tr", {}, el("td", {}, temaNombre(t)),
+          partidos.map((s) => {
+            const quitan = nLado.get(`${s}|${t}|Quitan`) || 0, anaden = nLado.get(`${s}|${t}|Añaden`) || 0;
+            if (!quitan && !anaden) return el("td", { class: "num muted" }, "—");
+            return el("td", { class: "num", style: "white-space:nowrap" },
+              quitan ? ["−", cifra(quitan, { g: s, tema: t, accion: accionesDe("Quitan") }, `${s}, ${temaNombre(t)}: lo que quita`)] : null,
+              quitan && anaden ? " " : null,
+              anaden ? ["+", cifra(anaden, { g: s, tema: t, accion: accionesDe("Añaden") }, `${s}, ${temaNombre(t)}: lo que añade`)] : null);
+          })))))) : null));
+
   // 4. Los compromisos, uno a uno, con sus iniciativas y votos.
   cont.append(el("div", { class: "card", style: "margin-top:16px" }, el("h3", {}, `Compromisos (${fmt(d.total)})`),
     el("p", { class: "small muted" }, "Cada compromiso con la cita del programa y su página, las iniciativas del Pleno que tratan lo mismo y lo que votó el partido en su votación decisiva. Clic en una iniciativa para ver su ficha y sus votaciones."),
@@ -240,6 +284,7 @@ VISTAS.programas = async (ruta) => {
 
   cont.append(el("div", { class: "card", style: "margin-top:16px" }, el("h3", {}, "Cómo se calcula"), markdown(`
 - De cada programa se toman los **compromisos** con su cita literal y su página. Los que solo expresan una intención («impulsaremos», «apostaremos por») son **declaraciones generales**: se muestran, pero no cuentan en las cifras.
+- Cada compromiso tiene un **tipo de medida**: legislar, derogar, financiar, crear un organismo, bajar o subir un impuesto u otra. Derogar y bajar un impuesto **quitan**; financiar, crear un organismo y subir un impuesto **añaden**; legislar y el resto no tienen signo.
 - Cada compromiso se relaciona con las iniciativas del Pleno de la legislatura siguiente a las elecciones que tratan la misma medida, y se indica si van **en su dirección**, **en la contraria** o solo tratan lo mismo. Al decidirlo no se tiene en cuenta qué partido hizo la promesa ni quién presentó la iniciativa, y lo que va en una dirección se comprueba en una segunda revisión más estricta: no basta con que se llamen parecido.
 - Se usa lo que votó el partido en la **votación decisiva** de cada iniciativa (en las enmiendas a la totalidad, votar sí es votar contra el proyecto). Apoyar algo en la dirección del compromiso o rechazar algo en la contraria **coincide con el programa**; lo inverso, no.
 - **Sin votación no es incumplimiento**: muchas promesas se cumplen o no por real decreto, por presupuestos o por gestión. De lo que depende del Gobierno solo se tienen en cuenta los decretos-leyes, que se convalidan en el Pleno.

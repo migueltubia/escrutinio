@@ -47,6 +47,11 @@ const eleccionTexto = (e) => String(e || "")
   .replace(/^generales-(\d{4})-(\d{2})$/, (_m, y, mes) => `Generales de ${["enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"][+mes - 1]} de ${y}`)
   .replace(/^generales-(\d{4})$/, "Generales de $1");
 const ORIGEN_PROGRAMA = { "copia-prensa": "copia publicada por un medio", "archivo-web": "copia guardada en el Internet Archive" };
+// Dónde está una cita: en un PDF, la página (el enlace abre el PDF en ella); en un programa publicado como página
+// web, el apartado (el enlace abre la copia guardada, sin «id_», que es la versión cruda para descargar).
+const enlaceCita = (url, formato, pagina) => formato === "html"
+  ? { href: url.replace(/(web\.archive\.org\/web\/\d+)id_\//, "$1/"), texto: `apartado ${pagina}` }
+  : { href: `${url}#page=${pagina}`, texto: `p. ${pagina}` };
 const puntoEstado = (e) => el("i", { class: "punto-estado", style: `background:${ESTADO_COMPROMISO[e][1]}` });
 // Parte de los compromisos con votación en un sentido claro que coincide con el programa.
 const coinciden = (o) => { const n = (o.impulsado || 0) + (o.apoyado || 0) + (o.contradicho || 0); return { p: n ? ((o.impulsado || 0) + (o.apoyado || 0)) / n : 0, n }; };
@@ -72,7 +77,7 @@ API.programas = (p) => {
   const total = q1(`SELECT COUNT(*) AS n ${base} ${we}`, [...args, ...ae]).n;
   const pagina = Math.max(1, +(p.pagina || 1));
   const tam = 25;
-  const compromisos = q(`SELECT c.*, p.partido, p.url, p.titulo AS programa_titulo, p.eleccion, ce.estado, ce.aprobada
+  const compromisos = q(`SELECT c.*, p.partido, p.url, p.formato, p.titulo AS programa_titulo, p.eleccion, ce.estado, ce.aprobada
     ${base} ${we} ORDER BY p.fecha_eleccion DESC, p.partido, c.orden LIMIT ? OFFSET ?`, [...args, ...ae, tam, (pagina - 1) * tam]);
   const ids = compromisos.map((c) => c.id);
   const marcas = ids.map(() => "?").join(",");
@@ -104,7 +109,7 @@ API.programas = (p) => {
 };
 
 // Compromisos relacionados con una iniciativa (para su ficha en el panel de detalle).
-API.programasIniciativa = (p) => q(`SELECT c.id, c.texto, c.pagina, ci.sentido, p.partido, p.eleccion, p.url
+API.programasIniciativa = (p) => q(`SELECT c.id, c.texto, c.pagina, ci.sentido, p.partido, p.eleccion, p.url, p.formato
   FROM compromiso_iniciativa ci JOIN compromiso c ON c.id=ci.compromiso JOIN programa p ON p.id=c.programa
   WHERE ci.legislatura=? AND ci.expediente=? ORDER BY ci.sentido='relacionada', p.partido, c.orden`, [+p.leg, p.exp]);
 
@@ -164,8 +169,8 @@ VISTAS.programas = async (ruta) => {
         const co = coinciden(o);
         return el("tr", { class: "clic", onclick: () => ir({ g: p.partido }) },
           el("td", { style: "white-space:nowrap" }, swatch(colorSiglas(p.partido)), p.partido),
-          el("td", {}, el("a", { href: p.url, target: "_blank", rel: "noopener", onclick: (e) => e.stopPropagation() }, p.titulo),
-            el("div", { class: "small muted" }, [eleccionTexto(p.eleccion), `${fmt(p.paginas)} páginas`, p.legislatura ? `cubre la ${legTexto(p.legislatura)}` : null,
+          el("td", {}, el("a", { href: enlaceCita(p.url, p.formato, 1).href.replace(/#page=1$/, ""), target: "_blank", rel: "noopener", onclick: (e) => e.stopPropagation() }, p.titulo),
+            el("div", { class: "small muted" }, [eleccionTexto(p.eleccion), p.formato === "html" ? `página web, ${fmt(p.paginas)} apartados` : `${fmt(p.paginas)} páginas`, p.legislatura ? `cubre la ${legTexto(p.legislatura)}` : null,
               p.legislatura && gobiernosLeg(p.legislatura) ? `gobierno: ${gobiernosLeg(p.legislatura)}` : null, ORIGEN_PROGRAMA[p.origen] || null, p.estado === "pendiente" ? "pendiente de leer" : p.estado === "error" ? "no se ha podido leer" : null].filter(Boolean).join(" · "))),
           el("td", { class: "num" }, p.estado === "leido" ? fmt(o.todos) : "—"),
           el("td", { class: "num" }, p.estado === "leido" ? `${fmt(o.verificables)} (${pct(o.verificables, o.todos)}%)` : "—"),
@@ -261,7 +266,8 @@ function filaCompromiso(c, d) {
     el("div", { class: "small muted cabecera" },
       el("span", { class: "badge", title: explicacion }, puntoEstado(c.estado || "generico"), nombre),
       el("span", {}, [temaNombre(c.tema), ACCION_COMPROMISO[c.tipo_accion], c.verificable ? RESPONSABLE_COMPROMISO[c.responsable] : null].filter(Boolean).join(" · ")),
-      el("a", { href: `${c.url}#page=${c.pagina}`, target: "_blank", rel: "noopener", title: c.programa_titulo }, `Programa ${c.partido} ${anio}, p. ${c.pagina}`),
+      el("a", { href: enlaceCita(c.url, c.formato, c.pagina).href, target: "_blank", rel: "noopener", title: c.programa_titulo },
+        `Programa ${c.partido} ${anio}, ${enlaceCita(c.url, c.formato, c.pagina).texto}`),
       c.aprobada ? el("span", { class: "badge ok" }, "Salió adelante algo en su dirección") : null),
     el("div", { class: "texto" }, c.texto),
     el("blockquote", {}, `«${c.cita}»`),
@@ -313,7 +319,8 @@ async function bloqueProgramas(leg, exp) {
       const votos = votosPartido(leg, exp, c.partido);
       return el("li", {},
         el("div", {}, swatch(colorSiglas(c.partido)), el("b", {}, c.partido), " · ", SENTIDO_COMPROMISO[c.sentido] || c.sentido, " · ",
-          el("a", { href: `${c.url}#page=${c.pagina}`, target: "_blank", rel: "noopener" }, `${eleccionTexto(c.eleccion)}, p. ${c.pagina}`)),
+          el("a", { href: enlaceCita(c.url, c.formato, c.pagina).href, target: "_blank", rel: "noopener" },
+            `${eleccionTexto(c.eleccion)}, ${enlaceCita(c.url, c.formato, c.pagina).texto}`)),
         el("div", {}, c.texto),
         votos.length ? votos.map((v) => lineaVoto(v, c.sentido, c.partido)) : el("div", { class: "small muted" }, "Todavía no se ha votado."));
     })),

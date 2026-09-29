@@ -91,7 +91,7 @@ CREATE TABLE gobierno(cuerpo TEXT, desde TEXT, hasta TEXT, presidente TEXT, part
 -- la web sabe si hace falta cargar programas.js sin descargarlo.
 CREATE TABLE programa(id TEXT PRIMARY KEY, eleccion TEXT, fecha_eleccion TEXT, cuerpo TEXT, legislatura INTEGER,
   partido TEXT, titulo TEXT, origen TEXT, url TEXT, url_oficial TEXT, descargado TEXT, paginas INTEGER, estado TEXT,
-  leido TEXT, compromisos INTEGER, verificables INTEGER);
+  leido TEXT, compromisos INTEGER, verificables INTEGER, formato TEXT);
 CREATE TABLE programa_iniciativa(legislatura INTEGER, expediente TEXT, PRIMARY KEY(legislatura, expediente));
 """
 # Compromisos de los programas, sus iniciativas relacionadas y su estado: van en programas.js, que la web
@@ -141,7 +141,8 @@ def construir(con, destino, log=print):
     web.executemany("INSERT INTO ambito VALUES (?,?,?,?,?,?)", arbol(con_datos))
     web.executemany("INSERT INTO gobierno VALUES (?,?,?,?,?,?)", [g for g in GOBIERNOS if g[0] in con_datos])
     copiar("programa", """SELECT id, eleccion, fecha_eleccion, cuerpo, legislatura, partido, titulo, origen, url, url_oficial,
-                                 descargado, paginas, estado, leido, compromisos, verificables FROM programa""")
+                                 descargado, paginas, estado, leido, compromisos, verificables,
+                                 COALESCE(formato, 'pdf') FROM programa""")
     n = copiar("compromiso", """SELECT id, programa, orden, texto, cita, pagina, tema, etiquetas, tipo_accion, responsable,
                                    verificable FROM compromiso""")
     copiar("compromiso_iniciativa", """SELECT compromiso, legislatura, expediente, sentido, justificacion, origen, estado

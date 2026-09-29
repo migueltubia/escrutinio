@@ -16,8 +16,10 @@ El PDF solo se guarda en la caché local (data/raw/programas/pdf/).
 """
 
 import hashlib
+import html
 import io
 import json
+import re
 import subprocess
 import tempfile
 from datetime import date
@@ -118,7 +120,10 @@ PROGRAMAS = [
     ("generales-2016-pnv", "generales-2016", "2016-06-26", "congreso", "PNV", "Lehenik Euskadi, es lo que importa. Programa electoral 2016",
      "https://www.eaj-pnv.eus/es/adjuntos-documentos/18191/pdf/programa-eaj-pnv-elecciones-generales-2016", "web-partido", None),
 
-    # Generales de abril de 2019 (XIII legislatura). Ciudadanos no publicó el programa completo en PDF (solo en HTML).
+    # Generales de abril de 2019 (XIII legislatura). Ciudadanos solo publicó el programa completo como página web.
+    ("generales-2019-04-cs", "generales-2019-04", "2019-04-28", "congreso", "Cs", "Programa electoral. Elecciones generales 2019 (28A)",
+     "https://web.archive.org/web/20190418113340id_/https://www.ciudadanos-cs.org/programa-electoral", "archivo-web",
+     "https://www.ciudadanos-cs.org/programa-electoral"),
     ("generales-2019-04-psoe", "generales-2019-04", "2019-04-28", "congreso", "PSOE", "Programa electoral. Elecciones generales 2019",
      "https://web.archive.org/web/20190417002326id_/https://www.psoe.es/media-content/2019/04/PSOE-programa-electoral-elecciones-generales-28-de-abril-de-2019.pdf",
      "archivo-web", "https://www.psoe.es/media-content/2019/04/PSOE-programa-electoral-elecciones-generales-28-de-abril-de-2019.pdf"),
@@ -135,8 +140,11 @@ PROGRAMAS = [
     ("generales-2019-04-pnv", "generales-2019-04", "2019-04-28", "congreso", "PNV", "Zurea, gurea. Programa electoral elecciones generales 2019",
      "https://www.eaj-pnv.eus/es/adjuntos-documentos/19093/pdf/programa-electoral-elecciones-generales-2019", "web-partido", None),
 
-    # Generales de noviembre de 2019 (XIV legislatura). VOX mantuvo sus 100 medidas; Ciudadanos (solo HTML) y EH Bildu
-    # (no se ha encontrado en PDF) quedan fuera.
+    # Generales de noviembre de 2019 (XIV legislatura). VOX mantuvo sus 100 medidas; EH Bildu queda fuera (no se ha
+    # encontrado en PDF ni en su web).
+    ("generales-2019-11-cs", "generales-2019-11", "2019-11-10", "congreso", "Cs", "Un gran acuerdo nacional para poner España en marcha",
+     "https://web.archive.org/web/20191117072209id_/https://www.ciudadanos-cs.org/programa-electoral", "archivo-web",
+     "https://www.ciudadanos-cs.org/programa-electoral"),
     ("generales-2019-11-psoe", "generales-2019-11", "2019-11-10", "congreso", "PSOE", "Ahora, progreso. Programa electoral 10N",
      "https://web.archive.org/web/20191109163211id_/https://www.psoe.es/media-content/2019/10/Ahora-progreso-programa-PSOE-10N-31102019.pdf",
      "archivo-web", "https://www.psoe.es/media-content/2019/10/Ahora-progreso-programa-PSOE-10N-31102019.pdf"),
@@ -215,34 +223,62 @@ def _pdf_a_texto(pdf):
     return "\f".join((p.extract_text() or "") for p in PdfReader(io.BytesIO(pdf)).pages)
 
 
+def _html_a_texto(crudo):
+    """Programa publicado como página web: texto con un salto de página (\\f) antes de cada apartado (<h3>, o <h2> si
+    no hay), que hace de «página» para citar. Sin menús, scripts ni estilos."""
+    h = crudo.decode("utf-8", "replace")
+    h = re.sub(r"(?is)<(script|style|nav|header|footer|noscript)[^>]*>.*?</\1>", " ", h)
+    corte = "h3" if re.search(r"(?i)<h3[\s>]", h) else "h2"
+    h = re.sub(rf"(?i)<{corte}[\s>]", lambda m: "\f" + m.group(0), h)
+    h = re.sub(r"(?i)<br\s*/?>|</p>|</div>|</li>|</h\d>|</tr>", "\n", h)
+    h = html.unescape(re.sub(r"(?s)<[^>]+>", " ", h))
+    h = re.sub(r"[ \t\xa0]+", " ", h)
+    return re.sub(r"\n\s*\n+", "\n\n", h).strip()
+
+
+def _formato(crudo):
+    if crudo.startswith(b"%PDF-"):
+        return "pdf"
+    return "html" if re.search(rb"(?i)<(!doctype html|html)[\s>]", crudo[:4000]) else None
+
+
+def _texto(crudo):
+    return _pdf_a_texto(crudo) if _formato(crudo) == "pdf" else _html_a_texto(crudo)
+
+
 def descargar(ids=None, forzar=False, log=print):
-    """Descarga y registra los programas del catálogo. Lo que ya está registrado con el mismo sha256 no cambia."""
+    """Descarga y registra los programas del catálogo. Lo que ya está registrado con el mismo sha256 no cambia.
+
+    Casi todos son PDF; si un partido solo publicó el programa como página web, se guarda el HTML y cada apartado
+    hace de página (formato «html» en el registro).
+    """
     entradas = leer_registro()
     PDF_DIR.mkdir(parents=True, exist_ok=True)
     nuevos = []
     for p in catalogo(ids):
-        cache = PDF_DIR / f"{p['id']}.pdf"
-        if forzar or not cache.exists():
+        cache = next((c for c in (PDF_DIR / f"{p['id']}.pdf", PDF_DIR / f"{p['id']}.html") if c.exists()), None)
+        if forzar or not cache:
             try:
-                pdf = http_util.fetch(p["url"], timeout=180)
+                crudo = http_util.fetch(p["url"], timeout=180)
             except Exception as e:
                 log(f"  ! {p['id']}: no se pudo descargar: {e}")
                 continue
-            if not pdf.startswith(b"%PDF-"):
-                log(f"  ! {p['id']}: la URL no devuelve un PDF (¿página de protección contra robots?)")
+            if not _formato(crudo):
+                log(f"  ! {p['id']}: la URL no devuelve un PDF ni una página web (¿protección contra robots?)")
                 continue
-            cache.write_bytes(pdf)
-        pdf = cache.read_bytes()
-        sha = hashlib.sha256(pdf).hexdigest()
+            cache = PDF_DIR / f"{p['id']}.{_formato(crudo)}"
+            cache.write_bytes(crudo)
+        crudo = cache.read_bytes()
+        sha = hashlib.sha256(crudo).hexdigest()
         previas = [e for e in entradas if e["base"] == p["id"]]
         if any(e["sha256"] == sha for e in previas):
             igual = next(e for e in previas if e["sha256"] == sha)
             if not ruta_texto(igual["id"]).exists():  # clon nuevo sin el texto: se regenera, el registro no cambia
-                ruta_texto(igual["id"]).write_text(_pdf_a_texto(pdf), encoding="utf-8")
+                ruta_texto(igual["id"]).write_text(_texto(crudo), encoding="utf-8")
             log(f"  {igual['id']}: ya registrado ({igual['estado']}), sin cambios")
             continue
         id_ = p["id"] if not previas else f"{p['id']}-{len(previas) + 1}"
-        txt = _pdf_a_texto(pdf)
+        txt = _texto(crudo)
         paginas = txt.count("\f") + (0 if txt.endswith("\f") else 1)
         caracteres = len(txt)
         TEXTOS_DIR.mkdir(parents=True, exist_ok=True)
@@ -252,7 +288,7 @@ def descargar(ids=None, forzar=False, log=print):
             "id": id_, "base": p["id"], "eleccion": p["eleccion"], "fecha_eleccion": p["fecha_eleccion"],
             "cuerpo": p["cuerpo"], "partido": p["partido"], "titulo": p["titulo"], "origen": p["origen"],
             "url": p["url"], "url_oficial": p["url_oficial"], "descargado": date.today().isoformat(),
-            "sha256": sha, "paginas": paginas, "caracteres": caracteres,
+            "sha256": sha, "formato": _formato(crudo), "paginas": paginas, "caracteres": caracteres,
             "estado": "error" if escaneado else "pendiente",
             "motivo": "sin capa de texto (escaneado): decidir aparte si merece la pena el OCR" if escaneado else None,
         }

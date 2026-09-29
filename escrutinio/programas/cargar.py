@@ -72,10 +72,11 @@ def cargar(con, log=print):
         leg = _legislatura(con, e)
         con.execute(
             """INSERT INTO programa(id, eleccion, fecha_eleccion, cuerpo, legislatura, partido, titulo, origen, url, url_oficial,
-                 descargado, paginas, estado, leido, version_prompt, compromisos, verificables) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)""",
+                 descargado, paginas, estado, leido, version_prompt, compromisos, verificables, formato)
+               VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)""",
             (e["id"], e["eleccion"], e["fecha_eleccion"], e["cuerpo"], leg, e["partido"], e["titulo"], e["origen"], e["url"],
              e.get("url_oficial"), e["descargado"], e.get("paginas"), e["estado"], e.get("leido"), e.get("version_prompt"),
-             e.get("compromisos"), e.get("verificables")))
+             e.get("compromisos"), e.get("verificables"), e.get("formato", "pdf")))
         if e["estado"] != "leido":
             continue
         compromisos = leer_compromisos(e["id"])

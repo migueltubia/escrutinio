@@ -241,7 +241,8 @@ CREATE TABLE IF NOT EXISTS programa(
   leido TEXT,
   version_prompt TEXT,
   compromisos INTEGER,
-  verificables INTEGER
+  verificables INTEGER,
+  formato TEXT
 );
 CREATE TABLE IF NOT EXISTS compromiso(
   id TEXT PRIMARY KEY,
@@ -348,6 +349,8 @@ def init(con, catalogos=True):
         con.commit()
         return
     con.executescript(SCHEMA_PROGRAMAS)
+    if "formato" not in {r[1] for r in con.execute("PRAGMA table_info(programa)")}:  # pdf o html
+        con.execute("ALTER TABLE programa ADD COLUMN formato TEXT")
     from .catalogos import TIPOS_EXPEDIENTE, TEMAS
     from .territorial.modelo import TIPOS_INICIATIVA
 

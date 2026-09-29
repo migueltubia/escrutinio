@@ -116,6 +116,8 @@ def main(argv=None):
     s.add_argument("--limite", type=int, help="Máximo de relaciones")
     s.add_argument("--modelo", help="Modelo de DeepSeek (por defecto, el Pro)")
     s.add_argument("--rehacer", action="store_true", help="Vuelve a revisar los pares revisados con una versión anterior del prompt")
+    s.add_argument("--solo", choices=["misma", "contraria", "relacionada"],
+                   help="Con --rehacer, solo los pares cuya última revisión dio esa relación")
 
     sub.add_parser("programas-calcular", help="Recarga programas, emparejamientos y verificaciones y recalcula el estado (sin DeepSeek)")
 
@@ -242,7 +244,7 @@ def main(argv=None):
         elif a.cmd == "programas-verificar":
             from .programas.verificar import verificar
 
-            verificar(con, ids=ids, limite=a.limite, modelo=a.modelo, rehacer=a.rehacer, log=log)
+            verificar(con, ids=ids, limite=a.limite, modelo=a.modelo, rehacer=a.rehacer, solo=a.solo, log=log)
         cargar(con, log)
         log("Para verlo en la web: python -m escrutinio web")
     elif a.cmd == "analizar":

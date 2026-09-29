@@ -24,7 +24,9 @@ from .leer import MODELO, leer_compromisos
 
 # v2: la v1 exigía «el mismo enfoque» y dejaba sin dirección más de la mitad de las relaciones; ahora cuenta
 # también lo que avanza en parte o con otro alcance. Solo queda fuera lo que coincide en el nombre y no en el fondo.
-VERSION_PROMPT = "verificar-v2"
+# v3: «contraria» exige ir en sentido opuesto. Quedarse corto (temporal en vez de permanente) es «misma», y pedir
+# información, auditar o retocar algo que el compromiso quiere suprimir es «relacionada», salvo que lo amplíe.
+VERSION_PROMPT = "verificar-v3"
 VERIFICACIONES_DIR = registro.PROGRAMAS_DIR / "verificaciones"
 POR_LLAMADA = 5
 
@@ -35,13 +37,19 @@ relación:
 - misma: si la iniciativa saliera adelante, se avanzaría en lo que promete el compromiso, aunque sea en parte o con
   otro alcance o enfoque (por ejemplo, el compromiso promete una jornada de 37,5 horas y la iniciativa la baja a 38; o
   promete reforzar la sanidad pública y la iniciativa amplía una prestación concreta de la sanidad pública).
-- contraria: la iniciativa iría en sentido opuesto a lo que promete el compromiso (deroga lo que promete mantener,
-  amplía lo que promete derogar, sube lo que promete bajar…), aunque sea en parte.
+- contraria: si la iniciativa saliera adelante, se retrocedería en lo que promete el compromiso o se haría lo opuesto
+  (deroga lo que promete mantener, amplía o consolida lo que promete derogar o suprimir, sube lo que promete bajar…),
+  aunque sea en parte. Quedarse corto no es ir en contra: si la iniciativa avanza menos de lo prometido (temporal en
+  vez de permanente, menos cuantía, menor alcance), es misma. Tampoco va en contra pedir información, auditar,
+  controlar o corregir fallos de algo que el compromiso quiere suprimir, ni retocar un detalle suyo: eso es
+  relacionada, salvo que la iniciativa lo amplíe o lo consolide. Y modificar la misma ley no es seguir con la reforma
+  que el compromiso quiere parar: mira en qué sentido la cambia cada una.
 - relacionada: tratan la misma medida, pero con lo que se sabe no se puede decir si avanza o retrocede en lo
   prometido; o solo coinciden en el nombre o el tema y el contenido va por otro lado (dos «leyes de familias» o dos
   «planes de choque» pueden proponer cosas distintas u opuestas).
 - ninguna: no tratan la misma medida.
-Ante una duda razonable entre misma o contraria y relacionada, elige relacionada. Justifica en una o dos frases
+Los trámites sin contenido propio (prórrogas de plazo, creación de subcomisiones o ponencias, peticiones de informe o
+de comparecencia) no avanzan ni retroceden por sí mismos: son relacionada. Ante una duda razonable entre misma o contraria y relacionada, elige relacionada. Justifica en una o dos frases
 neutras qué propone cada uno y por qué eliges esa relación. Responde SOLO con un objeto json:
 {"pares": [{"id": "p1", "relacion": "relacionada", "justificacion": "…"}]}"""
 
@@ -74,11 +82,12 @@ def _iniciativa(con, clave):
             "etiquetas": json.loads(r["etiquetas"] or "[]")}
 
 
-def verificar(con, ids=None, limite=None, modelo=None, rehacer=False, log=print):
+def verificar(con, ids=None, limite=None, modelo=None, rehacer=False, solo=None, log=print):
     """Revisa los pares con dirección (misma o contraria) de la primera pasada que aún no se han revisado.
 
     Un cambio de prompt no repite nada por sí solo: con rehacer=True (orden explícita) se vuelven a revisar los
-    pares revisados con una versión anterior; la revisión nueva se añade y manda sobre la vieja.
+    pares revisados con una versión anterior; la revisión nueva se añade y manda sobre la vieja. Con solo, únicamente
+    los que en su última revisión quedaron con esa relación (p. ej. «contraria», si el cambio de prompt va de eso).
     """
     if not deepseek.disponible():
         raise SystemExit("Falta DEEPSEEK_API_KEY (en .env o como variable de entorno)")
@@ -93,7 +102,8 @@ def verificar(con, ids=None, limite=None, modelo=None, rehacer=False, log=print)
         cola = []
         for (cid, ini), p in sorted(pares.items()):
             hecho = hechos.get((cid, ini))
-            pendiente = not hecho or (rehacer and hecho.get("version_prompt") != VERSION_PROMPT)
+            pendiente = not hecho or (rehacer and hecho.get("version_prompt") != VERSION_PROMPT
+                                      and (not solo or hecho["relacion"] == solo))
             if cid in compromisos and p["relacion"] in ("misma", "contraria") and pendiente:
                 info = _iniciativa(con, ini)
                 if info:

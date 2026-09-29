@@ -346,6 +346,7 @@ python -m escrutinio programas-estado        # qué está leído, qué falta, qu
 python -m escrutinio programas-leer          # compromisos de los pendientes, con DeepSeek (modelo Pro)
 python -m escrutinio programas-emparejar     # candidatas nuevas de cada compromiso, con DeepSeek
 python -m escrutinio programas-verificar     # segunda revisión de las relaciones con dirección (modelo Pro)
+python -m escrutinio programas-verificar --rehacer --solo contraria   # tras cambiar el prompt, solo esas
 python -m escrutinio programas-calcular      # recarga todo y recalcula el estado, sin DeepSeek
 python -m escrutinio programas-releer --id generales-2023-pp --version compromisos-v2   # solo a propósito
 ```
@@ -366,8 +367,10 @@ Cómo se hace, paso a paso:
 5. **Segunda revisión** (DeepSeek, modelo Pro). Las relaciones con dirección, que son las que cuentan
    en las cifras, se revisan con un criterio más estricto y más contexto: la cita literal del programa
    (sin nombres de partido) y el título, el resumen y las etiquetas de la iniciativa. No basta con que
-   se llamen parecido: dos «leyes de familias» pueden proponer cosas opuestas. Ante la duda, queda como
-   «trata lo mismo, sin dirección clara», que no cuenta.
+   se llamen parecido: dos «leyes de familias» pueden proponer cosas opuestas. «En la contraria» exige
+   ir en sentido opuesto: quedarse corto (un impuesto temporal frente a hacerlo permanente) va en su
+   dirección, y pedir información, auditar, retocar un detalle o un trámite sin contenido propio solo
+   tratan lo mismo. Ante la duda, queda como «trata lo mismo, sin dirección clara», que no cuenta.
 6. **Estado** (reglas, en cada actualización). Con el apoyo del partido en la votación decisiva de
    cada iniciativa (enmiendas a la totalidad invertidas; lo aprobado por asentimiento cuenta como
    apoyo): *impulsado* si presentó algo en su dirección (o lo presentó el Gobierno mientras

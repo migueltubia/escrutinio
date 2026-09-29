@@ -357,6 +357,40 @@ def rehacer_citas(ids=None, log=print):
     return cambiados
 
 
+def rehacer_texto(ids, log=print):
+    """Vuelve a extraer el texto de programas ya leídos (p. ej. separando las columnas, que en algunos PDF salían
+    mezcladas) y comprueba contra el texto nuevo, entero, todas las respuestas guardadas en la caché local, sin
+    llamar a DeepSeek. El texto versionado se sustituye: la página de cada cita sale del nuevo."""
+    for e in registro.vigentes(registro.leer_registro()):
+        if e["estado"] != "leido" or (e["id"] not in ids and e["base"] not in ids):
+            continue
+        pdf = registro.PDF_DIR / f"{e['base']}.pdf"
+        if not pdf.exists():
+            log(f"  {e['id']}: no está el PDF en la caché local (data/raw/programas/pdf/); se queda como estaba")
+            continue
+        nuevo = registro._pdf_a_texto(pdf.read_bytes())
+        if nuevo == registro.texto(e["id"]):
+            log(f"  {e['id']}: el texto no cambia")
+            continue
+        cache = registro.TEXTOS_DIR / "trozos" / e["id"] / (e.get("version_prompt") or VERSION_PROMPT)
+        respuestas = [r for r in (json.loads(f.read_text(encoding="utf-8")) for f in sorted(cache.glob("*.json"))) if "compromisos" in r]
+        paginas = _sin_cabeceras(nuevo.rstrip("\f").split("\f"))
+        compromisos, usados = [], set()
+        for r in respuestas:
+            _anadir(e, r, paginas, 1, compromisos, usados)
+        compromisos.sort(key=lambda c: c["pagina"])
+        brutos = sum(len(r["compromisos"]) for r in respuestas)
+        registro.ruta_texto(e["id"]).write_text(nuevo, encoding="utf-8")
+        ruta_compromisos(e["id"]).write_text("".join(json.dumps(c, ensure_ascii=False) + "\n" for c in compromisos),
+                                             encoding="utf-8")
+        antes = e.get("compromisos")
+        e = next(x for x in registro.leer_registro() if x["id"] == e["id"])  # el registro puede haber cambiado
+        e.update(compromisos=len(compromisos), verificables=sum(c["verificable"] for c in compromisos),
+                 descartados=brutos - len(compromisos), texto="columnas", caracteres=len(nuevo))
+        registro.actualizar_entrada(e)
+        log(f"  {e['id']}: texto rehecho; {antes} -> {len(compromisos)} compromisos; {brutos - len(compromisos)} siguen fuera")
+
+
 def releer(id_, version, modelo=None, log=print):
     """Releer un programa ya leído: solo con la versión actual del prompt y dicha explícitamente."""
     if version != VERSION_PROMPT:

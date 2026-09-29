@@ -206,8 +206,27 @@ def texto(id_):
 
 # ---------------------------------------------------------------- descarga
 
-def _pdf_a_texto(pdf):
-    """Texto en orden de lectura, con \\f entre páginas (pdftotext; si no está, pypdf)."""
+def _hueco_central(pagina_layout):
+    """Columna (en caracteres) del hueco entre dos columnas de texto en una página de `pdftotext -layout`, o None:
+    en casi todas las líneas largas hay un tramo de tres espacios en la misma zona central."""
+    lineas = [l for l in pagina_layout.splitlines() if len(l.strip()) > 20]
+    if len(lineas) < 8:
+        return None
+    ancho = max(len(l) for l in lineas)
+    mejor, n = None, 0
+    for c in range(int(ancho * 0.3), int(ancho * 0.7)):
+        k = sum(1 for l in lineas if len(l) > c + 2 and l[c - 1:c + 2] == "   " and l[:c].strip() and l[c:].strip())
+        if k > n:
+            mejor, n = c, k
+    return (mejor, ancho) if n >= 0.6 * len(lineas) else None
+
+
+def _pdf_a_texto(pdf, columnas=True):
+    """Texto en orden de lectura, con \\f entre páginas (pdftotext; si no está, pypdf).
+
+    Con columnas, las páginas a dos columnas se extraen mitad a mitad: en algunos PDF, pdftotext mezcla las líneas
+    de una columna con las de la otra y las citas dejan de aparecer seguidas.
+    """
     from ..territorial.contexto import _pdftotext
 
     exe = _pdftotext()
@@ -215,9 +234,32 @@ def _pdf_a_texto(pdf):
         with tempfile.TemporaryDirectory() as tmp:
             entrada = Path(tmp) / "doc.pdf"
             entrada.write_bytes(pdf)
-            r = subprocess.run([exe, "-enc", "UTF-8", str(entrada), "-"], capture_output=True, timeout=300)
-            if r.returncode == 0:
-                return r.stdout.decode("utf-8", "replace")
+
+            def texto(*args):
+                r = subprocess.run([exe, "-enc", "UTF-8", *args, str(entrada), "-"], capture_output=True, timeout=300)
+                return r.stdout.decode("utf-8", "replace").replace("\r\n", "\n") if r.returncode == 0 else None
+
+            plano = texto()
+            info = Path(exe).with_name(Path(exe).name.replace("pdftotext", "pdfinfo"))
+            if plano is None or not columnas or not info.exists():
+                return plano if plano is not None else ""
+            paginas = plano.split("\f")
+            maquetado = (texto("-layout") or "").split("\f")
+            r = subprocess.run([str(info), "-f", "1", "-l", str(len(paginas)), str(entrada)], capture_output=True, timeout=120)
+            tamanos = {int(n): (float(w), float(h)) for n, w, h in
+                       re.findall(r"Page\s+(\d+) size:\s+([\d.]+) x ([\d.]+)", r.stdout.decode("utf-8", "replace"))}
+            for k, pagina in enumerate(maquetado[: len(paginas)]):
+                hueco = _hueco_central(pagina)
+                if not hueco or (k + 1) not in tamanos:
+                    continue
+                w, h = tamanos[k + 1]
+                x = int(w * hueco[0] / hueco[1])
+                n = str(k + 1)
+                izquierda = texto("-f", n, "-l", n, "-x", "0", "-y", "0", "-W", str(x), "-H", str(int(h) + 1))
+                derecha = texto("-f", n, "-l", n, "-x", str(x), "-y", "0", "-W", str(int(w) - x + 1), "-H", str(int(h) + 1))
+                if izquierda is not None and derecha is not None:
+                    paginas[k] = izquierda.rstrip("\f") + "\n" + derecha.rstrip("\f")
+            return "\f".join(paginas)
     from pypdf import PdfReader
 
     return "\f".join((p.extract_text() or "") for p in PdfReader(io.BytesIO(pdf)).pages)

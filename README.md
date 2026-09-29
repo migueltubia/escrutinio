@@ -133,7 +133,7 @@ python -m escrutinio actas-deepseek --limite 40      # votaciones de diarios de 
 python -m escrutinio actas-exportar --limite 20      # textos pendientes para procesarlos por otra vía
 python -m escrutinio actas-importar "data/llm/actas/respuestas/*.json" --modelo <modelo>
 python -m escrutinio programas-descargar / programas-estado    # programas electorales (ver «Programas electorales»)
-python -m escrutinio programas-leer / programas-emparejar / programas-calcular
+python -m escrutinio programas-leer / programas-emparejar / programas-verificar / programas-calcular
 ```
 
 ## Actualizar los datos: en la nube o en local
@@ -321,10 +321,23 @@ oficial: en convalidaciones y votaciones de conjunto solo discrepa una votación
 Implementa las fases 0 y 1 de `Programas y votos lo que dicen frente a lo que votan.md` y la sección
 «Programas electorales» de Activismo en la web: los compromisos del programa de cada partido, cada uno con su
 cita literal y su página, enlazados con las iniciativas del Pleno que tratan lo mismo y con lo que votó
-el partido en ellas. Están los programas de las generales de 2023 de los partidos con grupo propio en la XV
-legislatura: PSOE, PP, VOX, Sumar, ERC, Junts, EH Bildu y PNV (los de ERC y Junts, en catalán: la cita se
-guarda en la lengua del programa y el compromiso, en castellano). Los programas
-se añaden en `escrutinio/programas/registro.py` (`PROGRAMAS`). Los partidos que votan dentro del Grupo
+el partido en ellas. Están los programas de las generales de 2011 a 2023 de los partidos con grupo propio,
+cada uno frente a la legislatura que empezó tras la elección:
+
+| Elecciones | Legislatura | Programas |
+| --- | --- | --- |
+| 2011 | X | PSOE, PP, CiU, IU (La Izquierda Plural), UPyD y PNV |
+| 2015 | XI | PSOE, PP, Podemos, ERC, Democràcia i Llibertat y PNV |
+| 2016 | XII | PSOE, PP, Unidos Podemos, Ciudadanos, ERC y PNV |
+| Abril de 2019 | XIII | PSOE, PP, Unidas Podemos, Ciudadanos, VOX, ERC y PNV |
+| Noviembre de 2019 | XIV | PSOE, PP, VOX, Unidas Podemos, Ciudadanos, ERC y PNV |
+| 2023 | XV | PSOE, PP, VOX, Sumar, ERC, Junts, EH Bildu y PNV |
+
+Faltan el de Ciudadanos de 2015, que solo existe escaneado, y el de EH Bildu de noviembre de 2019, que no
+se ha encontrado. La XI y la XIII duraron pocos meses, así que sus programas tienen pocas iniciativas con las
+que compararse. Los de CiU, Democràcia i Llibertat, ERC y Junts están en catalán: la cita se guarda en la
+lengua del programa y el compromiso, en castellano. Los programas se añaden en
+`escrutinio/programas/registro.py` (`PROGRAMAS`). Los partidos que votan dentro del Grupo
 Mixto (BNG, CC, UPN, y Podemos desde diciembre de 2023) no tienen voto propio de grupo con el que
 comparar: harían falta sus diputados uno a uno.
 
@@ -334,8 +347,8 @@ Cada programa se descarga, se lee y se guarda **una sola vez**. Lo que manda son
 
 | Fichero | Contenido |
 | --- | --- |
-| `data/llm/programas/registro.jsonl` | Una línea por documento: partido, elección, URL, `sha256`, páginas, estado (`pendiente`, `leido`, `error`), modelo, versión del prompt, compromisos y tokens gastados |
-| `data/raw/programas/<id>.txt` | Texto extraído del PDF, con un salto de página entre páginas. Se versiona (el PDF no) para que las citas sigan siendo comprobables aunque el partido retire el programa |
+| `data/llm/programas/registro.jsonl` | Una línea por documento: partido, elección, URL, `sha256`, formato (`pdf` o `html`), páginas, estado (`pendiente`, `leido`, `error`), modelo, versión del prompt, compromisos y tokens gastados |
+| `data/raw/programas/<id>.txt` | Texto extraído del PDF (o de la página web), con un salto de página entre páginas (en las páginas web, entre apartados). Se versiona (el PDF no) para que las citas sigan siendo comprobables aunque el partido retire el programa |
 | `data/llm/programas/<id>.jsonl` | Una línea por compromiso: texto, cita literal, página, tema, tipo de acción, de quién depende y si es verificable |
 | `data/llm/programas/emparejamientos/<id>.jsonl` | Una línea por par compromiso–iniciativa decidido, también los que no tienen que ver, para no volver a preguntarlos |
 | `data/llm/programas/verificaciones/<id>.jsonl` | Segunda revisión de cada relación con dirección (misma o contraria): manda sobre la primera y no se repite |
@@ -346,31 +359,45 @@ python -m escrutinio programas-estado        # qué está leído, qué falta, qu
 python -m escrutinio programas-leer          # compromisos de los pendientes, con DeepSeek (modelo Pro)
 python -m escrutinio programas-emparejar     # candidatas nuevas de cada compromiso, con DeepSeek
 python -m escrutinio programas-verificar     # segunda revisión de las relaciones con dirección (modelo Pro)
+python -m escrutinio programas-verificar --cifras --modelo <modelo rápido>   # solo las que cuentan, como cada día
 python -m escrutinio programas-verificar --rehacer --solo contraria   # tras cambiar el prompt, solo esas
 python -m escrutinio programas-calcular      # recarga todo y recalcula el estado, sin DeepSeek
+python -m escrutinio programas-rehacer-citas # vuelve a buscar las citas con las respuestas guardadas, sin DeepSeek
+python -m escrutinio programas-rehacer-texto --id generales-2019-04-psoe   # vuelve a extraer el texto y rehace sus citas
 python -m escrutinio programas-releer --id generales-2023-pp --version compromisos-v2   # solo a propósito
 ```
 
 Cómo se hace, paso a paso:
 
 1. **Descarga y registro** (sin DeepSeek). Si un partido corrige el PDF, entra como documento nuevo
-   con su propia línea y la lectura anterior se conserva. Un PDF escaneado queda como `error`.
+   con su propia línea y la lectura anterior se conserva. Un PDF escaneado queda como `error`. El texto se
+   extrae con `pdftotext` separando las columnas por la posición de cada palabra (en los programas a dos
+   columnas, sin separarlas, las frases salían mezcladas); los del PNV de 2019, que meten los rótulos
+   laterales en medio de las palabras, en el orden interno del PDF (`EXTRACCION`). Los de Ciudadanos de 2019
+   solo se publicaron como página web: cada apartado hace de página y la web enlaza con él como «apartado N».
 2. **Compromisos** (DeepSeek, una vez por programa). El texto va por trozos de unas 40 páginas. La
-   cita tiene que aparecer tal cual en el programa, o el compromiso se descarta; la página sale de
-   dónde está la cita, no de lo que responda el modelo. Las frases vagas quedan como no verificables.
-   Si la lectura se corta, los trozos ya respondidos están en la caché local y no se vuelven a pagar.
+   cita tiene que aparecer en el programa, o el compromiso se descarta: se busca tal cual (salvo espacios,
+   comillas, mayúsculas y tildes) y, si no, con todas sus palabras en el mismo orden, uniendo las partidas
+   por guion y admitiendo hasta tres intercaladas (un número de página, un rótulo). Las cabeceras y pies que
+   se repiten en cada página se quitan antes. La página sale de dónde está la cita, no de lo que responda el
+   modelo. Las frases vagas quedan como no verificables. Si la lectura se corta, los trozos ya respondidos
+   están en la caché local (`data/raw/programas/trozos/`, sin versionar) y no se vuelven a pagar; si una
+   respuesta sale truncada, el trozo se parte en dos. Con esa caché, `programas-rehacer-citas` y
+   `programas-rehacer-texto` rehacen las citas sin volver a leer.
 3. **Candidatas** (sin DeepSeek). Las 10 iniciativas con ficha más parecidas de la legislatura
    siguiente, del mismo tema, con BM25 sobre título, resumen y etiquetas.
 4. **Relación** (DeepSeek, modelo rápido). Recibe el compromiso y las candidatas sin partido, sin
    autor y sin votos, y dice si cada una va en su dirección, en la contraria, trata lo mismo sin
    dirección o no tiene que ver. Solo se preguntan las candidatas nuevas.
-5. **Segunda revisión** (DeepSeek, modelo Pro). Las relaciones con dirección, que son las que cuentan
-   en las cifras, se revisan con un criterio más estricto y más contexto: la cita literal del programa
+5. **Segunda revisión** (DeepSeek). Las relaciones con dirección se revisan con un criterio más
+   estricto y más contexto: la cita literal del programa
    (sin nombres de partido) y el título, el resumen y las etiquetas de la iniciativa. No basta con que
    se llamen parecido: dos «leyes de familias» pueden proponer cosas opuestas. «En la contraria» exige
    ir en sentido opuesto: quedarse corto (un impuesto temporal frente a hacerlo permanente) va en su
    dirección, y pedir información, auditar, retocar un detalle o un trámite sin contenido propio solo
    tratan lo mismo. Ante la duda, queda como «trata lo mismo, sin dirección clara», que no cuenta.
+   En las cifras solo cuentan las iniciativas que el partido votó en la votación decisiva o que presentó
+   él o su Gobierno; la actualización diaria revisa solo esas, con el modelo rápido (`--cifras`).
 6. **Estado** (reglas, en cada actualización). Con el apoyo del partido en la votación decisiva de
    cada iniciativa (enmiendas a la totalidad invertidas; lo aprobado por asentimiento cuenta como
    apoyo): *impulsado* si presentó algo en su dirección (o lo presentó el Gobierno mientras
@@ -380,15 +407,15 @@ Cómo se hace, paso a paso:
    se ha comparado con ninguna iniciativa queda *pendiente de comparar*, que no cuenta en las cifras.
 
 La actualización diaria lee los programas registrados que estén pendientes, decide las candidatas
-nuevas (hasta 300 compromisos por ejecución), revisa las relaciones nuevas con dirección y recalcula el
-estado. Descargar un programa nuevo es
+nuevas (hasta 300 compromisos por ejecución), revisa con el modelo rápido las relaciones nuevas que
+cuentan en las cifras y recalcula el estado. Descargar un programa nuevo es
 siempre a mano. En la web, la lista de programas va en `web/datos/comun.js` y los compromisos, en `web/datos/programas.js`,
 que solo se descarga cuando hace falta.
 
-Pendiente, según el plan: las elecciones anteriores (2011–2019), las intervenciones en el Pleno, los programas autonómicos
-y el contraste con la Chapel Hill Expert Survey. Los programas del PSOE, Junts y EH Bildu se descargan de
-la copia que publicó un medio: psoe.es está tras una protección contra robots que no se intenta saltar,
-y las webs de Junts y EH Bildu ya no enlazan el de 2023.
+Pendiente, según el plan: las intervenciones en el Pleno, los programas autonómicos y el contraste con la
+Chapel Hill Expert Survey. Cuando la web del partido no deja descargar el programa (psoe.es está tras una
+protección contra robots que no se intenta saltar) o ya no lo enlaza, se usa la copia que publicó un medio
+o la del archivo de Internet (web.archive.org), y se guarda también la URL oficial si se conoce.
 
 ## Fuentes y limitaciones
 

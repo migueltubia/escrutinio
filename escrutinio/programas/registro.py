@@ -208,17 +208,20 @@ def texto(id_):
 
 def _hueco_central(pagina_layout):
     """Columna (en caracteres) del hueco entre dos columnas de texto en una página de `pdftotext -layout`, o None:
-    en casi todas las líneas largas hay un tramo de tres espacios en la misma zona central."""
+    en casi todas las líneas que llegan más allá del centro (el 90 %) hay tres espacios en la misma columna."""
     lineas = [l for l in pagina_layout.splitlines() if len(l.strip()) > 20]
     if len(lineas) < 8:
         return None
     ancho = max(len(l) for l in lineas)
-    mejor, n = None, 0
+    mejor, parte = None, 0
     for c in range(int(ancho * 0.3), int(ancho * 0.7)):
-        k = sum(1 for l in lineas if len(l) > c + 2 and l[c - 1:c + 2] == "   " and l[:c].strip() and l[c:].strip())
-        if k > n:
-            mejor, n = c, k
-    return (mejor, ancho) if n >= 0.6 * len(lineas) else None
+        cruzan = [l for l in lineas if len(l) > c + 2]
+        if len(cruzan) < 6:
+            continue
+        k = sum(1 for l in cruzan if l[c - 1:c + 2] == "   ") / len(cruzan)
+        if k > parte:
+            mejor, parte = c, k
+    return (mejor, ancho) if parte >= 0.9 else None
 
 
 def _pdf_a_texto(pdf, columnas=True):

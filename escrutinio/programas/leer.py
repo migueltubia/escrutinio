@@ -180,10 +180,19 @@ def localizar(cita, paginas, desde):
     palabras = re.findall(r"\w+", _plano(buscada))
     if len(palabras) < 6:
         return None
-    i = _en_orden(palabras, [(m.group(), m.start()) for m in re.finditer(r"\w+", _plano(completo))])
+    # Aquí se unen también las palabras partidas por guion al final de línea («propone- mos»), página a página.
+    unidas = [_GUION.sub(r"\1\2", _plano(n)) for n in normas]
+    inicios, pos = [], 0
+    for n in unidas:
+        inicios.append(pos)
+        pos += len(n) + 1
+    i = _en_orden(palabras, [(m.group(), m.start()) for m in re.finditer(r"\w+", " ".join(unidas))])
     if i is None:
         return None
     return desde + max(k for k, ini in enumerate(inicios) if ini <= i), buscada
+
+
+_GUION = re.compile(r"(\w)- (\w)")
 
 
 def validar(c):

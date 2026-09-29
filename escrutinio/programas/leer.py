@@ -177,17 +177,32 @@ def leer_compromisos(id_):
     return [json.loads(l) for l in ruta.read_text(encoding="utf-8").splitlines() if l.strip()]
 
 
-def _respuesta(desde, paginas, ruta, modelo):
-    """Respuesta de un trozo: la de la caché o, si no está, la de DeepSeek (que se guarda). (respuesta, nueva)."""
-    if ruta.exists():
-        return json.loads(ruta.read_text(encoding="utf-8")), False
-    datos, modelo_real, uso = deepseek.chat_json(SISTEMA, "Fragmento del programa (páginas "
-                                                 f"{desde}–{desde + len(paginas) - 1}):\n\n" + "\n".join(paginas),
-                                                 modelo, max_tokens=64_000)
+def _respuestas(desde, paginas, cache, modelo):
+    """Respuestas de un trozo: [(primera página, páginas, respuesta, nueva)]. Cada respuesta sale de la caché (por el
+    contenido del trozo) o de DeepSeek, y se guarda. Si la respuesta no cabe (muchos compromisos y mucho
+    razonamiento), el trozo se parte en dos por las páginas y se pide cada mitad."""
+    ruta = cache / f"{hashlib.sha1(chr(12).join(paginas).encode()).hexdigest()[:16]}.json"
+    guardada = json.loads(ruta.read_text(encoding="utf-8")) if ruta.exists() else None
+    if guardada and not guardada.get("partir"):
+        return [(desde, paginas, guardada, False)]
+    if not guardada:
+        try:
+            datos, modelo_real, uso = deepseek.chat_json(SISTEMA, "Fragmento del programa (páginas "
+                                                         f"{desde}–{desde + len(paginas) - 1}):\n\n" + "\n".join(paginas),
+                                                         modelo, max_tokens=64_000)
+        except deepseek.RespuestaTruncada:
+            if len(paginas) < 2:
+                raise
+            ruta.write_text(json.dumps({"partir": True}), encoding="utf-8")  # al reintentar, directamente a las mitades
+            guardada = {"partir": True}
+    if guardada:
+        mitad = len(paginas) // 2
+        return (_respuestas(desde, paginas[:mitad], cache, modelo)
+                + _respuestas(desde + mitad, paginas[mitad:], cache, modelo))
     respuesta = {"compromisos": datos.get("compromisos") or [], "modelo": f"deepseek:{modelo_real}",
                  "tokens_entrada": uso.get("prompt_tokens", 0), "tokens_salida": uso.get("completion_tokens", 0)}
     ruta.write_text(json.dumps(respuesta, ensure_ascii=False), encoding="utf-8")
-    return respuesta, True
+    return [(desde, paginas, respuesta, True)]
 
 
 def _leer_programa(e, modelo, log):
@@ -195,21 +210,20 @@ def _leer_programa(e, modelo, log):
     cache = registro.TEXTOS_DIR / "trozos" / e["id"] / VERSION_PROMPT
     cache.mkdir(parents=True, exist_ok=True)
     partes = trozos(registro.texto(e["id"]))
-    compromisos, t_in, t_out, descartados = [], 0, 0, 0
+    compromisos, t_in, t_out, brutos = [], 0, 0, 0
     usados = set()
     # Los trozos se piden a la vez (HILOS) y se procesan en orden. Si uno falla, los demás terminan y quedan en la caché.
     with ThreadPoolExecutor(HILOS) as hilos:
-        futuros = [hilos.submit(_respuesta, desde, paginas, cache / f"{hashlib.sha1(chr(12).join(paginas).encode()).hexdigest()[:16]}.json",
-                                modelo) for desde, paginas in partes]  # la caché va por el contenido del trozo
+        futuros = [hilos.submit(_respuestas, desde, paginas, cache, modelo) for desde, paginas in partes]
         for k, ((desde, paginas), futuro) in enumerate(zip(partes, futuros), 1):
-            respuesta, nueva = futuro.result()
-            if nueva:
-                t_in += respuesta["tokens_entrada"]
-                t_out += respuesta["tokens_salida"]
-            _anadir(e, respuesta, paginas, desde, compromisos, usados)
+            for desde_p, paginas_p, respuesta, nueva in futuro.result():
+                if nueva:
+                    t_in += respuesta["tokens_entrada"]
+                    t_out += respuesta["tokens_salida"]
+                brutos += len(respuesta["compromisos"])
+                _anadir(e, respuesta, paginas_p, desde_p, compromisos, usados)
             log(f"    trozo {k}/{len(partes)} (págs. {desde}–{desde + len(paginas) - 1}): {len(compromisos)} compromisos")
-    descartados = sum(len(futuro.result()[0]["compromisos"]) for futuro in futuros) - len(compromisos)
-    return compromisos, t_in, t_out, descartados
+    return compromisos, t_in, t_out, brutos - len(compromisos)
 
 
 def _anadir(e, respuesta, paginas, desde, compromisos, usados):

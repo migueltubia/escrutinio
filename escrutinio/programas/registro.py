@@ -206,43 +206,40 @@ def texto(id_):
 
 # ---------------------------------------------------------------- descarga
 
-def _hueco_central(pagina_layout):
-    """Columna (en caracteres) del hueco entre dos columnas de texto en una página de `pdftotext -layout`, o None:
-    en casi todas las líneas que llegan más allá del centro (el 90 %) hay tres espacios en la misma columna."""
-    lineas = [l for l in pagina_layout.splitlines() if len(l.strip()) > 20]
-    if len(lineas) < 8:
+def _corte_columnas(ancho, palabras):
+    """Coordenada x (en puntos) del hueco entre dos columnas de una página, o None. Se busca en la zona central la
+    franja más ancha por la que no pasa ninguna palabra (con al menos 6 puntos y una cuarta parte de las palabras a
+    cada lado) y se corta por su centro."""
+    if len(palabras) < 40:
         return None
-    ancho = max(len(l) for l in lineas)
-    mejor, parte = None, 0
-    for c in range(int(ancho * 0.3), int(ancho * 0.7)):
-        cruzan = [l for l in lineas if len(l) > c + 2]
-        if len(cruzan) < 6:
+    ocupado = [0] * (int(ancho) + 2)
+    for x0, x1 in palabras:
+        for x in range(max(0, int(x0)), min(len(ocupado), int(x1) + 1)):
+            ocupado[x] += 1
+    mejor, i = None, int(ancho * 0.3)
+    while i < int(ancho * 0.7):
+        if ocupado[i]:
+            i += 1
             continue
-        k = sum(1 for l in cruzan if l[c - 1:c + 2] == "   ") / len(cruzan)
-        if k > parte:
-            mejor, parte = c, k
-    if parte < 0.9:
+        j = i
+        while j < int(ancho * 0.7) and not ocupado[j]:
+            j += 1
+        if j - i >= 6 and (not mejor or j - i > mejor[1] - mejor[0]):
+            mejor = (i, j)
+        i = j
+    if not mejor:
         return None
-    # Se corta por el centro del hueco (mediana de los tramos de espacios de cada línea): cortando en su borde, la
-    # última letra de algunas líneas de la columna izquierda se quedaba fuera.
-    centros = []
-    for l in lineas:
-        if len(l) > mejor + 2 and l[mejor] == " ":
-            i, j = mejor, mejor
-            while i > 0 and l[i - 1] == " ":
-                i -= 1
-            while j < len(l) and l[j] == " ":
-                j += 1
-            centros.append((i + j) / 2)
-    centros.sort()
-    return (centros[len(centros) // 2] if centros else mejor), ancho
+    x = (mejor[0] + mejor[1]) / 2
+    izquierda = sum(1 for x0, _x1 in palabras if x0 < x)
+    return x if min(izquierda, len(palabras) - izquierda) >= len(palabras) / 4 else None
 
 
 def _pdf_a_texto(pdf, columnas=True):
     """Texto en orden de lectura, con \\f entre páginas (pdftotext; si no está, pypdf).
 
     Con columnas, las páginas a dos columnas se extraen mitad a mitad: en algunos PDF, pdftotext mezcla las líneas
-    de una columna con las de la otra y las citas dejan de aparecer seguidas.
+    de una columna con las de la otra y las citas dejan de aparecer seguidas. El hueco entre columnas sale de las
+    coordenadas de cada palabra (pdftotext -bbox).
     """
     from ..territorial.contexto import _pdftotext
 
@@ -257,23 +254,20 @@ def _pdf_a_texto(pdf, columnas=True):
                 return r.stdout.decode("utf-8", "replace").replace("\r\n", "\n") if r.returncode == 0 else None
 
             plano = texto()
-            info = Path(exe).with_name(Path(exe).name.replace("pdftotext", "pdfinfo"))
-            if plano is None or not columnas or not info.exists():
+            if plano is None or not columnas:
                 return plano if plano is not None else ""
             paginas = plano.split("\f")
-            maquetado = (texto("-layout") or "").split("\f")
-            r = subprocess.run([str(info), "-f", "1", "-l", str(len(paginas)), str(entrada)], capture_output=True, timeout=120)
-            tamanos = {int(n): (float(w), float(h)) for n, w, h in
-                       re.findall(r"Page\s+(\d+) size:\s+([\d.]+) x ([\d.]+)", r.stdout.decode("utf-8", "replace"))}
-            for k, pagina in enumerate(maquetado[: len(paginas)]):
-                hueco = _hueco_central(pagina)
-                if not hueco or (k + 1) not in tamanos:
+            cajas = texto("-bbox") or ""
+            for k, (w, h, cuerpo) in enumerate(re.findall(r'<page width="([\d.]+)" height="([\d.]+)">(.*?)</page>', cajas, re.S)):
+                if k >= len(paginas):
+                    break
+                palabras = [(float(a), float(b)) for a, b in re.findall(r'<word xMin="([\d.]+)" yMin="[\d.]+" xMax="([\d.]+)"', cuerpo)]
+                x = _corte_columnas(float(w), palabras)
+                if x is None:
                     continue
-                w, h = tamanos[k + 1]
-                x = int(w * hueco[0] / hueco[1])
-                n = str(k + 1)
-                izquierda = texto("-f", n, "-l", n, "-x", "0", "-y", "0", "-W", str(x), "-H", str(int(h) + 1))
-                derecha = texto("-f", n, "-l", n, "-x", str(x), "-y", "0", "-W", str(int(w) - x + 1), "-H", str(int(h) + 1))
+                n, alto = str(k + 1), str(int(float(h)) + 1)
+                izquierda = texto("-f", n, "-l", n, "-x", "0", "-y", "0", "-W", str(int(x)), "-H", alto)
+                derecha = texto("-f", n, "-l", n, "-x", str(int(x)), "-y", "0", "-W", str(int(float(w) - x) + 1), "-H", alto)
                 if izquierda is not None and derecha is not None:
                     paginas[k] = izquierda.rstrip("\f") + "\n" + derecha.rstrip("\f")
             return "\f".join(paginas)

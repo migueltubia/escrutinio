@@ -356,9 +356,11 @@ def descargar(ids=None, forzar=False, log=print):
 
 # ---------------------------------------------------------------- estado
 
-# Precio orientativo de DeepSeek en dólares por millón de tokens (entrada sin caché, salida). Solo sirve
-# para estimar el gasto con los tokens anotados en el registro; el real es el de la factura.
-PRECIO_ENTRADA, PRECIO_SALIDA = 0.28, 0.42
+# Precio orientativo de DeepSeek en dólares por millón de tokens (entrada, salida con el razonamiento). Solo
+# sirve para estimar el gasto con los tokens anotados en el registro; el real es el de la factura. Ajustado a la
+# factura del 29-09-2026 (unos 50 $ por 15,3 M de entrada y 28,2 M de salida): la referencia anterior
+# (0,28 y 0,42) se quedaba en un tercio.
+PRECIO_ENTRADA, PRECIO_SALIDA = 0.55, 1.50
 
 
 def estado(log=print):

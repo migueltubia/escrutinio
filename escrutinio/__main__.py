@@ -101,6 +101,9 @@ def main(argv=None):
     s.add_argument("--reintentar", action="store_true", help="Reintenta también los que fallaron")
     s.add_argument("--modelo", help="Modelo de DeepSeek (por defecto, el Pro)")
 
+    s = sub.add_parser("programas-rehacer-citas", help="Vuelve a comprobar las citas con las respuestas guardadas en la caché local (sin DeepSeek)")
+    s.add_argument("--id", help="Programas separados por comas")
+
     s = sub.add_parser("programas-releer", help="Vuelve a leer un programa ya leído con una versión nueva del prompt")
     s.add_argument("--id", required=True)
     s.add_argument("--version", required=True, help="Versión del prompt con la que releer (tiene que ser la actual)")
@@ -237,6 +240,8 @@ def main(argv=None):
         ids = a.id.split(",") if getattr(a, "id", None) else None
         if a.cmd == "programas-leer":
             leer.leer(ids=ids, reintentar=a.reintentar, limite=a.limite, modelo=a.modelo, log=log)
+        elif a.cmd == "programas-rehacer-citas":
+            leer.rehacer_citas(ids=ids, log=log)
         elif a.cmd == "programas-releer":
             leer.releer(a.id, a.version, modelo=a.modelo, log=log)
         elif a.cmd == "programas-emparejar":

@@ -134,8 +134,37 @@ def trozos(txt):
     return out
 
 
+def _en_orden(palabras, fuente):
+    """Posición (en caracteres) donde empiezan las palabras de la cita dentro de la fuente, todas y en el mismo orden,
+    con como mucho 3 palabras intercaladas entre dos seguidas y un 20 % en total; o None. Sirve para los PDF que
+    repiten trozos de texto («situar-lo situar lo», «per per»): el modelo lee la frase limpia."""
+    n = len(palabras)
+    margen = max(3, n // 5)
+    for i, (w, ini) in enumerate(fuente):
+        if w != palabras[0]:
+            continue
+        k, sobran = i, 0
+        for p in palabras[1:]:
+            for salto in range(1, 5):
+                if k + salto < len(fuente) and fuente[k + salto][0] == p:
+                    k, sobran = k + salto, sobran + salto - 1
+                    break
+            else:
+                break
+            if sobran > margen:
+                break
+        else:
+            return ini
+    return None
+
+
 def localizar(cita, paginas, desde):
-    """(página, fragmento literal del programa) donde está la cita, o None si no aparece tal cual."""
+    """(página, cita) si la cita está en el programa, o None.
+
+    Primero se busca tal cual (salvo espacios, comillas, mayúsculas y tildes) y se guarda el fragmento del propio
+    programa. Si no, se acepta cuando todas sus palabras están en el programa en el mismo orden y casi seguidas
+    (_en_orden), y se guarda la cita del modelo: cada palabra suya está escrita en el programa, en ese orden.
+    """
     normas = [normalizar(p) for p in paginas]
     inicios, pos = [], 0
     for n in normas:
@@ -146,10 +175,15 @@ def localizar(cita, paginas, desde):
     if len(buscada) < 20:
         return None
     i = _plano(completo).find(_plano(buscada))
-    if i < 0:
+    if i >= 0:
+        return desde + max(k for k, ini in enumerate(inicios) if ini <= i), completo[i:i + len(buscada)]
+    palabras = re.findall(r"\w+", _plano(buscada))
+    if len(palabras) < 6:
         return None
-    pagina = max(k for k, ini in enumerate(inicios) if ini <= i)
-    return desde + pagina, completo[i:i + len(buscada)]
+    i = _en_orden(palabras, [(m.group(), m.start()) for m in re.finditer(r"\w+", _plano(completo))])
+    if i is None:
+        return None
+    return desde + max(k for k, ini in enumerate(inicios) if ini <= i), buscada
 
 
 def validar(c):
@@ -179,7 +213,7 @@ def leer_compromisos(id_):
     return [json.loads(l) for l in ruta.read_text(encoding="utf-8").splitlines() if l.strip()]
 
 
-def _respuestas(desde, paginas, cache, modelo):
+def _respuestas(desde, paginas, cache, modelo, solo_cache=False):
     """Respuestas de un trozo: [(primera página, páginas, respuesta, nueva)]. Cada respuesta sale de la caché (por el
     contenido del trozo) o de DeepSeek, y se guarda. Si la respuesta no cabe (muchos compromisos y mucho
     razonamiento), el trozo se parte en dos por las páginas y se pide cada mitad."""
@@ -187,6 +221,8 @@ def _respuestas(desde, paginas, cache, modelo):
     guardada = json.loads(ruta.read_text(encoding="utf-8")) if ruta.exists() else None
     if guardada and not guardada.get("partir"):
         return [(desde, paginas, guardada, False)]
+    if not guardada and solo_cache:
+        raise deepseek.ErrorIA(f"el trozo de las páginas {desde}–{desde + len(paginas) - 1} no está en la caché")
     if not guardada:
         try:
             datos, modelo_real, uso = deepseek.chat_json(SISTEMA, "Fragmento del programa (páginas "
@@ -199,24 +235,24 @@ def _respuestas(desde, paginas, cache, modelo):
             guardada = {"partir": True}
     if guardada:
         mitad = len(paginas) // 2
-        return (_respuestas(desde, paginas[:mitad], cache, modelo)
-                + _respuestas(desde + mitad, paginas[mitad:], cache, modelo))
+        return (_respuestas(desde, paginas[:mitad], cache, modelo, solo_cache)
+                + _respuestas(desde + mitad, paginas[mitad:], cache, modelo, solo_cache))
     respuesta = {"compromisos": datos.get("compromisos") or [], "modelo": f"deepseek:{modelo_real}",
                  "tokens_entrada": uso.get("prompt_tokens", 0), "tokens_salida": uso.get("completion_tokens", 0)}
     ruta.write_text(json.dumps(respuesta, ensure_ascii=False), encoding="utf-8")
     return [(desde, paginas, respuesta, True)]
 
 
-def _leer_programa(e, modelo, log):
+def _leer_programa(e, modelo, log, version=VERSION_PROMPT, solo_cache=False):
     """Lee un programa trozo a trozo. Devuelve (compromisos, tokens de entrada, de salida, descartados)."""
-    cache = registro.TEXTOS_DIR / "trozos" / e["id"] / VERSION_PROMPT
+    cache = registro.TEXTOS_DIR / "trozos" / e["id"] / version
     cache.mkdir(parents=True, exist_ok=True)
     partes = trozos(registro.texto(e["id"]))
     compromisos, t_in, t_out, brutos = [], 0, 0, 0
     usados = set()
     # Los trozos se piden a la vez (HILOS) y se procesan en orden. Si uno falla, los demás terminan y quedan en la caché.
     with ThreadPoolExecutor(HILOS) as hilos:
-        futuros = [hilos.submit(_respuestas, desde, paginas, cache, modelo) for desde, paginas in partes]
+        futuros = [hilos.submit(_respuestas, desde, paginas, cache, modelo, solo_cache) for desde, paginas in partes]
         for k, ((desde, paginas), futuro) in enumerate(zip(partes, futuros), 1):
             for desde_p, paginas_p, respuesta, nueva in futuro.result():
                 if nueva:
@@ -292,6 +328,33 @@ def leer(ids=None, reintentar=False, limite=None, modelo=None, releer=False, log
     with ThreadPoolExecutor(PROGRAMAS_A_LA_VEZ) as programas:
         list(programas.map(uno, cola[: limite or None]))
     return len(cola)
+
+
+def rehacer_citas(ids=None, log=print):
+    """Vuelve a comprobar las citas de los programas leídos con lo que DeepSeek ya respondió (la caché local de
+    trozos), sin llamar a nada: sirve cuando mejora la comprobación. Los compromisos que ya estaban conservan su id
+    (sale de la cita), así que sus emparejamientos siguen valiendo; los recuperados se emparejan como nuevos."""
+    cambiados = 0
+    for e in registro.vigentes(registro.leer_registro()):
+        if e["estado"] != "leido" or (ids and e["id"] not in ids and e["base"] not in ids):
+            continue
+        try:
+            compromisos, _t_in, _t_out, descartados = _leer_programa(e, None, lambda m: None, version=e.get("version_prompt") or VERSION_PROMPT,
+                                                                   solo_cache=True)
+        except deepseek.ErrorIA as err:
+            log(f"  {e['id']}: {err}; se queda como estaba")
+            continue
+        if len(compromisos) <= (e.get("compromisos") or 0):
+            continue
+        ruta_compromisos(e["id"]).write_text("".join(json.dumps(c, ensure_ascii=False) + "\n" for c in compromisos),
+                                             encoding="utf-8")
+        antes = e.get("compromisos")
+        e = next(x for x in registro.leer_registro() if x["id"] == e["id"])  # el registro puede haber cambiado
+        e.update(compromisos=len(compromisos), verificables=sum(c["verificable"] for c in compromisos), descartados=descartados)
+        registro.actualizar_entrada(e)
+        cambiados += 1
+        log(f"  {e['id']}: {antes} -> {len(compromisos)} compromisos; {descartados} siguen fuera")
+    return cambiados
 
 
 def releer(id_, version, modelo=None, log=print):

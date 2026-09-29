@@ -44,7 +44,7 @@ GitHub Pages.
 | --- | --- |
 | Resumen | Cifras generales, lo que se vota frente a lo que se aprueba, actividad mensual y análisis de las cifras |
 | Votaciones / Iniciativas | Buscador con filtros (también derrotas del Gobierno), detalle con voto nominal, grupo decisivo, quién gobernaba y exportación a CSV |
-| Temas → ficha de tema | Cómo vota cada grupo en el tema, quién propone y quién lo consigue, afinidad, evolución por legislatura y matriz votación a votación |
+| Temas → ficha de tema | Cómo vota cada grupo en el tema, quién propone y quién lo consigue y matriz votación a votación, con enlaces a la afinidad en el tema (Grupos) y a su evolución por legislatura (Comparar) |
 | Grupos → perfil de grupo | Su voto por tema, sus iniciativas, con quién coincide y en qué, y cuándo su voto decidió el resultado |
 | Comparar | Dos o más grupos frente a frente en los mismos asuntos: en cuántos votan igual, cuánto apoya cada uno lo que presentan los demás, a quién apoya cada uno, tema a tema y legislatura a legislatura, y asunto a asunto |
 | Análisis · Coaliciones ganadoras | Qué combinaciones de grupos aprueban y tumban cada cosa |

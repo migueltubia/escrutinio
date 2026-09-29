@@ -71,11 +71,10 @@ Una ficha por asunto que llegó a votarse en el Pleno: qué es, quién lo propon
   temas: {
     titulo: "Temas",
     texto: `
-Compara los 23 temas: cuánto se vota de cada uno, cuánto sale adelante y quién lo consigue.
+Compara los 23 temas: cuánto se vota de cada uno y cuánto sale adelante.
 
 ### Cómo se lee
-- **Éxito por tema**: asuntos votados y porcentaje aprobado, separando lo que tiene fuerza de ley (leyes y decretos) de lo declarativo (PNL y mociones). Toca un tema para analizarlo a fondo.
-- **Quién consigue sacar adelante qué**: porcentaje de las iniciativas de cada proponente que salen adelante, por tema. Más oscuro, más éxito; las celdas atenuadas tienen menos de 3 iniciativas.
+- **Éxito por tema**: asuntos votados y porcentaje aprobado, separando lo que tiene fuerza de ley (leyes y decretos) de lo declarativo (PNL y mociones). Toca un tema para analizarlo a fondo, con quién propone y quién lo consigue.
 - **Etiquetas más frecuentes**: palabras clave que captan la actualidad (toca una para buscarla).
 - **Leyes que más se intenta modificar**: normas citadas en los títulos de lo votado.
 
@@ -86,13 +85,12 @@ Compara los 23 temas: cuánto se vota de cada uno, cuánto sale adelante y quié
   tema: {
     titulo: "Análisis de un tema",
     texto: `
-Todo sobre uno o varios temas: cómo vota cada grupo, quién propone, con quién coincide cada uno y la votación a votación.
+Todo sobre uno o varios temas: cómo vota cada grupo, quién propone y quién lo consigue, y la votación a votación.
 
 ### Cómo se lee
 - **Cómo vota cada grupo**: porcentaje de asuntos en que votó a favor en la votación decisiva. Cada asunto cuenta una vez: una PNL votada en 8 puntos no pesa 8 veces más que una ley. Entre paréntesis, la diferencia con su media general: «+12» quiere decir que en este tema vota a favor 12 puntos más que de costumbre.
 - **Quién propone y quién lo consigue**: asuntos del tema según quién los presentó y cómo acabaron.
-- **Con quién coincide cada grupo en este tema**: afinidad, en porcentaje de votaciones en que dos grupos votan lo mismo.
-- **Cómo ha cambiado el apoyo**: por legislatura, también en asuntos. Sirve para ver cómo cambia un partido al pasar del Gobierno a la oposición.
+- **Con quién coincide cada grupo en este tema** y **cómo cambia su apoyo de una legislatura a otra**: los enlaces llevan a Grupos, con el tema elegido, y a Comparar, que separa lo que presenta cada uno de lo que presentan los demás.
 - **Subtemas**: etiquetas de los asuntos; toca una para limitar todo el análisis a esos asuntos.
 - **Votación a votación**: una fila por votación decisiva y una columna por grupo: azul a favor, rojo en contra, gris abstención, gris claro dividido.
 

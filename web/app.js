@@ -429,11 +429,11 @@ function gruposDeLegs(legs, minimo = 2) {
 API.afinidad = (p) => ({ pares: afinidadSiglas(legsOActual(p.leg), lista(p.tema).filter((t) => t !== "*")) });
 
 API.temas = (p) => ({
-  filas: q(`SELECT f.tema_principal AS tema, te.familia, i.grupo_autor, i.resultado_final, COUNT(*) AS n
+  filas: q(`SELECT f.tema_principal AS tema, te.familia, i.resultado_final, COUNT(*) AS n
     FROM iniciativa i
     JOIN ficha_llm f ON f.legislatura=i.legislatura AND f.expediente=i.expediente
     LEFT JOIN tipo_expediente te ON te.prefijo=i.prefijo
-    ${enSQL("i.legislatura", p.leg, { conector: "WHERE", conv: Number })[0]} GROUP BY 1, 2, 3, 4`, enSQL("i.legislatura", p.leg, { conv: Number })[1])
+    ${enSQL("i.legislatura", p.leg, { conector: "WHERE", conv: Number })[0]} GROUP BY 1, 2, 3`, enSQL("i.legislatura", p.leg, { conv: Number })[1])
     .filter((r) => r.tema), // los debates de política general no tienen tema
 });
 
@@ -615,14 +615,7 @@ API.tema = (p) => {
     JOIN ficha_llm f ON f.legislatura=i.legislatura AND f.expediente=i.expediente
     LEFT JOIN tipo_expediente te ON te.prefijo=i.prefijo
     WHERE v.decisiva=1 AND v.asentimiento=1 AND ${w}`, a).n;
-  // Afinidad en el tema (tema principal), sumada por siglas si abarca varias legislaturas.
-  const afinidad = p.tema ? q(`SELECT ga.siglas AS a, gb.siglas AS b, SUM(af.coinciden) AS coinciden, SUM(af.total) AS total
-    FROM afinidad af
-    JOIN grupo ga ON ga.legislatura=af.legislatura AND ga.codigo=af.grupo_a
-    JOIN grupo gb ON gb.legislatura=af.legislatura AND gb.codigo=af.grupo_b
-    WHERE 1=1 ${enSQL("af.tema", p.tema)[0]} ${enSQL("af.legislatura", p.leg, { conv: Number })[0]} AND af.grupo_a<>'?' AND af.grupo_b<>'?'
-    GROUP BY 1, 2`, [...enSQL("af.tema", p.tema)[1], ...enSQL("af.legislatura", p.leg, { conv: Number })[1]]) : [];
-  return { asuntos, apoyo, media, votaciones, celdas, totalMatriz, pagina, tam, asentimiento, afinidad };
+  return { asuntos, apoyo, media, votaciones, celdas, totalMatriz, pagina, tam, asentimiento };
 };
 
 API.grupoPerfil = (p) => {
@@ -1377,37 +1370,7 @@ VISTAS.temas = async (q) => {
       el("td", { class: "num" }, fmt(t.leyV)), el("td", { class: "num" }, t.leyV ? `${pct(t.leyA, t.leyV)}%` : "—"),
       el("td", { class: "num" }, fmt(t.declV)), el("td", { class: "num" }, t.declV ? `${pct(t.declA, t.declV)}%` : "—")))));
   cont.append(el("div", { class: "card" }, el("h3", {}, "Éxito por tema"),
-    el("p", { class: "small muted" }, "Clic en un tema para ver cómo vota cada grupo, quién lo propone, las afinidades y la votación a votación."), tabla));
-
-  // Proponente x tema (PNL, mociones y proposiciones de ley de grupos).
-  const P = {};
-  const autores = new Map();
-  for (const r of d.filas) {
-    if (!r.grupo_autor || ["internacional", "organizacion", "control", "otro"].includes(r.familia)) continue;
-    if (["caducada", "retirada", "subsumida", "inadmitida", "en_tramite", "otra", null].includes(r.resultado_final)) continue;
-    const k = r.tema + "|" + r.grupo_autor;
-    P[k] = P[k] || { v: 0, a: 0 };
-    P[k].v += r.n;
-    if (OK.has(r.resultado_final)) P[k].a += r.n;
-    autores.set(r.grupo_autor, (autores.get(r.grupo_autor) || 0) + r.n);
-  }
-  const cols = [...autores.entries()].sort((a, b) => b[1] - a[1]).slice(0, 12).map(([a]) => a);
-  const legRef = leg || META.legislaturas.at(-1).id;
-  const heat = el("div", { class: "heat" }, el("table", {},
-    el("thead", {}, el("tr", {}, el("th", {}), cols.map((c) => el("th", { class: "rot" }, el("div", {}, grupo(autorLeg(c), c).siglas))))),
-    el("tbody", {}, filas.map((t) => el("tr", {}, el("th", { style: "text-align:left" }, temaNombre(t.tema)),
-      cols.map((c) => {
-        const x = P[t.tema + "|" + c];
-        if (!x) return el("td", { class: "self" });
-        const p = x.a / x.v;
-        const col = colorSecuencial(p);
-        // Con menos de 3 iniciativas el porcentaje dice poco: la celda se atenúa.
-        return conTip(el("td", { style: `background:${col.bg};color:${col.ink};${x.v < 3 ? "opacity:.35" : ""}`, tabindex: 0 }, `${Math.round(100 * p)}`),
-          `${Math.round(100 * p)}% aprobadas`, `${grupo(autorLeg(c), c).siglas} · ${temaNombre(t.tema)}`, `${x.a} de ${x.v} votadas`);
-      }))))));
-  cont.append(el("div", { class: "card", style: "margin-top:16px" }, el("h3", {}, "Quién consigue sacar adelante qué"),
-    el("p", { class: "small muted" }, "Porcentaje de iniciativas votadas que salen adelante, por proponente y tema (más oscuro = más éxito). Las celdas atenuadas tienen menos de 3 iniciativas. Pasa el ratón por una celda para ver cuántas son."),
-    heat));
+    el("p", { class: "small muted" }, "Clic en un tema para ver cómo vota cada grupo, quién lo propone y lo consigue, y la votación a votación."), tabla));
 
   cont.append(el("div", { class: "grid g2", style: "margin-top:16px" },
     el("div", { class: "card" }, el("h3", {}, "Etiquetas más frecuentes"),
@@ -1418,11 +1381,6 @@ VISTAS.temas = async (q) => {
       barrasH(leyes.leyes.slice(0, 15).map((l) => ({ label: l.ley, v: l.n, tip: () => l.iniciativas.slice(0, 3).map((i) => tituloCorto(i.titulo, 80)).join(" · ") }))))));
   return cont;
 };
-
-function autorLeg(codigo) {
-  for (const l of [...META.legislaturas].reverse()) if ((META.grupos[l.id] || []).some((g) => g.codigo === codigo)) return l.id;
-  return META.legislaturas.at(-1).id;
-}
 
 VISTAS.grupos = async (q) => {
   const legs = legsOActual(q.leg);
@@ -1592,42 +1550,13 @@ VISTAS.tema = async (q) => {
         el("a", { href: "#/comparar?" + new URLSearchParams(Object.entries({ g: aComparar, tema, leg: q.leg, familia: q.familia }).filter(([, v]) => v)) }, "Compara grupos separando lo propio de lo ajeno →"))),
     tarjetaProponentes(d.asuntos)));
 
-  // Afinidad en el tema.
-  const orden = grupos.slice().sort((a, b) => b.n - a.n).map((o) => o.siglas);
-  const par = {};
-  for (const r of d.afinidad) par[r.a + "|" + r.b] = r;
-  cont.append(el("div", { class: "card", style: "margin-top:16px" }, el("h3", {}, "Con quién coincide cada grupo en este tema"),
-    el("p", { class: "small muted" }, "Porcentaje de votaciones de fondo del tema (tema principal) en que los dos grupos votan lo mismo. Si abarca varias legislaturas, se suman por partido."),
-    mapaCalor(orden, orden, (a, b) => {
-      if (a === b) return null;
-      const r = par[a + "|" + b];
-      return r ? { p: r.coinciden / r.total, n: r.total, r } : null;
-    }, {
-      etiquetaFila: (s) => [swatch(colorSiglas(s)), s],
-      tip: (a, b, x) => [`${Math.round(100 * x.p)}% de coincidencia`, `${a} y ${b}`, `${fmt(x.r.coinciden)} de ${fmt(x.n)} votaciones`],
-      alClicarFila: (s) => irA("grupo", { g: s, leg: q.leg }),
-    })));
-
-  // Evolución por legislatura (si hay más de una en juego).
-  if (lista(q.leg).length !== 1) {
-    const legs = META.legislaturas.filter((l) => d.asuntos.some((x) => x.legislatura === l.id));
-    const porGL = sumarPor(d.apoyo, (r) => r.siglas + "|" + r.legislatura);
-    const filasEvo = todasSiglas().filter((s) => legs.some((l) => (porGL.get(s + "|" + l.id) || {}).n >= 3));
-    const resumenLeg = legs.map((l) => {
-      const xs = d.asuntos.filter((x) => x.legislatura === l.id);
-      return `${l.romano}: ${xs.length} asuntos, ${pct(xs.filter((x) => SALE_RES.has(x.resultado_final)).length, xs.length)}% salen`;
-    });
-    cont.append(el("div", { class: "card", style: "margin-top:16px" }, el("h3", {}, "Cómo ha cambiado el apoyo de cada grupo"),
-      el("p", { class: "small muted" }, "Porcentaje de asuntos del tema en que cada grupo votó a favor en la votación decisiva, por legislatura. Ayuda a ver cómo cambia la posición de un partido entre el Gobierno y la oposición. " + resumenLeg.join(" · ")),
-      mapaCalor(filasEvo, legs, (s, l) => {
-        const o = porGL.get(s + "|" + l.id);
-        return o ? { p: o.si / o.n, n: o.n, o } : null;
-      }, {
-        minimo: 3,
-        etiquetaFila: (s) => [swatch(colorSiglas(s)), s], etiquetaCol: (l) => `Leg. ${l.romano}`,
-        tip: (s, l, x) => [`${Math.round(100 * x.p)}% a favor`, `${s} · Leg. ${l.romano}`, `de ${fmtAs(x.o.n)} asuntos: a favor ${fmtAs(x.o.si)}, abst. ${fmtAs(x.o.abst)}, en contra ${fmtAs(x.o.no)}, dividido ${fmtAs(x.o.div)}`],
-      })));
-  }
+  // Afinidad en el tema y evolución por legislatura: están en Grupos (filtrado por el tema) y en Comparar (legislatura
+  // a legislatura, separando lo propio de lo ajeno), con más casos y mejor medidas. Para la evolución hacen falta
+  // todas las legislaturas, y Comparar elige de entrada los dos grupos mayores.
+  const conFiltros = (o) => new URLSearchParams(Object.entries(o).filter(([, v]) => v));
+  cont.append(el("p", { class: "small", style: "margin:12px 0 0" },
+    el("a", { href: "#/grupos?" + conFiltros({ tema, leg: q.leg }) }, "Con quién coincide cada grupo en este tema →"), " · ",
+    el("a", { href: "#/comparar?" + conFiltros({ tema, familia: q.familia }) }, "Cómo cambia el apoyo de cada grupo de una legislatura a otra →")));
 
   // Etiquetas del tema.
   const et = new Map();

@@ -164,7 +164,7 @@ Lo que prometió cada partido en su programa electoral y lo que votó después e
 ### Ten en cuenta
 - **Sin votación no es incumplimiento**: muchas promesas se cumplen o no por real decreto, por presupuestos o por gestión, sin pasar por el Pleno.
 - Un programa más concreto tiene más compromisos verificables; conviene mirar cuántos tiene cada partido antes de comparar porcentajes.
-- Qué iniciativas tratan lo mismo que un compromiso se decide sin tener en cuenta qué partido lo prometió ni quién presentó la iniciativa, y se puede revisar a mano.
+- Qué iniciativas tratan lo mismo que un compromiso se decide sin tener en cuenta qué partido lo prometió ni quién presentó la iniciativa. Las que van en su dirección o en la contraria se comprueban en una segunda revisión más estricta: no basta con que se llamen parecido.
 - Los partidos que votan dentro del Grupo Mixto no tienen un voto de grupo propio con el que comparar.
 `,
   },

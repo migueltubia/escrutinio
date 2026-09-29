@@ -111,7 +111,12 @@ def main(argv=None):
     s.add_argument("--limite", type=int, help="Máximo de compromisos")
     s.add_argument("--modelo", help="Modelo de DeepSeek (por defecto, DEEPSEEK_MODEL)")
 
-    sub.add_parser("programas-calcular", help="Recarga programas, emparejamientos y validaciones y recalcula el estado (sin DeepSeek)")
+    s = sub.add_parser("programas-verificar", help="Segunda revisión, más exigente, de las relaciones con dirección (DeepSeek Pro)")
+    s.add_argument("--id", help="Programas separados por comas")
+    s.add_argument("--limite", type=int, help="Máximo de relaciones")
+    s.add_argument("--modelo", help="Modelo de DeepSeek (por defecto, el Pro)")
+
+    sub.add_parser("programas-calcular", help="Recarga programas, emparejamientos y verificaciones y recalcula el estado (sin DeepSeek)")
 
     sub.add_parser("analizar", help="Recalcula afinidades y agregados")
 
@@ -233,6 +238,10 @@ def main(argv=None):
             leer.releer(a.id, a.version, modelo=a.modelo, log=log)
         elif a.cmd == "programas-emparejar":
             emparejar.emparejar(con, ids=ids, limite=a.limite, modelo=a.modelo, log=log)
+        elif a.cmd == "programas-verificar":
+            from .programas.verificar import verificar
+
+            verificar(con, ids=ids, limite=a.limite, modelo=a.modelo, log=log)
         cargar(con, log)
         log("Para verlo en la web: python -m escrutinio web")
     elif a.cmd == "analizar":

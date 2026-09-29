@@ -220,7 +220,7 @@ def _anadir(e, respuesta, paginas, desde, compromisos, usados):
         if not sitio:
             continue
         c["pagina"], c["cita"] = sitio
-        # El id sale de la cita: si se relee y sale la misma cita, los emparejamientos y validaciones siguen valiendo.
+        # El id sale de la cita: si se relee y sale la misma cita, los emparejamientos y verificaciones siguen valiendo.
         base = f"{e['id']}:{hashlib.sha1(c['cita'].lower().encode()).hexdigest()[:8]}"
         c["id"], n = base, 2
         while c["id"] in usados:

@@ -1,14 +1,9 @@
 """Tablas de programas y compromisos desde data/llm/programas/, y estado de cada compromiso.
 
-Todo se reconstruye desde los JSONL (registro, compromisos, emparejamientos y validaciones), como las
-fichas, así que no hace falta guardarlo en data/bd/. Lo validado a mano (validaciones.jsonl, una línea
-por par con la persona, la fecha y el motivo) manda sobre lo propuesto:
-
-  {"compromiso": "generales-2023-pp:1a2b3c4d", "iniciativa": "15:122/000019", "estado": "validado",
-   "sentido": "contraria", "persona": "…", "fecha": "2026-10-05", "motivo": "…"}
-
-«estado» es validado o rechazado; «sentido» (misma, contraria o relacionada) corrige el propuesto o, si
-el par no estaba propuesto, lo añade a mano.
+Todo se reconstruye desde los JSONL (registro, compromisos, emparejamientos y verificaciones), como
+las fichas, así que no hace falta guardarlo en data/bd/. Todo es automático: las relaciones con dirección
+(misma o contraria) de la primera pasada se revisan en una segunda más exigente (verificar.py), que manda
+sobre la primera; mientras no se ha revisado, cuenta la primera.
 
 El estado de cada compromiso se calcula con reglas a partir del sentido de cada iniciativa respecto al
 compromiso y del apoyo del partido en su votación decisiva (con las enmiendas a la totalidad
@@ -24,8 +19,8 @@ from ..gobiernos import GOBIERNOS
 from . import registro
 from .emparejar import _legislatura, leer_emparejamientos
 from .leer import leer_compromisos
+from .verificar import leer_verificaciones
 
-VALIDACIONES = registro.PROGRAMAS_DIR / "validaciones.jsonl"
 SALE = ("aprobada", "aprobada_en_parte", "convalidada")
 # Estados en el orden en que se enseñan.
 ESTADOS = ("impulsado", "apoyado", "mixto", "contradicho", "abstencion", "sin_votacion", "fuera_parlamento", "generico")
@@ -36,17 +31,6 @@ def en_gobierno(cuerpo, partido, fecha):
         if c == cuerpo and desde <= fecha and (not hasta or fecha <= hasta):
             return partido == p or partido in [s.strip() for s in socios.split(",")]
     return False
-
-
-def _validaciones():
-    if not VALIDACIONES.exists():
-        return {}
-    out = {}
-    for linea in VALIDACIONES.read_text(encoding="utf-8").splitlines():
-        if linea.strip():
-            d = json.loads(linea)
-            out[(d["compromiso"], d["iniciativa"])] = d
-    return out
 
 
 def _posicion(con, leg, exp, siglas):
@@ -82,7 +66,7 @@ def cargar(con, log=print):
         con.execute(f"DELETE FROM {t}")
     entradas = registro.vigentes(registro.leer_registro())
     pares = leer_emparejamientos()
-    validaciones = _validaciones()
+    verificaciones = leer_verificaciones()
     n_comp = n_pares = 0
     for e in entradas:
         leg = _legislatura(con, e)
@@ -102,18 +86,16 @@ def cargar(con, log=print):
               c["tipo_accion"], c["responsable"], int(c["verificable"])) for k, c in enumerate(compromisos, 1)])
         n_comp += len(compromisos)
         ids = {c["id"] for c in compromisos}
-        # Propuestos (lo que no es «ninguna») y, encima, lo validado a mano.
+        # Lo que no es «ninguna»; si la segunda revisión ya ha visto el par, manda la suya.
         filas = {}
         for (cid, ini), p in pares.items():
-            if cid in ids and p["relacion"] != "ninguna":
-                filas[(cid, ini)] = [p["relacion"], p.get("justificacion"), "llm", "propuesto", p.get("rango")]
-        for (cid, ini), v in validaciones.items():
             if cid not in ids:
                 continue
-            fila = filas.get((cid, ini)) or [None, v.get("motivo"), "manual", None, None]
-            fila[0] = v.get("sentido") or fila[0] or (pares.get((cid, ini)) or {}).get("relacion")
-            fila[3] = "rechazado" if v.get("estado") == "rechazado" else "validado"
-            if fila[0] and fila[0] != "ninguna":
+            fila = [p["relacion"], p.get("justificacion"), "llm", "propuesto", p.get("rango")]
+            v = verificaciones.get((cid, ini))
+            if v and v["antes"] == p["relacion"]:
+                fila[0], fila[1], fila[3] = v["relacion"], v.get("justificacion") or fila[1], "verificado"
+            if fila[0] != "ninguna":
                 filas[(cid, ini)] = fila
         for (cid, ini), (sentido, just, origen, estado, rango) in filas.items():
             leg_i, exp = ini.split(":", 1)

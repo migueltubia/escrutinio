@@ -338,13 +338,14 @@ Cada programa se descarga, se lee y se guarda **una sola vez**. Lo que manda son
 | `data/raw/programas/<id>.txt` | Texto extraído del PDF, con un salto de página entre páginas. Se versiona (el PDF no) para que las citas sigan siendo comprobables aunque el partido retire el programa |
 | `data/llm/programas/<id>.jsonl` | Una línea por compromiso: texto, cita literal, página, tema, tipo de acción, de quién depende y si es verificable |
 | `data/llm/programas/emparejamientos/<id>.jsonl` | Una línea por par compromiso–iniciativa decidido, también los que no tienen que ver, para no volver a preguntarlos |
-| `data/llm/programas/validaciones.jsonl` | Lo revisado a mano (persona, fecha, motivo): manda sobre lo propuesto y nunca se recalcula |
+| `data/llm/programas/verificaciones/<id>.jsonl` | Segunda revisión de cada relación con dirección (misma o contraria): manda sobre la primera y no se repite |
 
 ```bash
 python -m escrutinio programas-descargar     # descarga y registra; si el sha256 no cambia, no hace nada
 python -m escrutinio programas-estado        # qué está leído, qué falta, qué falló y el gasto estimado
 python -m escrutinio programas-leer          # compromisos de los pendientes, con DeepSeek (modelo Pro)
 python -m escrutinio programas-emparejar     # candidatas nuevas de cada compromiso, con DeepSeek
+python -m escrutinio programas-verificar     # segunda revisión de las relaciones con dirección (modelo Pro)
 python -m escrutinio programas-calcular      # recarga todo y recalcula el estado, sin DeepSeek
 python -m escrutinio programas-releer --id generales-2023-pp --version compromisos-v2   # solo a propósito
 ```
@@ -362,7 +363,12 @@ Cómo se hace, paso a paso:
 4. **Relación** (DeepSeek, modelo rápido). Recibe el compromiso y las candidatas sin partido, sin
    autor y sin votos, y dice si cada una va en su dirección, en la contraria, trata lo mismo sin
    dirección o no tiene que ver. Solo se preguntan las candidatas nuevas.
-5. **Estado** (reglas, en cada actualización). Con el apoyo del partido en la votación decisiva de
+5. **Segunda revisión** (DeepSeek, modelo Pro). Las relaciones con dirección, que son las que cuentan
+   en las cifras, se revisan con un criterio más estricto y más contexto: la cita literal del programa
+   (sin nombres de partido) y el título, el resumen y las etiquetas de la iniciativa. No basta con que
+   se llamen parecido: dos «leyes de familias» pueden proponer cosas opuestas. Ante la duda, queda como
+   «trata lo mismo, sin dirección clara», que no cuenta. Todo es automático: no hay revisión a mano.
+6. **Estado** (reglas, en cada actualización). Con el apoyo del partido en la votación decisiva de
    cada iniciativa (enmiendas a la totalidad invertidas; lo aprobado por asentimiento cuenta como
    apoyo): *impulsado* si presentó algo en su dirección (o lo presentó el Gobierno mientras
    gobernaba), *apoyado*, *contradicho*, *mixto*, *abstención*, *sin votación* y *no verificable en el
@@ -370,12 +376,12 @@ Cómo se hace, paso a paso:
    decretos-leyes). Sin votación no es incumplimiento, y la web lo dice.
 
 La actualización diaria lee los programas registrados que estén pendientes, decide las candidatas
-nuevas (hasta 300 compromisos por ejecución) y recalcula el estado. Descargar un programa nuevo es
+nuevas (hasta 300 compromisos por ejecución), revisa las relaciones nuevas con dirección y recalcula el
+estado. Descargar un programa nuevo es
 siempre a mano. En la web, la lista de programas va en `web/datos/comun.js` y los compromisos, en `web/datos/programas.js`,
 que solo se descarga cuando hace falta.
 
-Pendiente, según el plan: validar a mano la muestra del piloto (y la vista de revisión para hacerlo
-rápido), el resto de partidos y elecciones, las intervenciones en el Pleno, los programas autonómicos
+Pendiente, según el plan: las elecciones anteriores (2011–2019), las intervenciones en el Pleno, los programas autonómicos
 y el contraste con la Chapel Hill Expert Survey. Los programas del PSOE, Junts y EH Bildu se descargan de
 la copia que publicó un medio: psoe.es está tras una protección contra robots que no se intenta saltar,
 y las webs de Junts y EH Bildu ya no enlazan el de 2023.

@@ -256,8 +256,8 @@ CREATE TABLE IF NOT EXISTS compromiso(
   responsable TEXT,
   verificable INTEGER
 );
--- Sentido de la iniciativa respecto al compromiso: misma, contraria o relacionada. Origen llm o manual;
--- estado propuesto, validado o rechazado.
+-- Sentido de la iniciativa respecto al compromiso: misma, contraria o relacionada. Estado: propuesto (primera
+-- pasada) o verificado (segunda revisión, programas/verificar.py).
 CREATE TABLE IF NOT EXISTS compromiso_iniciativa(
   compromiso TEXT NOT NULL,
   legislatura INTEGER NOT NULL,

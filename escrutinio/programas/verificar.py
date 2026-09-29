@@ -82,12 +82,33 @@ def _iniciativa(con, clave):
             "etiquetas": json.loads(r["etiquetas"] or "[]")}
 
 
-def verificar(con, ids=None, limite=None, modelo=None, rehacer=False, solo=None, log=print):
+def _cuenta(con, e, compromiso, clave):
+    """Si el par cuenta en el estado del compromiso (cargar.calcular): el partido votó la iniciativa en su votación
+    decisiva o la presentó (él o, si gobernaba, el Gobierno). De lo que depende del Gobierno o de otra
+    Administración solo cuentan los decretos-leyes."""
+    from .cargar import _posicion, en_gobierno
+
+    leg, exp = clave.split(":", 1)
+    r = con.execute(
+        """SELECT te.familia, i.fecha_presentacion, CASE WHEN i.grupo_autor='Gobierno' THEN 'Gobierno' ELSE gr.siglas END AS autor
+           FROM iniciativa i LEFT JOIN tipo_expediente te ON te.prefijo=i.prefijo
+           LEFT JOIN grupo gr ON gr.legislatura=i.legislatura AND gr.codigo=i.grupo_autor
+           WHERE i.legislatura=? AND i.expediente=?""", (int(leg), exp)).fetchone()
+    if not r or (compromiso["responsable"] != "parlamento" and r["familia"] != "decreto_ley"):
+        return False
+    if _posicion(con, int(leg), exp, e["partido"]):
+        return True
+    return r["autor"] == e["partido"] or (r["autor"] == "Gobierno" and bool(r["fecha_presentacion"])
+                                           and en_gobierno(e["cuerpo"], e["partido"], r["fecha_presentacion"]))
+
+
+def verificar(con, ids=None, limite=None, modelo=None, rehacer=False, solo=None, cifras=False, log=print):
     """Revisa los pares con dirección (misma o contraria) de la primera pasada que aún no se han revisado.
 
     Un cambio de prompt no repite nada por sí solo: con rehacer=True (orden explícita) se vuelven a revisar los
     pares revisados con una versión anterior; la revisión nueva se añade y manda sobre la vieja. Con solo, únicamente
     los que en su última revisión quedaron con esa relación (p. ej. «contraria», si el cambio de prompt va de eso).
+    Con cifras, solo los pares que cuentan en el estado del compromiso (_cuenta): los que el partido votó o presentó.
     """
     if not deepseek.disponible():
         raise SystemExit("Falta DEEPSEEK_API_KEY (en .env o como variable de entorno)")
@@ -105,6 +126,8 @@ def verificar(con, ids=None, limite=None, modelo=None, rehacer=False, solo=None,
             pendiente = not hecho or (rehacer and hecho.get("version_prompt") != VERSION_PROMPT
                                       and (not solo or hecho["relacion"] == solo))
             if cid in compromisos and p["relacion"] in ("misma", "contraria") and pendiente:
+                if cifras and not _cuenta(con, e, compromisos[cid], ini):
+                    continue
                 info = _iniciativa(con, ini)
                 if info:
                     cola.append((cid, ini, p["relacion"], info))

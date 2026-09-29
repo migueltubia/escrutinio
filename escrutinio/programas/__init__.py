@@ -27,7 +27,7 @@ def actualizar(con, ia=True, limite_compromisos=300, log=print):
         try:
             leer(log=log)
             emparejar(con, limite=limite_compromisos, log=log)
-            verificar(con, log=log)
+            verificar(con, modelo=deepseek.modelo_por_defecto(), cifras=True, log=log)  # lo que cuenta, con el modelo rápido
         except Exception as e:  # lo ya leído y decidido está guardado; el resto de la actualización sigue
             log(f"  ! Programas: {type(e).__name__}: {e}")
     cargar(con, log)

@@ -124,6 +124,7 @@ def main(argv=None):
     s.add_argument("--rehacer", action="store_true", help="Vuelve a revisar los pares revisados con una versión anterior del prompt")
     s.add_argument("--solo", choices=["misma", "contraria", "relacionada"],
                    help="Con --rehacer, solo los pares cuya última revisión dio esa relación")
+    s.add_argument("--cifras", action="store_true", help="Solo los pares que cuentan en las cifras (el partido votó o presentó la iniciativa)")
 
     sub.add_parser("programas-calcular", help="Recarga programas, emparejamientos y verificaciones y recalcula el estado (sin DeepSeek)")
 
@@ -254,7 +255,7 @@ def main(argv=None):
         elif a.cmd == "programas-verificar":
             from .programas.verificar import verificar
 
-            verificar(con, ids=ids, limite=a.limite, modelo=a.modelo, rehacer=a.rehacer, solo=a.solo, log=log)
+            verificar(con, ids=ids, limite=a.limite, modelo=a.modelo, rehacer=a.rehacer, solo=a.solo, cifras=a.cifras, log=log)
         cargar(con, log)
         log("Para verlo en la web: python -m escrutinio web")
     elif a.cmd == "analizar":

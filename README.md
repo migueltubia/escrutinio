@@ -367,7 +367,7 @@ Cómo se hace, paso a paso:
    en las cifras, se revisan con un criterio más estricto y más contexto: la cita literal del programa
    (sin nombres de partido) y el título, el resumen y las etiquetas de la iniciativa. No basta con que
    se llamen parecido: dos «leyes de familias» pueden proponer cosas opuestas. Ante la duda, queda como
-   «trata lo mismo, sin dirección clara», que no cuenta. Todo es automático: no hay revisión a mano.
+   «trata lo mismo, sin dirección clara», que no cuenta.
 6. **Estado** (reglas, en cada actualización). Con el apoyo del partido en la votación decisiva de
    cada iniciativa (enmiendas a la totalidad invertidas; lo aprobado por asentimiento cuenta como
    apoyo): *impulsado* si presentó algo en su dirección (o lo presentó el Gobierno mientras

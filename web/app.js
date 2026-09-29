@@ -548,10 +548,20 @@ const FROM_ASUNTO = `FROM iniciativa i
   JOIN ficha_llm f ON f.legislatura=i.legislatura AND f.expediente=i.expediente
   LEFT JOIN tipo_expediente te ON te.prefijo=i.prefijo`;
 
+// El grupo (gr) forma parte del Gobierno en la fecha de la votación (v): es su partido o uno de sus socios.
+const SQL_EN_GOBIERNO = `EXISTS (SELECT 1 FROM gobierno go JOIN legislatura lg ON lg.id=v.legislatura AND lg.cuerpo=go.cuerpo
+    WHERE v.fecha>=go.desde AND (go.hasta IS NULL OR v.fecha<=go.hasta)
+      AND (go.partido=gr.siglas OR ',' || REPLACE(COALESCE(go.socios, ''), ', ', ',') || ',' LIKE '%,' || gr.siglas || ',%'))`;
+
 // Apoyo de cada grupo (por siglas) en las votaciones decisivas de fondo que cumplen el filtro. Cuenta
 // asuntos, no votaciones (tabla peso): n es el número de asuntos en que votó el grupo y nv, el de votaciones.
-function apoyoPorGrupo(p, { conTema = true, agrupar = "gr.siglas, v.legislatura" } = {}) {
+// Sin lo propio (por defecto): no cuenta lo que presenta el propio grupo ni, mientras forma parte del Gobierno, lo que
+// presenta el Gobierno, que casi siempre apoya; si contara, el porcentaje mediría más quién presenta que qué apoya.
+// En la oposición, lo del Gobierno sí cuenta. (Comparar deja fuera todo lo del Gobierno, para medir a todos igual.)
+function apoyoPorGrupo(p, { conTema = true, agrupar = "gr.siglas, v.legislatura", sinLoPropio = true } = {}) {
   const [w, a] = filtrosAsunto(p, { conTema });
+  const autor = `(CASE WHEN ${SQL_PROPONE} <> '' THEN ${SQL_PROPONE} ELSE COALESCE(i.grupo_autor, '') END)`;
+  const ajeno = sinLoPropio ? `AND ${autor}<>g.grupo AND NOT (${autor}='Gobierno' AND ${SQL_EN_GOBIERNO})` : "";
   return q(`SELECT gr.siglas, MAX(gr.color) AS color, v.legislatura, f.tema_principal AS tema,
       SUM(pe.peso * (${SQL_APOYO}='si')) AS si, SUM(pe.peso * (${SQL_APOYO}='no')) AS no,
       SUM(pe.peso * (${SQL_APOYO}='abstencion')) AS abst, SUM(pe.peso * (${SQL_APOYO}='dividido')) AS div,
@@ -564,7 +574,7 @@ function apoyoPorGrupo(p, { conTema = true, agrupar = "gr.siglas, v.legislatura"
     JOIN voto_grupo g ON g.votacion_id=v.id
     JOIN grupo gr ON gr.legislatura=v.legislatura AND gr.codigo=g.grupo
     WHERE v.decisiva=1 AND v.asentimiento=0 AND v.tipo_votacion IN (${FONDO_SQL}) AND g.grupo<>'?'
-      AND g.sentido IS NOT NULL AND ${w}
+      AND g.sentido IS NOT NULL AND ${w} ${ajeno}
     GROUP BY ${agrupar}`, a);
 }
 
@@ -586,6 +596,7 @@ API.tema = (p) => {
     ${FROM_ASUNTO} WHERE ${w}`, a);
   const apoyo = apoyoPorGrupo(p);
   const media = apoyoPorGrupo(p, { conTema: false });
+  const apoyoTodo = apoyoPorGrupo(p, { agrupar: "gr.siglas", sinLoPropio: false });
   const pagina = Math.max(1, +(p.pagina || 1));
   const tam = 30;
   const baseMatriz = `FROM votacion v
@@ -615,7 +626,7 @@ API.tema = (p) => {
     JOIN ficha_llm f ON f.legislatura=i.legislatura AND f.expediente=i.expediente
     LEFT JOIN tipo_expediente te ON te.prefijo=i.prefijo
     WHERE v.decisiva=1 AND v.asentimiento=1 AND ${w}`, a).n;
-  return { asuntos, apoyo, media, votaciones, celdas, totalMatriz, pagina, tam, asentimiento };
+  return { asuntos, apoyo, media, apoyoTodo, votaciones, celdas, totalMatriz, pagina, tam, asentimiento };
 };
 
 API.grupoPerfil = (p) => {
@@ -626,7 +637,7 @@ API.grupoPerfil = (p) => {
   const [wl, al] = enSQL("v.legislatura", p.leg, { conv: Number });
   const porTema = [...sumarPor(apoyoPorGrupo(filtro, { conTema: false, agrupar: "gr.siglas, f.tema_principal" })
     .filter((r) => gs.includes(r.siglas)), (r) => r.tema).values()].map((o) => ({ ...o, tema: o.clave }));
-  const media = apoyoPorGrupo(filtro, { conTema: false, agrupar: "gr.siglas" });
+  const todo = apoyoPorGrupo(filtro, { conTema: false, agrupar: "gr.siglas", sinLoPropio: false }).filter((r) => gs.includes(r.siglas));
   const propuestas = q(`SELECT f.tema_principal AS tema, i.resultado_final, COUNT(*) AS n ${FROM_ASUNTO}
     JOIN grupo gr ON gr.legislatura=i.legislatura AND gr.codigo=i.grupo_autor
     WHERE ${enG("gr.siglas")} AND ${w} GROUP BY 1, 2`, [...gs, ...a]);
@@ -655,7 +666,7 @@ API.grupoPerfil = (p) => {
     GROUP BY v.id ORDER BY v.fecha DESC LIMIT 20`, [...gs, ...al]);
   const legislaturas = q(`SELECT DISTINCT legislatura FROM grupo WHERE ${enG("siglas")} ORDER BY 1`, gs).map((r) => r.legislatura);
   const programas = q(`SELECT DISTINCT partido FROM programa WHERE ${enG("partido")}`, gs).map((r) => r.partido);
-  return { porTema, media, propuestas, afinidad, decisivo, totalesDecisivas, cohesion, clave, legislaturas, programas };
+  return { porTema, todo, propuestas, afinidad, decisivo, totalesDecisivas, cohesion, clave, legislaturas, programas };
 };
 
 const MESES = ["ene", "feb", "mar", "abr", "may", "jun", "jul", "ago", "sep", "oct", "nov", "dic"];
@@ -1529,25 +1540,24 @@ VISTAS.tema = async (q) => {
   // Cómo vota cada grupo.
   const porSiglas = sumarPor(d.apoyo, (r) => r.siglas);
   const medias = sumarPor(d.media, (r) => r.siglas);
+  const todo = sumarPor(d.apoyoTodo, (r) => r.siglas);
   const grupos = [...porSiglas.values()].filter((o) => o.n >= 3).sort((a, b) => pctFavor(b) - pctFavor(a));
   const itemsApoyo = grupos.map((o) => {
-    const m = medias.get(o.siglas);
+    const m = medias.get(o.siglas), t = todo.get(o.siglas);
     const delta = m && m.n ? pctFavor(o) - pctFavor(m) : null;
     return {
       label: o.siglas, color: o.color, segs: segsApoyo(o),
       valorTexto: `${pctFavor(o)}%` + (delta === null ? "" : ` (${delta > 0 ? "+" : ""}${delta})`),
-      tip: (s) => `${fmtAs(s.v)} de ${fmtAs(o.n)} asuntos (${fmt(o.nv)} votaciones) · su media en todos los temas: ${m ? pctFavor(m) : "—"}% a favor`,
+      tip: (s) => `${fmtAs(s.v)} de ${fmtAs(o.n)} asuntos (${fmt(o.nv)} votaciones) · su media en todos los temas: ${m ? pctFavor(m) : "—"}% · contando lo propio: ${t ? pctFavor(t) : "—"}% a favor`,
       onclick: () => irA("grupo", { g: o.siglas, leg: q.leg, familia: q.familia }),
     };
   });
   const nombresFamilia = q.familia ? optFamiliasAnalisis().find(([k]) => k === q.familia)?.[1].toLowerCase() : "asuntos";
-  const aComparar = grupos.slice().sort((a, b) => b.n - a.n).slice(0, 2).map((o) => o.siglas).join(",");
   cont.append(el("div", { class: "grid g2", style: "margin-top:16px" },
     el("div", { class: "card" }, el("h3", {}, "Cómo vota cada grupo"),
-      el("p", { class: "small muted" }, `Voto de cada grupo en la votación decisiva de cada asunto (${nombresFamilia}). Cada asunto cuenta una vez: si se votó por puntos, sus puntos se reparten el peso. El número es el porcentaje a favor y, entre paréntesis, la diferencia con su media en todos los temas con los mismos filtros. En las enmiendas a la totalidad el voto se invierte: votar sí a la devolución es votar en contra del proyecto. Clic en un grupo para ver su perfil.`),
-      leyendaApoyo(), barrasH(itemsApoyo, { segs: true, normalizar: true, formato: fmtAs }),
-      el("p", { class: "aviso-lectura small" }, "Cada grupo vota casi siempre a favor de lo que presenta él mismo, y el partido del Gobierno, de lo que presenta el Gobierno. Un porcentaje alto puede deberse a que el grupo presentó muchos asuntos del tema, no a que apoye más ese tema. ",
-        el("a", { href: "#/comparar?" + new URLSearchParams(Object.entries({ g: aComparar, tema, leg: q.leg, familia: q.familia }).filter(([, v]) => v)) }, "Compara grupos separando lo propio de lo ajeno →"))),
+      el("p", { class: "small muted" }, `Voto de cada grupo en la votación decisiva de cada asunto (${nombresFamilia}), sin contar lo que presenta el propio grupo ni, mientras gobierna, lo que presenta el Gobierno: eso casi siempre lo apoya. Cada asunto cuenta una vez: si se votó por puntos, sus puntos se reparten el peso. El número es el porcentaje a favor y, entre paréntesis, la diferencia con su media en todos los temas con los mismos filtros. En las enmiendas a la totalidad el voto se invierte: votar sí a la devolución es votar en contra del proyecto. Clic en un grupo para ver su perfil.`),
+      leyendaApoyo(), itemsApoyo.length ? barrasH(itemsApoyo, { segs: true, normalizar: true, formato: fmtAs })
+        : el("p", { class: "muted" }, "Ningún grupo votó al menos 3 asuntos presentados por otros con estos filtros.")),
     tarjetaProponentes(d.asuntos)));
 
   // Afinidad en el tema y evolución por legislatura: están en Grupos (filtrado por el tema) y en Comparar (legislatura
@@ -1579,7 +1589,7 @@ VISTAS.tema = async (q) => {
         onchange: (e) => irA("tema", { ...q, tema, ajustadas: e.target.checked ? "1" : "", pagina: "" }),
       }), "Solo ajustadas (±10 votos)")),
     el("p", { class: "small muted" }, "Posición de cada grupo respecto a la iniciativa en su votación decisiva: ✓ a favor, ✗ en contra, ~ abstención, ± grupo dividido. Clic en una fila para ver el voto nominal."),
-    matrizVotos(d, grupos.slice().sort((a, b) => b.n - a.n).map((o) => o.siglas).slice(0, 14)),
+    matrizVotos(d, [...todo.values()].filter((o) => o.n >= 3).sort((a, b) => b.n - a.n).map((o) => o.siglas).slice(0, 14)),
     paginacion(d.totalMatriz, d.pagina, d.tam, (p) => irA("tema", { ...q, tema, pagina: p }))));
   return cont;
 };
@@ -1660,7 +1670,8 @@ VISTAS.grupo = async (q) => {
       `${d.programas.length > 1 ? "Sus programas electorales" : "Su programa electoral"}: lo que prometió frente a lo que votó →`)));
   }
 
-  const total = d.porTema.reduce((o, r) => { for (const c of ["si", "no", "abst", "div", "n", "nv"]) o[c] += r[c]; return o; }, { si: 0, no: 0, abst: 0, div: 0, n: 0, nv: 0 });
+  const sumaApoyo = (xs) => xs.reduce((o, r) => { for (const c of ["si", "no", "abst", "div", "n", "nv"]) o[c] += r[c]; return o; }, { si: 0, no: 0, abst: 0, div: 0, n: 0, nv: 0 });
+  const total = sumaApoyo(d.porTema), conLoPropio = sumaApoyo(d.todo);
   const legsFiltro = lista(q.leg).length ? lista(q.leg).map(Number) : d.legislaturas;
   const decisivasTotales = d.totalesDecisivas.filter((r) => legsFiltro.includes(r.legislatura)).reduce((a, r) => a + r.n, 0);
   const abst = d.decisivo.filter((r) => r.modo === "absteniendose").reduce((a, r) => a + r.n, 0);
@@ -1668,7 +1679,7 @@ VISTAS.grupo = async (q) => {
   const propias = d.propuestas.reduce((a, r) => a + r.n, 0);
   const propiasOk = d.propuestas.filter((r) => SALE_RES.has(r.resultado_final)).reduce((a, r) => a + r.n, 0);
   cont.append(el("div", { class: "grid g4" },
-    stat("Vota a favor", `${pctFavor(total)}%`, `de ${fmt(Math.round(total.n))} asuntos votados (${fmt(total.nv)} votaciones decisivas de fondo)`),
+    stat("Vota a favor", `${pctFavor(total)}%`, `de ${fmt(Math.round(total.n))} asuntos que no presentó él ni su Gobierno (contando lo propio, ${pctFavor(conLoPropio)}%)`),
     stat("Sus iniciativas", `${pct(propiasOk, propias)}% salen`, `${fmt(propiasOk)} de ${fmt(propias)} votadas`),
     stat("Decisivo absteniéndose", fmt(abst), `de ${fmt(decisivasTotales)} votaciones decisivas nominales`),
     stat("Divisiones internas", `${(coh.n ? (100 * coh.p) / coh.n : 0).toFixed(1)}%`, "votaciones de fondo con ≥10% del grupo en contra de su mayoría")));
@@ -1696,9 +1707,9 @@ VISTAS.grupo = async (q) => {
   }));
   cont.append(el("div", { class: "grid g2", style: "margin-top:16px" },
     el("div", { class: "card" }, el("h3", {}, "Cómo vota en cada tema"),
-      el("p", { class: "small muted" }, `Porcentaje de asuntos en que votó a favor en la votación decisiva y, entre paréntesis, diferencia con su media (${media}%). Cada asunto cuenta una vez aunque se votara por puntos. Incluye lo que presenta el propio grupo, que casi siempre apoya. Clic en un tema para analizarlo.`),
+      el("p", { class: "small muted" }, `Porcentaje de asuntos en que votó a favor en la votación decisiva y, entre paréntesis, diferencia con su media (${media}%). Cada asunto cuenta una vez aunque se votara por puntos. No cuenta lo que presenta el propio grupo ni, mientras gobierna, lo que presenta el Gobierno, que casi siempre apoya. Clic en un tema para analizarlo.`),
       leyendaApoyo(), itemsTema.length ? barrasH(itemsTema, { segs: true, normalizar: true, formato: fmtAs }) : el("p", { class: "muted" }, "Sin votaciones."),
-      el("p", { class: "small" }, el("a", { href: "#/comparar?" + new URLSearchParams(Object.entries({ g: gs.join(","), leg: q.leg, familia: q.familia }).filter(([, v]) => v)) }, "Compáralo con otros grupos, separando lo propio de lo ajeno →"))),
+      el("p", { class: "small" }, el("a", { href: "#/comparar?" + new URLSearchParams(Object.entries({ g: gs.join(","), leg: q.leg, familia: q.familia }).filter(([, v]) => v)) }, "Compáralo con otros grupos, tema a tema →"))),
     el("div", { class: "card" }, el("h3", {}, "Sus iniciativas, por tema"),
       el("p", { class: "small muted" }, "Asuntos presentados por el grupo que llegaron a votarse y cómo acabaron."),
       el("div", { class: "legend" }, el("span", {}, el("i", { style: "background:var(--si)" }), "Salen"), el("span", {}, el("i", { style: "background:var(--abs)" }), "Caducan o siguen"), el("span", {}, el("i", { style: "background:var(--no)" }), "Rechazadas")),

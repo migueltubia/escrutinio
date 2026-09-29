@@ -73,8 +73,10 @@ En todas las vistas de análisis se usa el «apoyo» a la iniciativa: en las enm
 votar sí es votar contra el proyecto, así que ese voto se invierte. Los porcentajes de apoyo por grupo cuentan
 asuntos, no votaciones: si un asunto se votó por puntos (PNL, mociones), los puntos se reparten su peso, y
 en los debates con propuestas de resolución las de cada grupo cuentan como un asunto. Cada grupo apoya
-casi siempre lo que presenta él mismo, así que Comparar separa lo propio (y lo del Gobierno) de lo que
-presentan los demás.
+casi siempre lo que presenta él mismo, y el partido del Gobierno, lo que presenta el Gobierno: en la ficha
+de tema y en el perfil de grupo, «a favor» no cuenta lo que presenta el propio grupo ni, mientras gobierna, lo
+del Gobierno (en la oposición, lo del Gobierno sí cuenta), y el total con lo propio queda como dato secundario.
+Comparar deja fuera además todo lo del Gobierno, para medir a todos los grupos con la misma base.
 
 Los debates de política general (estado de la nación, de la comunidad o de la región, orientación
 política del Gobierno) no tienen tema: cada grupo presenta propuestas de resolución sobre cualquier

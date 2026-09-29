@@ -88,7 +88,7 @@ Compara los 23 temas: cuánto se vota de cada uno y cuánto sale adelante.
 Todo sobre uno o varios temas: cómo vota cada grupo, quién propone y quién lo consigue, y la votación a votación.
 
 ### Cómo se lee
-- **Cómo vota cada grupo**: porcentaje de asuntos en que votó a favor en la votación decisiva. Cada asunto cuenta una vez: una PNL votada en 8 puntos no pesa 8 veces más que una ley. Entre paréntesis, la diferencia con su media general: «+12» quiere decir que en este tema vota a favor 12 puntos más que de costumbre.
+- **Cómo vota cada grupo**: porcentaje de asuntos en que votó a favor en la votación decisiva, sin contar lo que presenta el propio grupo ni, mientras gobierna, lo que presenta el Gobierno (casi siempre lo apoya). Al pasar el ratón, también el porcentaje contando lo propio. Cada asunto cuenta una vez: una PNL votada en 8 puntos no pesa 8 veces más que una ley. Entre paréntesis, la diferencia con su media general: «+12» quiere decir que en este tema vota a favor 12 puntos más que de costumbre.
 - **Quién propone y quién lo consigue**: asuntos del tema según quién los presentó y cómo acabaron.
 - **Con quién coincide cada grupo en este tema** y **cómo cambia su apoyo de una legislatura a otra**: los enlaces llevan a Grupos, con el tema elegido, y a Comparar, que separa lo que presenta cada uno de lo que presentan los demás.
 - **Subtemas**: etiquetas de los asuntos; toca una para limitar todo el análisis a esos asuntos.
@@ -101,7 +101,7 @@ Todo sobre uno o varios temas: cómo vota cada grupo, quién propone y quién lo
 
 ### Ten en cuenta
 - En las enmiendas a la totalidad votar «sí» es votar contra el proyecto, así que ese voto se invierte y cuenta como «en contra» del asunto.
-- Cada grupo vota casi siempre a favor de lo que presenta él mismo (y el partido del Gobierno, de lo que presenta el Gobierno). Un porcentaje alto puede deberse a que el grupo presentó muchos asuntos del tema. Para comparar partidos sin ese efecto, usa [Comparar](#/comparar).
+- Cada grupo vota casi siempre a favor de lo que presenta él mismo (y el partido del Gobierno, de lo que presenta el Gobierno): por eso no se cuenta. En la oposición, lo del Gobierno sí cuenta. En [Comparar](#/comparar), «lo que presentan otros grupos» deja fuera además todo lo del Gobierno, para medir a todos los grupos con la misma base.
 - Votar a favor de asuntos de un tema no es apoyar «el tema»: un mismo tema reúne propuestas en direcciones opuestas.
 - Los debates de política general (estado de la nación, de la comunidad…) no cuentan en ningún tema: sus propuestas de resolución tratan de cualquier asunto.
 `,
@@ -130,8 +130,8 @@ Las relaciones entre grupos: con quién vota cada uno y quién tiene la llave de
 El perfil de un partido (o de un bloque de varios): cómo vota, qué propone, con quién coincide y cuándo decide.
 
 ### Cómo se lee
-- **Cifras**: porcentaje de asuntos en que votó a favor (votación decisiva de fondo; cada asunto cuenta una vez); porcentaje de sus iniciativas que salen adelante; veces que su abstención habría bastado para cambiar el resultado; y cuántas veces se partió el grupo (10% o más de sus diputados contra la mayoría).
-- **Cómo vota en cada tema**: a favor por tema y, entre paréntesis, diferencia con su media. Incluye lo que presenta el propio grupo; para separarlo, usa [Comparar](#/comparar).
+- **Cifras**: porcentaje de asuntos en que votó a favor (votación decisiva de fondo; cada asunto cuenta una vez), sin contar lo que presentó él ni, mientras gobernaba, el Gobierno, y al lado el porcentaje contando lo propio; porcentaje de sus iniciativas que salen adelante; veces que su abstención habría bastado para cambiar el resultado; y cuántas veces se partió el grupo (10% o más de sus diputados contra la mayoría).
+- **Cómo vota en cada tema**: a favor por tema y, entre paréntesis, diferencia con su media, con la misma medida (sin lo propio).
 - **Sus iniciativas, por tema**: lo que presentó y llegó a votarse, y cómo acabó.
 - **Con quién coincide**: afinidad con cada grupo y los temas en que más y menos coinciden.
 - **Cuándo su voto decidió el resultado**: votaciones en que bastaba con que se abstuviera para que salieran al revés.

@@ -154,8 +154,7 @@ Lo que prometió cada partido en su programa electoral y lo que votó después e
 - **Dónde votaron en contra de lo que prometieron**: los compromisos en los que el partido votó al menos una vez lo contrario de lo que prometía (*contradicho*, o *mixto* si también votó a favor en otras iniciativas relacionadas), con la cita del programa y solo esas votaciones: quién presentó la iniciativa, qué votó el partido y si gobernaba.
 - **Los programas**: cuántos compromisos tiene cada uno, cuántos son verificables y, de los que tuvieron votación en un sentido claro, cuántos **coinciden** con lo que votó el partido. La mayoría de lo prometido no llega a votarse en el Pleno.
 - **En el Gobierno y en la oposición**: la misma cifra según el partido estuviera en el Gobierno o en la oposición cuando se votó lo relacionado con cada compromiso (sale si hay programas de un partido en los dos lados).
-- **Cuánto pesa cada tema** en el programa de cada partido frente a lo que presentó después en el Congreso.
-- **Qué quiere quitar y qué añadir cada partido**: sus compromisos verificables por tipo de medida, en total y por tema. Quitan: derogar una norma o bajar un impuesto; añaden: subir o crear un impuesto, dar dinero o crear un organismo o un plan; legislar no tiene signo. Quitar no es siempre el mismo lado (depende de qué se deroga): pulsa una cifra para ver esos compromisos.
+- Para comparar los programas entre sí (cuánto pesa cada tema y qué quiere quitar y qué añadir cada partido), [Comparar · Programas electorales](#/comparar-programas).
 - **Compromisos**: cada uno con la cita literal del programa y su página (el enlace abre el PDF en esa página), las iniciativas del Pleno que tratan lo mismo (**en su dirección**, **en la contraria** o sin dirección clara) y lo que votó el partido, en el Gobierno o en la oposición. Su estado: *impulsado* (presentó algo en su dirección, o lo presentó el Gobierno mientras gobernaba), *apoyado* (votó a favor de algo en su dirección o en contra de algo en la contraria), *contradicho* (lo inverso), *mixto* (votos en los dos sentidos), *abstención*, *sin votación* y *no verificable en el Parlamento* (depende del Gobierno o de otra Administración). Un programa leído que aún no se ha comparado con lo votado sale como *pendiente de comparar* y no cuenta en las cifras.
 
 ### Filtros
@@ -188,6 +187,24 @@ Pone a dos o más grupos frente a frente en los mismos asuntos, tema a tema y le
 - Votar a favor de asuntos de un tema no es apoyar «el tema»: un mismo tema reúne propuestas en direcciones opuestas. Para puntuar con tu criterio qué voto era el bueno, usa [Mis causas](#/causas).
 - Los debates de política general no tienen tema: solo cuentan con «Todos los temas».
 - Lo que presenta el Gobierno va en su propia columna y no cuenta como «de otros grupos». En «Legislatura a legislatura» se indica quién gobernaba.
+`,
+  },
+  "comparar-programas": {
+    titulo: "Comparar programas electorales",
+    texto: `
+Lo que promete cada partido frente a lo que prometen los demás, con los compromisos verificables de sus programas. Sin votos: lo que votaron después está en [Activismo · Programas electorales](#/programas).
+
+### Cómo se lee
+- **Qué quiere quitar y qué añadir cada partido**: sus compromisos por tipo de medida. Quitan: derogar una norma o bajar un impuesto. Añaden: subir o crear un impuesto, dar dinero (ayudas, prestaciones, inversión) o crear un organismo o un plan. Legislar y el resto no tienen signo: una ley puede ampliar derechos o recortarlos. **Por tema**, cuántos quitan (−) y cuántos añaden (+) en cada uno.
+- **Cuánto pesa cada tema** en el programa de cada partido frente a lo que presentó después en el Congreso.
+- Pulsa una cifra o un tema para ver esos compromisos, con su cita, en Programas electorales.
+
+### Filtros
+- **Partido**, **elección** (sin elegir, la última: sumar programas de años distintos mezcla épocas) y **tema**, todos con varias opciones. Con varias elecciones, se suman los programas de cada partido.
+
+### Ten en cuenta
+- Quitar no es siempre el mismo lado: depende de qué se deroga o qué impuesto se baja. Mira los compromisos antes de sacar conclusiones.
+- Un programa más concreto tiene más compromisos verificables; compara proporciones, no solo cifras.
 `,
   },
   coaliciones: {
@@ -341,6 +358,7 @@ const SECCIONES_WEB = [
   ["temas", "Temas", "Éxito por tema y quién consigue sacar adelante qué. Cada tema tiene su análisis a fondo."],
   ["grupos", "Grupos", "Afinidad entre grupos, quién decide las votaciones y el perfil de cada partido o bloque."],
   ["comparar", "Comparar grupos", "Dos o más partidos frente a frente, tema a tema: dónde votan igual, dónde no y cuánto apoya cada uno lo que presentan los demás."],
+  ["comparar-programas", "Comparar programas", "Lo que promete cada partido frente a los demás: qué quiere quitar y qué añadir y cuánto pesa cada tema en su programa."],
   ["coaliciones", "Coaliciones ganadoras", "Qué combinaciones de grupos aprueban y tumban cada cosa."],
   ["mapa", "Mapa ideológico", "Dónde se sitúa cada grupo según sus votos y cómo evoluciona la polarización."],
   ["disciplina", "Disciplina y ausencias", "Quién rompe la disciplina de voto, quién falta y qué votaciones cambiaron por las ausencias."],

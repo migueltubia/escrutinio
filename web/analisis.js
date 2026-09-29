@@ -11,6 +11,7 @@ function subnav(items, actual, q = {}) {
   }, texto)));
 }
 const NAV_ANALISIS = [["coaliciones", "Coaliciones ganadoras"], ["mapa", "Mapa ideológico y polarización"], ["disciplina", "Disciplina y ausencias"], ["enmiendas", "Enmiendas"]];
+const NAV_COMPARAR = [["comparar", "Grupos por temas"], ["comparar-programas", "Programas electorales"]];
 const NAV_ACTIVISMO = [["causas", "Mis causas"], ["viene", "Qué viene"], ["programas", "Programas electorales"]];
 
 const siglas = (leg, codigo) => grupo(leg, codigo).siglas;

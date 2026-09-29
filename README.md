@@ -47,13 +47,14 @@ GitHub Pages.
 | Temas → ficha de tema | Cómo vota cada grupo en el tema, quién propone y quién lo consigue y matriz votación a votación, con enlaces a la afinidad en el tema (Grupos) y a su evolución por legislatura (Comparar) |
 | Grupos → perfil de grupo | Su voto por tema, sus iniciativas, con quién coincide y en qué, y cuándo su voto decidió el resultado |
 | Comparar | Dos o más grupos frente a frente en los mismos asuntos: en cuántos votan igual, cuánto apoya cada uno lo que presentan los demás, a quién apoya cada uno, tema a tema y legislatura a legislatura, y asunto a asunto |
+| Comparar · Programas electorales | Los programas de los partidos entre sí, sin votos: qué quiere quitar y qué añadir cada uno (por tipo de medida y por tema) y cuánto pesa cada tema en su programa frente a lo que presentó después |
 | Análisis · Coaliciones ganadoras | Qué combinaciones de grupos aprueban y tumban cada cosa |
 | Análisis · Mapa ideológico y polarización | Posición de los grupos según sus votos (MDS sobre la afinidad) y polarización por trimestre |
 | Análisis · Disciplina y ausencias | Diputados que votan distinto a su grupo, votos no emitidos y votaciones que habrían cambiado con los ausentes |
 | Análisis · Enmiendas | Qué grupo consigue cambiar las leyes, quién apoya las enmiendas de quién y leyes con más enmiendas aprobadas |
 | Activismo · Mis causas | Seguimiento guardado en el navegador (texto, tema o etiqueta), novedades desde la última visita, scorecard con tu criterio, qué prometían los partidos sobre lo mismo en sus programas y CSV |
 | Activismo · Qué viene | Iniciativas abiertas de la legislatura actual: recién abiertas a enmiendas, pendientes de debate y paradas en comisión, con los partidos que llevaban en su programa algo en su dirección |
-| Activismo · Programas electorales | Lo que prometió cada partido en su programa frente a lo que votó: primero, dónde votó en contra de lo que prometía; después, los programas frente a frente, cuánto pesa cada tema, qué quiere quitar y qué añadir cada partido (por tipo de medida y tema) y compromiso a compromiso con su cita y las iniciativas relacionadas (ver «Programas electorales»). El detalle de cada iniciativa dice qué partidos llevaban algo relacionado en su programa, y el de cada votación enlaza con él |
+| Activismo · Programas electorales | Lo que prometió cada partido en su programa frente a lo que votó: primero, dónde votó en contra de lo que prometía; después, cuánto coincide cada programa con lo votado, en el Gobierno y en la oposición, y compromiso a compromiso con su cita y las iniciativas relacionadas (ver «Programas electorales»). El detalle de cada iniciativa dice qué partidos llevaban algo relacionado en su programa, y el de cada votación enlaza con él |
 | Ayuda | Qué es, qué hace, de dónde salen los datos, qué se actualiza y cada cuánto, conceptos y limitaciones. Cada pestaña tiene además su «Cómo se lee» |
 
 En listas y tablas los títulos oficiales se acortan (abreviatura del tipo, número y asunto: «RDL

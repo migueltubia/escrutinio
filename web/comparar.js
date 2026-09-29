@@ -189,7 +189,7 @@ VISTAS.comparar = async (q) => {
   const temas = lista(q.tema);
   const d = await api("comparar", { ...q, g: gs.join(",") });
   const base = Object.fromEntries(Object.entries({ g: gs.join(","), tema: q.tema, leg: q.leg, familia: q.familia, sec: q.sec }).filter(([, v]) => v));
-  const cont = el("div", {},
+  const cont = el("div", {}, subnav(NAV_COMPARAR, "comparar", q),
     el("h2", {}, "Comparar grupos"),
     el("p", { class: "sub" }, "Cómo votan dos o más grupos los mismos asuntos, tema a tema, separando lo que presenta cada uno (que casi siempre apoya) de lo que presentan los demás. Elige los grupos, los temas y las legislaturas."),
     formFiltros([

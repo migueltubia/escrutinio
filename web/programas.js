@@ -76,11 +76,6 @@ API.programas = (p) => {
   const args = [...ag, ...al, ...at, ...aa];
   const resumen = q(`SELECT p.id AS programa, p.partido, c.tema, COALESCE(ce.estado, 'generico') AS estado, COUNT(*) AS n
     ${base} GROUP BY 1, 2, 3, 4`, args);
-  // Lo que presentó cada partido en la legislatura que cubre su programa, por tema (para comparar el peso de cada tema).
-  const propuestas = q(`SELECT gr.siglas AS partido, f.tema_principal AS tema, COUNT(*) AS n ${FROM_ASUNTO}
-    JOIN grupo gr ON gr.legislatura=i.legislatura AND gr.codigo=i.grupo_autor
-    JOIN programa p ON p.partido=gr.siglas AND p.legislatura=i.legislatura AND p.estado='leido'
-    WHERE 1=1 ${wg} ${wl} GROUP BY 1, 2`, [...ag, ...al]);
   const total = q1(`SELECT COUNT(*) AS n ${base} ${we}`, [...args, ...ae]).n;
   const pagina = Math.max(1, +(p.pagina || 1));
   const tam = 25;
@@ -108,16 +103,32 @@ API.programas = (p) => {
     LEFT JOIN grupo gr ON gr.legislatura=v.legislatura AND gr.siglas=p.partido
     LEFT JOIN voto_grupo g ON g.votacion_id=v.id AND g.grupo=gr.codigo
     WHERE ci.compromiso IN (${marcas}) ORDER BY v.fecha`, ids) : [];
-  const opciones = {
-    partidos: q("SELECT DISTINCT partido FROM programa ORDER BY 1").map((r) => r.partido),
-    legislaturas: q("SELECT legislatura, MIN(eleccion) AS eleccion FROM programa WHERE legislatura IS NOT NULL GROUP BY 1 ORDER BY 1 DESC"),
-  };
+  const opciones = opcionesProgramas();
   // Efecto gobierno: estado de los compromisos según si el partido gobernaba en todas las votaciones relacionadas
   // (gobierno=1) o en ninguna (gobierno=0).
   const gobierno = q(`SELECT p.partido, ce.gobierno, ce.estado, COUNT(*) AS n ${base} AND ce.gobierno IS NOT NULL GROUP BY 1, 2, 3`, args);
-  // Tipo de medida de los compromisos verificables, por partido y tema: qué quiere añadir y qué quitar cada programa.
-  const acciones = q(`SELECT p.partido, c.tema, c.tipo_accion AS accion, COUNT(*) AS n ${base} AND COALESCE(ce.estado, 'generico')<>'generico' GROUP BY 1, 2, 3`, args);
-  return { programas, resumen, propuestas, compromisos, contradichos, relacionadas, votos, total, pagina, tam, opciones, gobierno, acciones };
+  return { programas, resumen, compromisos, contradichos, relacionadas, votos, total, pagina, tam, opciones, gobierno };
+};
+
+const opcionesProgramas = () => ({
+  partidos: q("SELECT DISTINCT partido FROM programa ORDER BY 1").map((r) => r.partido),
+  legislaturas: q("SELECT legislatura, MIN(eleccion) AS eleccion FROM programa WHERE legislatura IS NOT NULL GROUP BY 1 ORDER BY 1 DESC"),
+});
+
+// Para Comparar · Programas: compromisos verificables por partido, tema y tipo de medida, y lo que presentó cada
+// partido en la legislatura que cubre su programa, por tema (para comparar el peso de cada tema).
+API.programasComparar = (p) => {
+  const [wg, ag] = enSQL("p.partido", p.g);
+  const [wl, al] = enSQL("p.legislatura", p.leg, { conv: Number });
+  const [wt, at] = enSQL("c.tema", p.tema);
+  const acciones = q(`SELECT p.partido, c.tema, c.tipo_accion AS accion, COUNT(*) AS n
+    FROM compromiso c JOIN programa p ON p.id=c.programa LEFT JOIN compromiso_estado ce ON ce.compromiso=c.id
+    WHERE COALESCE(ce.estado, 'generico')<>'generico' ${wg} ${wl} ${wt} GROUP BY 1, 2, 3`, [...ag, ...al, ...at]);
+  const propuestas = q(`SELECT gr.siglas AS partido, f.tema_principal AS tema, COUNT(*) AS n ${FROM_ASUNTO}
+    JOIN grupo gr ON gr.legislatura=i.legislatura AND gr.codigo=i.grupo_autor
+    JOIN programa p ON p.partido=gr.siglas AND p.legislatura=i.legislatura AND p.estado='leido'
+    WHERE 1=1 ${wg} ${wl} GROUP BY 1, 2`, [...ag, ...al]);
+  return { acciones, propuestas, opciones: opcionesProgramas() };
 };
 
 // Compromisos relacionados con una iniciativa (para su ficha en el panel de detalle).
@@ -193,6 +204,10 @@ VISTAS.programas = async (ruta) => {
           el("td", { class: "num" }, comparado ? fmt(o.contradicho || 0) : "—"),
           el("td", { class: "num" }, comparado ? fmt((o.sin_votacion || 0) + (o.fuera_parlamento || 0)) : "—"));
       })))));
+  // Los programas entre sí (cuánto pesa cada tema, qué quiere quitar y qué añadir cada partido), en Comparar.
+  const filtrosComparar = new URLSearchParams(Object.entries({ g: ruta.g, leg: ruta.leg, tema: ruta.tema }).filter(([, v]) => v));
+  cont.append(el("p", { class: "small", style: "margin:12px 0 0" }, el("a", { href: `#/comparar-programas?${filtrosComparar}` },
+    "Comparar los programas entre sí: cuánto pesa cada tema y qué quiere quitar y qué añadir cada partido →")));
   if (!d.resumen.length) return cont;
 
   // 2b. Efecto gobierno: la misma cifra cuando el partido gobernaba y cuando estaba en la oposición.
@@ -215,67 +230,6 @@ VISTAS.programas = async (ruta) => {
       barrasH(conLosDos.flatMap(([s, o]) => [fila(s, o.g, "en el Gobierno"), fila(s, o.o, "en la oposición")]), { max: 100 })));
   }
 
-  // 3. Cuánto pesa cada tema en el programa de cada partido y en lo que presentó después.
-  const partidos = [...porPartido.keys()].sort((a, b) => porPartido.get(b).verificables - porPartido.get(a).verificables);
-  const celdas = new Map();
-  for (const r of d.resumen) {
-    if (r.estado === "generico" || !r.tema) continue;
-    const k = r.partido + "|" + r.tema;
-    const o = celdas.get(k) || { verificables: 0 };
-    o[r.estado] = (o[r.estado] || 0) + r.n;
-    o.verificables += r.n;
-    celdas.set(k, o);
-  }
-  const temas = META.temas.map((t) => t.codigo).filter((t) => partidos.some((s) => celdas.has(s + "|" + t)));
-  const prop = new Map(d.propuestas.map((r) => [r.partido + "|" + r.tema, r.n]));
-  const totalProp = (s) => d.propuestas.filter((r) => r.partido === s).reduce((a, r) => a + r.n, 0);
-  cont.append(el("div", { class: "card", style: "margin-top:16px" }, el("h3", {}, "Cuánto pesa cada tema"),
-    el("p", { class: "small muted" }, "Parte de los compromisos verificables del programa que son de cada tema / parte de las iniciativas que presentó el grupo en la legislatura que cubre el programa. Si un tema pesa mucho más en el programa que en lo que presenta, se ve aquí. Clic en un tema para ver sus compromisos."),
-    el("table", { class: "tabla" },
-      el("thead", {}, el("tr", {}, el("th", {}, "Tema"), partidos.map((s) => el("th", { class: "num" }, swatch(colorSiglas(s)), s)))),
-      el("tbody", {}, temas.map((t) => el("tr", { class: "clic", onclick: () => ir({ tema: t }) }, el("td", {}, temaNombre(t)),
-        partidos.map((s) => {
-          const o = celdas.get(s + "|" + t);
-          const enProg = pct(o ? o.verificables : 0, porPartido.get(s).verificables);
-          const enInic = pct(prop.get(s + "|" + t) || 0, totalProp(s));
-          return el("td", { class: "num", style: "white-space:nowrap" }, `${enProg}% / ${enInic}%`);
-        })))))));
-
-  // 3b. Qué tipo de medidas propone cada partido: qué quiere quitar y qué añadir, en total y por tema. Clic en una
-  // cifra para ver esos compromisos.
-  const nAccion = new Map(), nLado = new Map();
-  const ladoDe = Object.fromEntries(LADOS_ACCION.slice(0, 2).flatMap(([lado, as]) => as.map((a) => [a, lado])));
-  for (const r of d.acciones) {
-    nAccion.set(r.partido + "|" + r.accion, (nAccion.get(r.partido + "|" + r.accion) || 0) + r.n);
-    if (ladoDe[r.accion]) nLado.set(`${r.partido}|${r.tema}|${ladoDe[r.accion]}`, (nLado.get(`${r.partido}|${r.tema}|${ladoDe[r.accion]}`) || 0) + r.n);
-  }
-  const columnas = LADOS_ACCION.map(([lado, as]) => [lado, as.filter((a) => partidos.some((s) => nAccion.get(s + "|" + a)))]).filter(([, as]) => as.length);
-  const cifra = (n, cambios, titulo) => n ? el("a", { href: "#", title: titulo, onclick: (e) => { e.preventDefault(); ir(cambios); } }, fmt(n)) : el("span", { class: "muted" }, "—");
-  const temasLado = temas.filter((t) => partidos.some((s) => nLado.get(`${s}|${t}|Quitan`) || nLado.get(`${s}|${t}|Añaden`)));
-  const accionesDe = (lado) => LADOS_ACCION.find(([l]) => l === lado)[1].join(",");
-  cont.append(el("div", { class: "card", style: "margin-top:16px" }, el("h3", {}, "Qué quiere quitar y qué añadir cada partido"),
-    el("p", { class: "small muted" }, "El tipo de medida de cada compromiso verificable. Quitan: derogar una norma o bajar un impuesto. Añaden: subir o crear un impuesto, dar dinero (ayudas, prestaciones, inversión) o crear un organismo o un plan. Legislar y el resto no tienen signo: una ley puede ampliar derechos o recortarlos. Quitar no es siempre el mismo lado: depende de qué se deroga o qué impuesto se baja. Clic en una cifra para ver esos compromisos."),
-    el("table", { class: "tabla" },
-      el("thead", {},
-        el("tr", {}, el("th", {}), columnas.map(([lado, as]) => el("th", { colspan: as.length, style: "text-align:center" }, lado)), el("th", {})),
-        el("tr", {}, el("th", {}, "Partido"), columnas.flatMap(([, as]) => as.map((a) => el("th", { class: "num" }, ACCION_COMPROMISO[a]))), el("th", { class: "num" }, "Verificables"))),
-      el("tbody", {}, partidos.map((s) => el("tr", {}, el("td", { style: "white-space:nowrap" }, swatch(colorSiglas(s)), s),
-        columnas.flatMap(([, as]) => as.map((a) => el("td", { class: "num" }, cifra(nAccion.get(s + "|" + a), { g: s, accion: a }, `${s}: ${ACCION_COMPROMISO[a].toLowerCase()}`)))),
-        el("td", { class: "num" }, fmt(porPartido.get(s).verificables)))))),
-    temasLado.length ? el("div", {}, el("h4", {}, "Por tema"),
-      el("p", { class: "small muted" }, "En cada tema, cuántos compromisos quitan (−) y cuántos añaden (+)."),
-      el("table", { class: "tabla" },
-        el("thead", {}, el("tr", {}, el("th", {}, "Tema"), partidos.map((s) => el("th", { class: "num" }, swatch(colorSiglas(s)), s)))),
-        el("tbody", {}, temasLado.map((t) => el("tr", {}, el("td", {}, temaNombre(t)),
-          partidos.map((s) => {
-            const quitan = nLado.get(`${s}|${t}|Quitan`) || 0, anaden = nLado.get(`${s}|${t}|Añaden`) || 0;
-            if (!quitan && !anaden) return el("td", { class: "num muted" }, "—");
-            return el("td", { class: "num", style: "white-space:nowrap" },
-              quitan ? ["−", cifra(quitan, { g: s, tema: t, accion: accionesDe("Quitan") }, `${s}, ${temaNombre(t)}: lo que quita`)] : null,
-              quitan && anaden ? " " : null,
-              anaden ? ["+", cifra(anaden, { g: s, tema: t, accion: accionesDe("Añaden") }, `${s}, ${temaNombre(t)}: lo que añade`)] : null);
-          })))))) : null));
-
   // 4. Los compromisos, uno a uno, con sus iniciativas y votos.
   cont.append(el("div", { class: "card", style: "margin-top:16px" }, el("h3", {}, `Compromisos (${fmt(d.total)})`),
     el("p", { class: "small muted" }, "Cada compromiso con la cita del programa y su página, las iniciativas del Pleno que tratan lo mismo y lo que votó el partido en su votación decisiva. Clic en una iniciativa para ver su ficha y sus votaciones."),
@@ -290,6 +244,87 @@ VISTAS.programas = async (ruta) => {
 - **Sin votación no es incumplimiento**: muchas promesas se cumplen o no por real decreto, por presupuestos o por gestión. De lo que depende del Gobierno solo se tienen en cuenta los decretos-leyes, que se convalidan en el Pleno.
 - Un programa leído que aún no se ha comparado con lo votado sale como **pendiente de comparar**, no como sin votación, y no cuenta en las cifras.
 - Se indica si el partido estaba en el Gobierno o en la oposición en cada votación: votar contra una promesa propia por un acuerdo de coalición es un dato, no una anomalía.`)));
+  return cont;
+};
+
+// Comparar · Programas: los programas de los partidos entre sí, sin votos. Clic en una cifra para ver esos compromisos
+// en Activismo · Programas electorales.
+VISTAS["comparar-programas"] = async (ruta) => {
+  const cabecera = [subnav(NAV_COMPARAR, "comparar-programas", ruta), el("h2", {}, "Comparar programas electorales")];
+  if (!(await cargarProgramas())) return el("div", {}, cabecera, el("div", { class: "vacio" }, "Todavía no hay programas electorales."));
+  const opciones = opcionesProgramas();
+  // Sin elección elegida, la última: sumar programas de años distintos mezcla épocas.
+  const leg = ruta.leg || String((opciones.legislaturas[0] || {}).legislatura || "");
+  const d = await api("programasComparar", { g: ruta.g, leg, tema: ruta.tema });
+  const verCompromisos = (cambios) => irA("programas", { leg, tema: ruta.tema, ...cambios });
+  const cont = el("div", {}, cabecera,
+    el("p", { class: "sub" }, "Lo que promete cada partido frente a lo que prometen los demás, con los compromisos verificables de sus programas: qué quiere quitar y qué añadir, y cuánto pesa cada tema. Lo que votaron después está en Activismo · Programas electorales."),
+    formFiltros([
+      multiSelect("g", opciones.partidos.map((s) => [s, s]), ruta.g, "Todos los partidos", "partidos"),
+      multiSelect("leg", opciones.legislaturas.map((l) => [l.legislatura, `${eleccionTexto(l.eleccion)} · ${legTexto(l.legislatura)}`]), leg, "Última elección", "elecciones"),
+      multiSelect("tema", optTemas(), ruta.tema, "Todos los temas", "temas"),
+    ], { ...ruta, leg }, (f) => irA("comparar-programas", f)));
+  if (!d.acciones.length) {
+    cont.append(el("div", { class: "vacio" }, "Ningún compromiso verificable con estos filtros."));
+    return cont;
+  }
+
+  const suma = (m, k, n) => m.set(k, (m.get(k) || 0) + n);
+  const ladoDe = Object.fromEntries(LADOS_ACCION.slice(0, 2).flatMap(([lado, as]) => as.map((a) => [a, lado])));
+  const verificables = new Map(), nTema = new Map(), nAccion = new Map(), nLado = new Map();
+  for (const r of d.acciones) {
+    suma(verificables, r.partido, r.n);
+    suma(nAccion, r.partido + "|" + r.accion, r.n);
+    if (!r.tema) continue;
+    suma(nTema, r.partido + "|" + r.tema, r.n);
+    if (ladoDe[r.accion]) suma(nLado, `${r.partido}|${r.tema}|${ladoDe[r.accion]}`, r.n);
+  }
+  const partidos = [...verificables.keys()].sort((a, b) => verificables.get(b) - verificables.get(a));
+  const temas = META.temas.map((t) => t.codigo).filter((t) => partidos.some((s) => nTema.get(s + "|" + t)));
+  const cabeceraPartidos = (primera) => el("thead", {}, el("tr", {}, el("th", {}, primera), partidos.map((s) => el("th", { class: "num" }, swatch(colorSiglas(s)), s))));
+
+  // 1. Qué quiere quitar y qué añadir cada partido, en total y por tema.
+  const columnas = LADOS_ACCION.map(([lado, as]) => [lado, as.filter((a) => partidos.some((s) => nAccion.get(s + "|" + a)))]).filter(([, as]) => as.length);
+  const cifra = (n, cambios, titulo) => n ? el("a", { href: "#", title: titulo, onclick: (e) => { e.preventDefault(); verCompromisos(cambios); } }, fmt(n)) : el("span", { class: "muted" }, "—");
+  const temasLado = temas.filter((t) => partidos.some((s) => nLado.get(`${s}|${t}|Quitan`) || nLado.get(`${s}|${t}|Añaden`)));
+  const accionesDe = (lado) => LADOS_ACCION.find(([l]) => l === lado)[1].join(",");
+  cont.append(el("div", { class: "card" }, el("h3", {}, "Qué quiere quitar y qué añadir cada partido"),
+    el("p", { class: "small muted" }, "El tipo de medida de cada compromiso verificable. Quitan: derogar una norma o bajar un impuesto. Añaden: subir o crear un impuesto, dar dinero (ayudas, prestaciones, inversión) o crear un organismo o un plan. Legislar y el resto no tienen signo: una ley puede ampliar derechos o recortarlos. Quitar no es siempre el mismo lado: depende de qué se deroga o qué impuesto se baja. Clic en una cifra para ver esos compromisos, con su cita."),
+    el("table", { class: "tabla" },
+      el("thead", {},
+        el("tr", {}, el("th", {}), columnas.map(([lado, as]) => el("th", { colspan: as.length, style: "text-align:center" }, lado)), el("th", {})),
+        el("tr", {}, el("th", {}, "Partido"), columnas.flatMap(([, as]) => as.map((a) => el("th", { class: "num" }, ACCION_COMPROMISO[a]))), el("th", { class: "num" }, "Verificables"))),
+      el("tbody", {}, partidos.map((s) => el("tr", {}, el("td", { style: "white-space:nowrap" }, swatch(colorSiglas(s)), s),
+        columnas.flatMap(([, as]) => as.map((a) => el("td", { class: "num" }, cifra(nAccion.get(s + "|" + a), { g: s, accion: a }, `${s}: ${ACCION_COMPROMISO[a].toLowerCase()}`)))),
+        el("td", { class: "num" }, fmt(verificables.get(s))))))),
+    temasLado.length ? el("div", {}, el("h4", {}, "Por tema"),
+      el("p", { class: "small muted" }, "En cada tema, cuántos compromisos quitan (−) y cuántos añaden (+)."),
+      el("table", { class: "tabla" }, cabeceraPartidos("Tema"),
+        el("tbody", {}, temasLado.map((t) => el("tr", {}, el("td", {}, temaNombre(t)),
+          partidos.map((s) => {
+            const quitan = nLado.get(`${s}|${t}|Quitan`) || 0, anaden = nLado.get(`${s}|${t}|Añaden`) || 0;
+            if (!quitan && !anaden) return el("td", { class: "num muted" }, "—");
+            return el("td", { class: "num", style: "white-space:nowrap" },
+              quitan ? ["−", cifra(quitan, { g: s, tema: t, accion: accionesDe("Quitan") }, `${s}, ${temaNombre(t)}: lo que quita`)] : null,
+              quitan && anaden ? " " : null,
+              anaden ? ["+", cifra(anaden, { g: s, tema: t, accion: accionesDe("Añaden") }, `${s}, ${temaNombre(t)}: lo que añade`)] : null);
+          })))))) : null));
+
+  // 2. Cuánto pesa cada tema en el programa de cada partido y en lo que presentó después (sin el Congreso en el
+  // ámbito, solo en el programa).
+  const conCongreso = META.cuerpos.includes("congreso");
+  const prop = new Map(d.propuestas.map((r) => [r.partido + "|" + r.tema, r.n]));
+  const totalProp = (s) => d.propuestas.filter((r) => r.partido === s).reduce((a, r) => a + r.n, 0);
+  cont.append(el("div", { class: "card", style: "margin-top:16px" }, el("h3", {}, "Cuánto pesa cada tema"),
+    el("p", { class: "small muted" }, conCongreso
+      ? "Parte de los compromisos verificables del programa que son de cada tema / parte de las iniciativas que presentó el grupo en la legislatura que cubre el programa. Si un tema pesa mucho más en el programa que en lo que presenta, se ve aquí. Clic en un tema para ver sus compromisos."
+      : "Parte de los compromisos verificables del programa que son de cada tema. Clic en un tema para ver sus compromisos. Con «Nacional» en el ámbito, también la parte de lo que presentó cada grupo en el Congreso."),
+    el("table", { class: "tabla" }, cabeceraPartidos("Tema"),
+      el("tbody", {}, temas.map((t) => el("tr", { class: "clic", onclick: () => verCompromisos({ g: ruta.g, tema: t }) }, el("td", {}, temaNombre(t)),
+        partidos.map((s) => {
+          const enProg = pct(nTema.get(s + "|" + t) || 0, verificables.get(s));
+          return el("td", { class: "num", style: "white-space:nowrap" }, conCongreso ? `${enProg}% / ${pct(prop.get(s + "|" + t) || 0, totalProp(s))}%` : `${enProg}%`);
+        })))))));
   return cont;
 };
 

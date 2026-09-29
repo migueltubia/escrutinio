@@ -377,12 +377,19 @@ def rehacer_texto(ids, log=print):
         if not pdf.exists():
             log(f"  {e['id']}: no está el PDF en la caché local (data/raw/programas/pdf/); se queda como estaba")
             continue
-        nuevo = registro._pdf_a_texto(pdf.read_bytes())
-        if nuevo == registro.texto(e["id"]):
+        nuevo = registro._texto(pdf.read_bytes(), e["base"])
+        viejo = registro.texto(e["id"])
+        if nuevo == viejo:
             log(f"  {e['id']}: el texto no cambia")
             continue
+        # Solo las respuestas de la lectura que corresponde al texto actual (si se leyó más de una vez, mezclarlas
+        # duplicaría compromisos): sus trozos se buscan en la caché por su contenido, partidos si hizo falta.
         cache = registro.TEXTOS_DIR / "trozos" / e["id"] / (e.get("version_prompt") or VERSION_PROMPT)
-        respuestas = [r for r in (json.loads(f.read_text(encoding="utf-8")) for f in sorted(cache.glob("*.json"))) if "compromisos" in r]
+        try:
+            respuestas = [r for desde, paginas in trozos(viejo) for _d, _p, r, _n in _respuestas(desde, paginas, cache, None, True)]
+        except deepseek.ErrorIA as err:
+            log(f"  {e['id']}: {err}; se queda como estaba")
+            continue
         paginas = _sin_cabeceras(nuevo.rstrip("\f").split("\f"))
         compromisos, usados = [], set()
         for r in respuestas:

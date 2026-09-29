@@ -234,12 +234,13 @@ def _corte_columnas(ancho, palabras):
     return x if min(izquierda, len(palabras) - izquierda) >= len(palabras) / 4 else None
 
 
-def _pdf_a_texto(pdf, columnas=True):
+def _pdf_a_texto(pdf, columnas=True, modo=None):
     """Texto en orden de lectura, con \\f entre páginas (pdftotext; si no está, pypdf).
 
     Con columnas, las páginas a dos columnas se extraen mitad a mitad: en algunos PDF, pdftotext mezcla las líneas
     de una columna con las de la otra y las citas dejan de aparecer seguidas. El hueco entre columnas sale de las
-    coordenadas de cada palabra (pdftotext -bbox).
+    coordenadas de cada palabra (pdftotext -bbox). Con modo «raw», el orden interno del PDF (pdftotext -raw), sin
+    tocar columnas: va mejor en los PDF que meten los rótulos laterales y las viñetas en medio de las palabras.
     """
     from ..territorial.contexto import _pdftotext
 
@@ -253,8 +254,8 @@ def _pdf_a_texto(pdf, columnas=True):
                 r = subprocess.run([exe, "-enc", "UTF-8", *args, str(entrada), "-"], capture_output=True, timeout=300)
                 return r.stdout.decode("utf-8", "replace").replace("\r\n", "\n") if r.returncode == 0 else None
 
-            plano = texto()
-            if plano is None or not columnas:
+            plano = texto("-raw") if modo == "raw" else texto()
+            if plano is None or not columnas or modo == "raw":
                 return plano if plano is not None else ""
             paginas = plano.split("\f")
             cajas = texto("-bbox") or ""
@@ -295,8 +296,15 @@ def _formato(crudo):
     return "html" if re.search(rb"(?i)<(!doctype html|html)[\s>]", crudo[:4000]) else None
 
 
-def _texto(crudo):
-    return _pdf_a_texto(crudo) if _formato(crudo) == "pdf" else _html_a_texto(crudo)
+# Programas cuyo PDF se lee mejor en el orden interno del documento (pdftotext -raw): los del PNV de 2019 meten
+# los rótulos laterales («› IGUALDAD») y las viñetas en medio de las palabras con la extracción normal.
+EXTRACCION = {"generales-2019-04-pnv": "raw", "generales-2019-11-pnv": "raw"}
+
+
+def _texto(crudo, id_=None):
+    if _formato(crudo) != "pdf":
+        return _html_a_texto(crudo)
+    return _pdf_a_texto(crudo, modo=EXTRACCION.get(id_))
 
 
 def descargar(ids=None, forzar=False, log=print):
@@ -327,11 +335,11 @@ def descargar(ids=None, forzar=False, log=print):
         if any(e["sha256"] == sha for e in previas):
             igual = next(e for e in previas if e["sha256"] == sha)
             if not ruta_texto(igual["id"]).exists():  # clon nuevo sin el texto: se regenera, el registro no cambia
-                ruta_texto(igual["id"]).write_text(_texto(crudo), encoding="utf-8")
+                ruta_texto(igual["id"]).write_text(_texto(crudo, p["id"]), encoding="utf-8")
             log(f"  {igual['id']}: ya registrado ({igual['estado']}), sin cambios")
             continue
         id_ = p["id"] if not previas else f"{p['id']}-{len(previas) + 1}"
-        txt = _texto(crudo)
+        txt = _texto(crudo, p["id"])
         paginas = txt.count("\f") + (0 if txt.endswith("\f") else 1)
         caracteres = len(txt)
         TEXTOS_DIR.mkdir(parents=True, exist_ok=True)

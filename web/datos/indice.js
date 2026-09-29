@@ -1,16 +1,16 @@
 // Generado por `python -m escrutinio web`. Ficheros de datos que carga la web, en orden.
 window.ESCRUTINIO_INDICE = {
- "generado": "2026-09-29T06:08:46+00:00",
+ "generado": "2026-09-29T08:22:47+00:00",
  "ficheros": [
   {
    "nombre": "comun",
-   "huella": "8036c7539c2f924c",
-   "bytes": 105707
+   "huella": "ed370491c2fefc50",
+   "bytes": 111211
   },
   {
    "nombre": "programas",
-   "huella": "a38cf95a5884645d",
-   "bytes": 1514635
+   "huella": "0a7580c1d07a8670",
+   "bytes": 1868611
   },
   {
    "nombre": "congreso/leg10",

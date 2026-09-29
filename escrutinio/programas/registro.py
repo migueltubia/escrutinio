@@ -221,7 +221,21 @@ def _hueco_central(pagina_layout):
         k = sum(1 for l in cruzan if l[c - 1:c + 2] == "   ") / len(cruzan)
         if k > parte:
             mejor, parte = c, k
-    return (mejor, ancho) if parte >= 0.9 else None
+    if parte < 0.9:
+        return None
+    # Se corta por el centro del hueco (mediana de los tramos de espacios de cada línea): cortando en su borde, la
+    # última letra de algunas líneas de la columna izquierda se quedaba fuera.
+    centros = []
+    for l in lineas:
+        if len(l) > mejor + 2 and l[mejor] == " ":
+            i, j = mejor, mejor
+            while i > 0 and l[i - 1] == " ":
+                i -= 1
+            while j < len(l) and l[j] == " ":
+                j += 1
+            centros.append((i + j) / 2)
+    centros.sort()
+    return (centros[len(centros) // 2] if centros else mejor), ancho
 
 
 def _pdf_a_texto(pdf, columnas=True):

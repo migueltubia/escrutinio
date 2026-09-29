@@ -89,11 +89,13 @@ async function abrirCatalogo() {
       return r ? r.values.map((v) => Object.fromEntries(r.columns.map((c, i) => [c, v[i]]))) : [];
     } catch { return null; } // datos generados con una versión anterior, sin catálogo territorial
   };
-  const ficheros = indice.ficheros.filter((f) => f.nombre !== "comun").map((f) => ({ ...f, cuerpo: f.cuerpo || "congreso" }));
+  // programas.js no es de ninguna institución: se carga aparte, solo cuando hace falta (programas.js).
+  const ficheros = indice.ficheros.filter((f) => f.nombre !== "comun" && f.nombre !== "programas").map((f) => ({ ...f, cuerpo: f.cuerpo || "congreso" }));
   CATALOGO = {
     generado: indice.generado,
     avisos: indice.avisos || {},  // instituciones que no respondieron en la última actualización
     ficheros,
+    programas: indice.ficheros.find((f) => f.nombre === "programas") || null,
     ambitos: filas("SELECT * FROM ambito ORDER BY orden, nombre") ||
       [{ codigo: "es", padre: null, nombre: "Toda España" }, { codigo: "congreso", padre: "es", nombre: "Congreso de los Diputados", nivel: "nacional", cuerpo: "congreso" }],
     cuerpos: Object.fromEntries((filas("SELECT * FROM cuerpo") ||
@@ -427,11 +429,11 @@ function gruposDeLegs(legs, minimo = 2) {
 API.afinidad = (p) => ({ pares: afinidadSiglas(legsOActual(p.leg), lista(p.tema).filter((t) => t !== "*")) });
 
 API.temas = (p) => ({
-  filas: q(`SELECT f.tema_principal AS tema, te.familia, i.grupo_autor, i.resultado_final, COUNT(*) AS n
+  filas: q(`SELECT f.tema_principal AS tema, te.familia, i.resultado_final, COUNT(*) AS n
     FROM iniciativa i
     JOIN ficha_llm f ON f.legislatura=i.legislatura AND f.expediente=i.expediente
     LEFT JOIN tipo_expediente te ON te.prefijo=i.prefijo
-    ${enSQL("i.legislatura", p.leg, { conector: "WHERE", conv: Number })[0]} GROUP BY 1, 2, 3, 4`, enSQL("i.legislatura", p.leg, { conv: Number })[1])
+    ${enSQL("i.legislatura", p.leg, { conector: "WHERE", conv: Number })[0]} GROUP BY 1, 2, 3`, enSQL("i.legislatura", p.leg, { conv: Number })[1])
     .filter((r) => r.tema), // los debates de política general no tienen tema
 });
 
@@ -613,14 +615,7 @@ API.tema = (p) => {
     JOIN ficha_llm f ON f.legislatura=i.legislatura AND f.expediente=i.expediente
     LEFT JOIN tipo_expediente te ON te.prefijo=i.prefijo
     WHERE v.decisiva=1 AND v.asentimiento=1 AND ${w}`, a).n;
-  // Afinidad en el tema (tema principal), sumada por siglas si abarca varias legislaturas.
-  const afinidad = p.tema ? q(`SELECT ga.siglas AS a, gb.siglas AS b, SUM(af.coinciden) AS coinciden, SUM(af.total) AS total
-    FROM afinidad af
-    JOIN grupo ga ON ga.legislatura=af.legislatura AND ga.codigo=af.grupo_a
-    JOIN grupo gb ON gb.legislatura=af.legislatura AND gb.codigo=af.grupo_b
-    WHERE 1=1 ${enSQL("af.tema", p.tema)[0]} ${enSQL("af.legislatura", p.leg, { conv: Number })[0]} AND af.grupo_a<>'?' AND af.grupo_b<>'?'
-    GROUP BY 1, 2`, [...enSQL("af.tema", p.tema)[1], ...enSQL("af.legislatura", p.leg, { conv: Number })[1]]) : [];
-  return { asuntos, apoyo, media, votaciones, celdas, totalMatriz, pagina, tam, asentimiento, afinidad };
+  return { asuntos, apoyo, media, votaciones, celdas, totalMatriz, pagina, tam, asentimiento };
 };
 
 API.grupoPerfil = (p) => {
@@ -659,7 +654,8 @@ API.grupoPerfil = (p) => {
     WHERE ${enG("gr.siglas")} AND v.decisiva=1 AND d.modo='absteniendose' AND v.tipo_votacion IN (${FONDO_SQL}) ${wl}
     GROUP BY v.id ORDER BY v.fecha DESC LIMIT 20`, [...gs, ...al]);
   const legislaturas = q(`SELECT DISTINCT legislatura FROM grupo WHERE ${enG("siglas")} ORDER BY 1`, gs).map((r) => r.legislatura);
-  return { porTema, media, propuestas, afinidad, decisivo, totalesDecisivas, cohesion, clave, legislaturas };
+  const programas = q(`SELECT DISTINCT partido FROM programa WHERE ${enG("partido")}`, gs).map((r) => r.partido);
+  return { porTema, media, propuestas, afinidad, decisivo, totalesDecisivas, cohesion, clave, legislaturas, programas };
 };
 
 const MESES = ["ene", "feb", "mar", "abr", "may", "jun", "jul", "ago", "sep", "oct", "nov", "dic"];
@@ -1088,7 +1084,7 @@ async function render() {
   const { ver, ...resto } = q;
   const clave = tab + JSON.stringify(resto) + "|" + AMBITO.clave;
   const padre = { tema: "temas", grupo: "grupos", coaliciones: "analisis", mapa: "analisis", disciplina: "analisis",
-    enmiendas: "analisis", causas: "activismo", causa: "activismo", viene: "activismo" }[tab] || tab;
+    enmiendas: "analisis", causas: "activismo", causa: "activismo", viene: "activismo", programas: "activismo" }[tab] || tab;
   document.querySelectorAll("#tabs a, #barraMovil [data-tab]").forEach((a) => a.classList.toggle("activo",
     a.dataset.tab === padre || (a.dataset.tab === "mas" && ["comparar", "analisis", "activismo", "ayuda"].includes(padre))));
   document.querySelectorAll("#hojaMas a").forEach((a) => a.classList.toggle("activo", a.getAttribute("href") === `#/${tab}`));
@@ -1374,37 +1370,7 @@ VISTAS.temas = async (q) => {
       el("td", { class: "num" }, fmt(t.leyV)), el("td", { class: "num" }, t.leyV ? `${pct(t.leyA, t.leyV)}%` : "—"),
       el("td", { class: "num" }, fmt(t.declV)), el("td", { class: "num" }, t.declV ? `${pct(t.declA, t.declV)}%` : "—")))));
   cont.append(el("div", { class: "card" }, el("h3", {}, "Éxito por tema"),
-    el("p", { class: "small muted" }, "Clic en un tema para ver cómo vota cada grupo, quién lo propone, las afinidades y la votación a votación."), tabla));
-
-  // Proponente x tema (PNL, mociones y proposiciones de ley de grupos).
-  const P = {};
-  const autores = new Map();
-  for (const r of d.filas) {
-    if (!r.grupo_autor || ["internacional", "organizacion", "control", "otro"].includes(r.familia)) continue;
-    if (["caducada", "retirada", "subsumida", "inadmitida", "en_tramite", "otra", null].includes(r.resultado_final)) continue;
-    const k = r.tema + "|" + r.grupo_autor;
-    P[k] = P[k] || { v: 0, a: 0 };
-    P[k].v += r.n;
-    if (OK.has(r.resultado_final)) P[k].a += r.n;
-    autores.set(r.grupo_autor, (autores.get(r.grupo_autor) || 0) + r.n);
-  }
-  const cols = [...autores.entries()].sort((a, b) => b[1] - a[1]).slice(0, 12).map(([a]) => a);
-  const legRef = leg || META.legislaturas.at(-1).id;
-  const heat = el("div", { class: "heat" }, el("table", {},
-    el("thead", {}, el("tr", {}, el("th", {}), cols.map((c) => el("th", { class: "rot" }, el("div", {}, grupo(autorLeg(c), c).siglas))))),
-    el("tbody", {}, filas.map((t) => el("tr", {}, el("th", { style: "text-align:left" }, temaNombre(t.tema)),
-      cols.map((c) => {
-        const x = P[t.tema + "|" + c];
-        if (!x) return el("td", { class: "self" });
-        const p = x.a / x.v;
-        const col = colorSecuencial(p);
-        // Con menos de 3 iniciativas el porcentaje dice poco: la celda se atenúa.
-        return conTip(el("td", { style: `background:${col.bg};color:${col.ink};${x.v < 3 ? "opacity:.35" : ""}`, tabindex: 0 }, `${Math.round(100 * p)}`),
-          `${Math.round(100 * p)}% aprobadas`, `${grupo(autorLeg(c), c).siglas} · ${temaNombre(t.tema)}`, `${x.a} de ${x.v} votadas`);
-      }))))));
-  cont.append(el("div", { class: "card", style: "margin-top:16px" }, el("h3", {}, "Quién consigue sacar adelante qué"),
-    el("p", { class: "small muted" }, "Porcentaje de iniciativas votadas que salen adelante, por proponente y tema (más oscuro = más éxito). Las celdas atenuadas tienen menos de 3 iniciativas. Pasa el ratón por una celda para ver cuántas son."),
-    heat));
+    el("p", { class: "small muted" }, "Clic en un tema para ver cómo vota cada grupo, quién lo propone y lo consigue, y la votación a votación."), tabla));
 
   cont.append(el("div", { class: "grid g2", style: "margin-top:16px" },
     el("div", { class: "card" }, el("h3", {}, "Etiquetas más frecuentes"),
@@ -1415,11 +1381,6 @@ VISTAS.temas = async (q) => {
       barrasH(leyes.leyes.slice(0, 15).map((l) => ({ label: l.ley, v: l.n, tip: () => l.iniciativas.slice(0, 3).map((i) => tituloCorto(i.titulo, 80)).join(" · ") }))))));
   return cont;
 };
-
-function autorLeg(codigo) {
-  for (const l of [...META.legislaturas].reverse()) if ((META.grupos[l.id] || []).some((g) => g.codigo === codigo)) return l.id;
-  return META.legislaturas.at(-1).id;
-}
 
 VISTAS.grupos = async (q) => {
   const legs = legsOActual(q.leg);
@@ -1589,42 +1550,13 @@ VISTAS.tema = async (q) => {
         el("a", { href: "#/comparar?" + new URLSearchParams(Object.entries({ g: aComparar, tema, leg: q.leg, familia: q.familia }).filter(([, v]) => v)) }, "Compara grupos separando lo propio de lo ajeno →"))),
     tarjetaProponentes(d.asuntos)));
 
-  // Afinidad en el tema.
-  const orden = grupos.slice().sort((a, b) => b.n - a.n).map((o) => o.siglas);
-  const par = {};
-  for (const r of d.afinidad) par[r.a + "|" + r.b] = r;
-  cont.append(el("div", { class: "card", style: "margin-top:16px" }, el("h3", {}, "Con quién coincide cada grupo en este tema"),
-    el("p", { class: "small muted" }, "Porcentaje de votaciones de fondo del tema (tema principal) en que los dos grupos votan lo mismo. Si abarca varias legislaturas, se suman por partido."),
-    mapaCalor(orden, orden, (a, b) => {
-      if (a === b) return null;
-      const r = par[a + "|" + b];
-      return r ? { p: r.coinciden / r.total, n: r.total, r } : null;
-    }, {
-      etiquetaFila: (s) => [swatch(colorSiglas(s)), s],
-      tip: (a, b, x) => [`${Math.round(100 * x.p)}% de coincidencia`, `${a} y ${b}`, `${fmt(x.r.coinciden)} de ${fmt(x.n)} votaciones`],
-      alClicarFila: (s) => irA("grupo", { g: s, leg: q.leg }),
-    })));
-
-  // Evolución por legislatura (si hay más de una en juego).
-  if (lista(q.leg).length !== 1) {
-    const legs = META.legislaturas.filter((l) => d.asuntos.some((x) => x.legislatura === l.id));
-    const porGL = sumarPor(d.apoyo, (r) => r.siglas + "|" + r.legislatura);
-    const filasEvo = todasSiglas().filter((s) => legs.some((l) => (porGL.get(s + "|" + l.id) || {}).n >= 3));
-    const resumenLeg = legs.map((l) => {
-      const xs = d.asuntos.filter((x) => x.legislatura === l.id);
-      return `${l.romano}: ${xs.length} asuntos, ${pct(xs.filter((x) => SALE_RES.has(x.resultado_final)).length, xs.length)}% salen`;
-    });
-    cont.append(el("div", { class: "card", style: "margin-top:16px" }, el("h3", {}, "Cómo ha cambiado el apoyo de cada grupo"),
-      el("p", { class: "small muted" }, "Porcentaje de asuntos del tema en que cada grupo votó a favor en la votación decisiva, por legislatura. Ayuda a ver cómo cambia la posición de un partido entre el Gobierno y la oposición. " + resumenLeg.join(" · ")),
-      mapaCalor(filasEvo, legs, (s, l) => {
-        const o = porGL.get(s + "|" + l.id);
-        return o ? { p: o.si / o.n, n: o.n, o } : null;
-      }, {
-        minimo: 3,
-        etiquetaFila: (s) => [swatch(colorSiglas(s)), s], etiquetaCol: (l) => `Leg. ${l.romano}`,
-        tip: (s, l, x) => [`${Math.round(100 * x.p)}% a favor`, `${s} · Leg. ${l.romano}`, `de ${fmtAs(x.o.n)} asuntos: a favor ${fmtAs(x.o.si)}, abst. ${fmtAs(x.o.abst)}, en contra ${fmtAs(x.o.no)}, dividido ${fmtAs(x.o.div)}`],
-      })));
-  }
+  // Afinidad en el tema y evolución por legislatura: están en Grupos (filtrado por el tema) y en Comparar (legislatura
+  // a legislatura, separando lo propio de lo ajeno), con más casos y mejor medidas. Para la evolución hacen falta
+  // todas las legislaturas, y Comparar elige de entrada los dos grupos mayores.
+  const conFiltros = (o) => new URLSearchParams(Object.entries(o).filter(([, v]) => v));
+  cont.append(el("p", { class: "small", style: "margin:12px 0 0" },
+    el("a", { href: "#/grupos?" + conFiltros({ tema, leg: q.leg }) }, "Con quién coincide cada grupo en este tema →"), " · ",
+    el("a", { href: "#/comparar?" + conFiltros({ tema, familia: q.familia }) }, "Cómo cambia el apoyo de cada grupo de una legislatura a otra →")));
 
   // Etiquetas del tema.
   const et = new Map();
@@ -1723,6 +1655,10 @@ VISTAS.grupo = async (q) => {
       multiSelect("leg", optLegs(), q.leg, "Todas las legislaturas", "legislaturas"),
       multiSelect("familia", optFamiliasAnalisis(), q.familia, "Todo tipo de asunto", "categorías"),
     ], q, (f) => irA("grupo", f)));
+  if (d.programas.length) {
+    cont.append(el("p", { class: "small" }, el("a", { href: "#/programas?" + new URLSearchParams({ g: d.programas.join(",") }) },
+      `${d.programas.length > 1 ? "Sus programas electorales" : "Su programa electoral"}: lo que prometió frente a lo que votó →`)));
+  }
 
   const total = d.porTema.reduce((o, r) => { for (const c of ["si", "no", "abst", "div", "n", "nv"]) o[c] += r[c]; return o; }, { si: 0, no: 0, abst: 0, div: 0, n: 0, nv: 0 });
   const legsFiltro = lista(q.leg).length ? lista(q.leg).map(Number) : d.legislaturas;
@@ -1928,7 +1864,8 @@ async function panelVotacion(id) {
       leidaDeActa ? el("p", { class: "procedencia" }, "Votación leída del diario de sesiones o del acta: el asunto, los totales y el voto de cada grupo salen del texto; conviene contrastarlos con el documento original.") : null,
       enlacesVotacion(v)),
     el("section", {}, el("h3", {}, "Qué es"), bloqueFicha(d.ficha), el("div", { style: "margin-top:10px" }, bloqueIniciativa(d.iniciativa)),
-      d.iniciativa ? el("p", { class: "small" }, el("a", { href: "#", onclick: (e) => { e.preventDefault(); abrir(`i:${leg}:${d.iniciativa.expediente}`); } }, "Ver la iniciativa y todas sus votaciones →")) : null));
+      d.iniciativa ? el("p", { class: "small" }, el("a", { href: "#", onclick: (e) => { e.preventDefault(); abrir(`i:${leg}:${d.iniciativa.expediente}`); } }, "Ver la iniciativa y todas sus votaciones →")) : null,
+      d.iniciativa ? lineaProgramas(leg, d.iniciativa.expediente) : null));
 
   // Por grupos.
   const filas = d.grupos.filter((g) => g.grupo !== "?").map((g) => {
@@ -1974,11 +1911,29 @@ function tablaOtras(otras, actual) {
 async function panelIniciativa(leg, exp) {
   const d = await api("iniciativa", { leg, exp });
   const i = d.iniciativa;
+  const programas = await bloqueProgramas(leg, exp);
+  // Las que aún no se han votado solo están en en_tramite: se abren desde «Qué viene» si están en algún programa.
+  if (!i) {
+    const t = q1("SELECT * FROM en_tramite WHERE legislatura=? AND expediente=?", [+leg, exp]);
+    if (!t) return el("div", { class: "vacio" }, "Esta iniciativa no está en los datos cargados.");
+    const ficha = enlaceIniciativa({ legislatura: +leg, expediente: exp });
+    return el("div", {},
+      el("div", { class: "muted small" }, [`Leg. ${romano(leg)}`, t.tipo].filter(Boolean).join(" · ")),
+      el("h2", {}, t.titulo),
+      el("section", {}, bloqueFicha(d.ficha)),
+      el("section", { class: "small" }, el("div", {}, el("strong", {}, `Expediente ${exp}`)), ficha ? el("div", {}, ficha) : null,
+        t.autor ? el("div", {}, "Autor: ", t.autor) : null,
+        t.fecha_presentacion ? el("div", {}, "Presentada: ", fecha(t.fecha_presentacion)) : null,
+        t.fase ? el("div", {}, "Fase: ", t.fase, t.organo ? el("span", { class: "muted" }, ` (${t.organo})`) : null) : null,
+        el("div", { class: "muted" }, "Todavía no se ha votado en el Pleno.")),
+      programas);
+  }
   return el("div", {},
     el("div", { class: "muted small" }, [infoLeg(leg).cuerpo !== "congreso" ? infoLeg(leg).cuerpo_nombre : null, `Leg. ${romano(leg)}`, i.tipo].filter(Boolean).join(" · ")),
     el("h2", {}, i.titulo),
     el("section", {}, bloqueFicha(d.ficha)),
     el("section", {}, bloqueIniciativa(i)),
+    programas,
     el("section", {}, el("h3", {}, `Votaciones (${d.votaciones.length})`), el("p", { class: "small muted" }, "★ votación decisiva"),
       el("div", { class: "lista" }, d.votaciones.map(filaVotacion))));
 }

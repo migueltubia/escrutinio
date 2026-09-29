@@ -28,6 +28,7 @@ ficheros `.js`, que la página carga con etiquetas `<script>`. Van troceados igu
 | --- | --- |
 | `web/datos/indice.js` | Lista de ficheros de datos con su institución, su huella y la fecha de generación |
 | `web/datos/comun.js` | Catálogos, instituciones y árbol de ámbitos, gobiernos, diputados, informe y los índices de la base |
+| `web/datos/programas.js` | Compromisos de los programas electorales, sus iniciativas relacionadas y su estado. Solo se descarga al entrar en Activismo · Programas electorales, al abrir una iniciativa que aparece en algún programa o al pulsar «¿Qué prometieron sobre esto?» en una causa |
 | `web/datos/<institución>/legNN.js` | Votaciones, voto nominal, iniciativas, fichas y afinidades de la legislatura NN de esa institución (`congreso/leg15.js`, `parl-AS/leg12.js`…) |
 
 En el navegador se juntan en una sola SQLite en memoria, pero **solo los de las instituciones del
@@ -43,15 +44,16 @@ GitHub Pages.
 | --- | --- |
 | Resumen | Cifras generales, lo que se vota frente a lo que se aprueba, actividad mensual y análisis de las cifras |
 | Votaciones / Iniciativas | Buscador con filtros (también derrotas del Gobierno), detalle con voto nominal, grupo decisivo, quién gobernaba y exportación a CSV |
-| Temas → ficha de tema | Cómo vota cada grupo en el tema, quién propone y quién lo consigue, afinidad, evolución por legislatura y matriz votación a votación |
+| Temas → ficha de tema | Cómo vota cada grupo en el tema, quién propone y quién lo consigue y matriz votación a votación, con enlaces a la afinidad en el tema (Grupos) y a su evolución por legislatura (Comparar) |
 | Grupos → perfil de grupo | Su voto por tema, sus iniciativas, con quién coincide y en qué, y cuándo su voto decidió el resultado |
 | Comparar | Dos o más grupos frente a frente en los mismos asuntos: en cuántos votan igual, cuánto apoya cada uno lo que presentan los demás, a quién apoya cada uno, tema a tema y legislatura a legislatura, y asunto a asunto |
 | Análisis · Coaliciones ganadoras | Qué combinaciones de grupos aprueban y tumban cada cosa |
 | Análisis · Mapa ideológico y polarización | Posición de los grupos según sus votos (MDS sobre la afinidad) y polarización por trimestre |
 | Análisis · Disciplina y ausencias | Diputados que votan distinto a su grupo, votos no emitidos y votaciones que habrían cambiado con los ausentes |
 | Análisis · Enmiendas | Qué grupo consigue cambiar las leyes, quién apoya las enmiendas de quién y leyes con más enmiendas aprobadas |
-| Activismo · Mis causas | Seguimiento guardado en el navegador (texto, tema o etiqueta), novedades desde la última visita, scorecard con tu criterio y CSV |
-| Activismo · Qué viene | Iniciativas abiertas de la legislatura actual: recién abiertas a enmiendas, pendientes de debate y paradas en comisión |
+| Activismo · Mis causas | Seguimiento guardado en el navegador (texto, tema o etiqueta), novedades desde la última visita, scorecard con tu criterio, qué prometían los partidos sobre lo mismo en sus programas y CSV |
+| Activismo · Qué viene | Iniciativas abiertas de la legislatura actual: recién abiertas a enmiendas, pendientes de debate y paradas en comisión, con los partidos que llevaban en su programa algo en su dirección |
+| Activismo · Programas electorales | Lo que prometió cada partido en su programa frente a lo que votó: primero, dónde votó en contra de lo que prometía; después, los programas frente a frente, cuánto pesa cada tema y compromiso a compromiso con su cita y las iniciativas relacionadas (ver «Programas electorales»). El detalle de cada iniciativa dice qué partidos llevaban algo relacionado en su programa, y el de cada votación enlaza con él |
 | Ayuda | Qué es, qué hace, de dónde salen los datos, qué se actualiza y cada cuánto, conceptos y limitaciones. Cada pestaña tiene además su «Cómo se lee» |
 
 En listas y tablas los títulos oficiales se acortan (abreviatura del tipo, número y asunto: «RDL
@@ -130,6 +132,8 @@ python -m escrutinio territorial-probar <conector> --limite 30                # 
 python -m escrutinio actas-deepseek --limite 40      # votaciones de diarios de sesiones y actas (DEEPSEEK_API_KEY)
 python -m escrutinio actas-exportar --limite 20      # textos pendientes para procesarlos por otra vía
 python -m escrutinio actas-importar "data/llm/actas/respuestas/*.json" --modelo <modelo>
+python -m escrutinio programas-descargar / programas-estado    # programas electorales (ver «Programas electorales»)
+python -m escrutinio programas-leer / programas-emparejar / programas-verificar / programas-calcular
 ```
 
 ## Actualizar los datos: en la nube o en local
@@ -311,6 +315,107 @@ completan en alrededor de un mes. Todas las peticiones a DeepSeek piden responde
 España. Control de calidad: reclasificadas a ciegas 60 fichas al azar, el tema principal coincide
 en el 93% (98% contando secundarios). El resultado calculado con los totales se contrasta con el
 oficial: en convalidaciones y votaciones de conjunto solo discrepa una votación, marcada con aviso.
+
+## Programas electorales: lo que prometen frente a lo que votan
+
+Implementa las fases 0 y 1 de `Programas y votos lo que dicen frente a lo que votan.md` y la sección
+«Programas electorales» de Activismo en la web: los compromisos del programa de cada partido, cada uno con su
+cita literal y su página, enlazados con las iniciativas del Pleno que tratan lo mismo y con lo que votó
+el partido en ellas. Están los programas de las generales de 2011 a 2023 de los partidos con grupo propio,
+cada uno frente a la legislatura que empezó tras la elección:
+
+| Elecciones | Legislatura | Programas |
+| --- | --- | --- |
+| 2011 | X | PSOE, PP, CiU, IU (La Izquierda Plural), UPyD y PNV |
+| 2015 | XI | PSOE, PP, Podemos, ERC, Democràcia i Llibertat y PNV |
+| 2016 | XII | PSOE, PP, Unidos Podemos, Ciudadanos, ERC y PNV |
+| Abril de 2019 | XIII | PSOE, PP, Unidas Podemos, Ciudadanos, VOX, ERC y PNV |
+| Noviembre de 2019 | XIV | PSOE, PP, VOX, Unidas Podemos, Ciudadanos, ERC y PNV |
+| 2023 | XV | PSOE, PP, VOX, Sumar, ERC, Junts, EH Bildu y PNV |
+
+Faltan el de Ciudadanos de 2015, que solo existe escaneado, y el de EH Bildu de noviembre de 2019, que no
+se ha encontrado. La XI y la XIII duraron pocos meses, así que sus programas tienen pocas iniciativas con las
+que compararse. Los de CiU, Democràcia i Llibertat, ERC y Junts están en catalán: la cita se guarda en la
+lengua del programa y el compromiso, en castellano. Los programas se añaden en
+`escrutinio/programas/registro.py` (`PROGRAMAS`). Los partidos que votan dentro del Grupo
+Mixto (BNG, CC, UPN, y Podemos desde diciembre de 2023) no tienen voto propio de grupo con el que
+comparar: harían falta sus diputados uno a uno.
+
+Cada programa se descarga, se lee y se guarda **una sola vez**. Lo que manda son los ficheros de
+`data/llm/programas/`, versionados como las fichas, y la base se reconstruye desde ellos (`unir`,
+`web` y `actualizar` los cargan):
+
+| Fichero | Contenido |
+| --- | --- |
+| `data/llm/programas/registro.jsonl` | Una línea por documento: partido, elección, URL, `sha256`, formato (`pdf` o `html`), páginas, estado (`pendiente`, `leido`, `error`), modelo, versión del prompt, compromisos y tokens gastados |
+| `data/raw/programas/<id>.txt` | Texto extraído del PDF (o de la página web), con un salto de página entre páginas (en las páginas web, entre apartados). Se versiona (el PDF no) para que las citas sigan siendo comprobables aunque el partido retire el programa |
+| `data/llm/programas/<id>.jsonl` | Una línea por compromiso: texto, cita literal, página, tema, tipo de acción, de quién depende y si es verificable |
+| `data/llm/programas/emparejamientos/<id>.jsonl` | Una línea por par compromiso–iniciativa decidido, también los que no tienen que ver, para no volver a preguntarlos |
+| `data/llm/programas/verificaciones/<id>.jsonl` | Segunda revisión de cada relación con dirección (misma o contraria): manda sobre la primera y no se repite |
+
+```bash
+python -m escrutinio programas-descargar     # descarga y registra; si el sha256 no cambia, no hace nada
+python -m escrutinio programas-estado        # qué está leído, qué falta, qué falló y el gasto estimado
+python -m escrutinio programas-leer          # compromisos de los pendientes, con DeepSeek (modelo Pro)
+python -m escrutinio programas-emparejar     # candidatas nuevas de cada compromiso, con DeepSeek
+python -m escrutinio programas-verificar     # segunda revisión de las relaciones con dirección (modelo Pro)
+python -m escrutinio programas-verificar --cifras --modelo <modelo rápido>   # solo las que cuentan, como cada día
+python -m escrutinio programas-verificar --rehacer --solo contraria   # tras cambiar el prompt, solo esas
+python -m escrutinio programas-calcular      # recarga todo y recalcula el estado, sin DeepSeek
+python -m escrutinio programas-rehacer-citas # vuelve a buscar las citas con las respuestas guardadas, sin DeepSeek
+python -m escrutinio programas-rehacer-texto --id generales-2019-04-psoe   # vuelve a extraer el texto y rehace sus citas
+python -m escrutinio programas-releer --id generales-2023-pp --version compromisos-v2   # solo a propósito
+```
+
+Cómo se hace, paso a paso:
+
+1. **Descarga y registro** (sin DeepSeek). Si un partido corrige el PDF, entra como documento nuevo
+   con su propia línea y la lectura anterior se conserva. Un PDF escaneado queda como `error`. El texto se
+   extrae con `pdftotext` separando las columnas por la posición de cada palabra (en los programas a dos
+   columnas, sin separarlas, las frases salían mezcladas); los del PNV de 2019, que meten los rótulos
+   laterales en medio de las palabras, en el orden interno del PDF (`EXTRACCION`). Los de Ciudadanos de 2019
+   solo se publicaron como página web: cada apartado hace de página y la web enlaza con él como «apartado N».
+2. **Compromisos** (DeepSeek, una vez por programa). El texto va por trozos de unas 40 páginas. La
+   cita tiene que aparecer en el programa, o el compromiso se descarta: se busca tal cual (salvo espacios,
+   comillas, mayúsculas y tildes) y, si no, con todas sus palabras en el mismo orden, uniendo las partidas
+   por guion y admitiendo hasta tres intercaladas (un número de página, un rótulo). Las cabeceras y pies que
+   se repiten en cada página se quitan antes. La página sale de dónde está la cita, no de lo que responda el
+   modelo. Las frases vagas quedan como no verificables. Si la lectura se corta, los trozos ya respondidos
+   están en la caché local (`data/raw/programas/trozos/`, sin versionar) y no se vuelven a pagar; si una
+   respuesta sale truncada, el trozo se parte en dos. Con esa caché, `programas-rehacer-citas` y
+   `programas-rehacer-texto` rehacen las citas sin volver a leer.
+3. **Candidatas** (sin DeepSeek). Las 10 iniciativas con ficha más parecidas de la legislatura
+   siguiente, del mismo tema, con BM25 sobre título, resumen y etiquetas.
+4. **Relación** (DeepSeek, modelo rápido). Recibe el compromiso y las candidatas sin partido, sin
+   autor y sin votos, y dice si cada una va en su dirección, en la contraria, trata lo mismo sin
+   dirección o no tiene que ver. Solo se preguntan las candidatas nuevas.
+5. **Segunda revisión** (DeepSeek). Las relaciones con dirección se revisan con un criterio más
+   estricto y más contexto: la cita literal del programa
+   (sin nombres de partido) y el título, el resumen y las etiquetas de la iniciativa. No basta con que
+   se llamen parecido: dos «leyes de familias» pueden proponer cosas opuestas. «En la contraria» exige
+   ir en sentido opuesto: quedarse corto (un impuesto temporal frente a hacerlo permanente) va en su
+   dirección, y pedir información, auditar, retocar un detalle o un trámite sin contenido propio solo
+   tratan lo mismo. Ante la duda, queda como «trata lo mismo, sin dirección clara», que no cuenta.
+   En las cifras solo cuentan las iniciativas que el partido votó en la votación decisiva o que presentó
+   él o su Gobierno; la actualización diaria revisa solo esas, con el modelo rápido (`--cifras`).
+6. **Estado** (reglas, en cada actualización). Con el apoyo del partido en la votación decisiva de
+   cada iniciativa (enmiendas a la totalidad invertidas; lo aprobado por asentimiento cuenta como
+   apoyo): *impulsado* si presentó algo en su dirección (o lo presentó el Gobierno mientras
+   gobernaba), *apoyado*, *contradicho*, *mixto*, *abstención*, *sin votación* y *no verificable en el
+   Parlamento* (lo que depende del Gobierno o de otra Administración solo se comprueba con los
+   decretos-leyes). Sin votación no es incumplimiento, y la web lo dice. Un programa leído que aún no
+   se ha comparado con ninguna iniciativa queda *pendiente de comparar*, que no cuenta en las cifras.
+
+La actualización diaria lee los programas registrados que estén pendientes, decide las candidatas
+nuevas (hasta 300 compromisos por ejecución), revisa con el modelo rápido las relaciones nuevas que
+cuentan en las cifras y recalcula el estado. Descargar un programa nuevo es
+siempre a mano. En la web, la lista de programas va en `web/datos/comun.js` y los compromisos, en `web/datos/programas.js`,
+que solo se descarga cuando hace falta.
+
+Pendiente, según el plan: las intervenciones en el Pleno, los programas autonómicos y el contraste con la
+Chapel Hill Expert Survey. Cuando la web del partido no deja descargar el programa (psoe.es está tras una
+protección contra robots que no se intenta saltar) o ya no lo enlaza, se usa la copia que publicó un medio
+o la del archivo de Internet (web.archive.org), y se guarda también la URL oficial si se conoce.
 
 ## Fuentes y limitaciones
 

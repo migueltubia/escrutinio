@@ -238,6 +238,10 @@ def unir(ruta=DB_PATH, log=print):
         con.commit()
         con.execute("DETACH DATABASE l")
         log(f"  {fichero.relative_to(BD_DIR).as_posix()} cargado")
+    # Programas electorales: no van en data/bd/, se cargan desde data/llm/programas/.
+    from .programas.cargar import cargar
+
+    cargar(con, log)
     n = con.execute("SELECT COUNT(*) FROM votacion").fetchone()[0]
     m = con.execute("SELECT COUNT(*) FROM voto").fetchone()[0]
     log(f"Base de trabajo reconstruida en {ruta}: {n} votaciones, {m} votos")

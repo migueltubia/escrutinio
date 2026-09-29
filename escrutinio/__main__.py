@@ -89,6 +89,45 @@ def main(argv=None):
     s.add_argument("ficheros", nargs="+")
     s.add_argument("--modelo", required=True)
 
+    s = sub.add_parser("programas-descargar", help="Descarga y registra los programas electorales del catálogo")
+    s.add_argument("--id", help="Programas separados por comas (por defecto, todos)")
+    s.add_argument("--forzar", action="store_true", help="Vuelve a descargar aunque esté en la caché (si cambió, entra como documento nuevo)")
+
+    sub.add_parser("programas-estado", help="Registro de programas: qué está leído, qué falta, qué falló y el gasto")
+
+    s = sub.add_parser("programas-leer", help="Extrae con DeepSeek los compromisos de los programas pendientes (una sola vez)")
+    s.add_argument("--id", help="Programas separados por comas")
+    s.add_argument("--limite", type=int, help="Máximo de programas")
+    s.add_argument("--reintentar", action="store_true", help="Reintenta también los que fallaron")
+    s.add_argument("--modelo", help="Modelo de DeepSeek (por defecto, el Pro)")
+
+    s = sub.add_parser("programas-rehacer-texto", help="Vuelve a extraer el texto de un programa leído (columnas) y rehace sus citas con la caché (sin DeepSeek)")
+    s.add_argument("--id", required=True, help="Programas separados por comas")
+
+    s = sub.add_parser("programas-rehacer-citas", help="Vuelve a comprobar las citas con las respuestas guardadas en la caché local (sin DeepSeek)")
+    s.add_argument("--id", help="Programas separados por comas")
+
+    s = sub.add_parser("programas-releer", help="Vuelve a leer un programa ya leído con una versión nueva del prompt")
+    s.add_argument("--id", required=True)
+    s.add_argument("--version", required=True, help="Versión del prompt con la que releer (tiene que ser la actual)")
+    s.add_argument("--modelo")
+
+    s = sub.add_parser("programas-emparejar", help="Relaciona con DeepSeek los compromisos con sus iniciativas candidatas nuevas")
+    s.add_argument("--id", help="Programas separados por comas")
+    s.add_argument("--limite", type=int, help="Máximo de compromisos")
+    s.add_argument("--modelo", help="Modelo de DeepSeek (por defecto, DEEPSEEK_MODEL)")
+
+    s = sub.add_parser("programas-verificar", help="Segunda revisión, más exigente, de las relaciones con dirección (DeepSeek Pro)")
+    s.add_argument("--id", help="Programas separados por comas")
+    s.add_argument("--limite", type=int, help="Máximo de relaciones")
+    s.add_argument("--modelo", help="Modelo de DeepSeek (por defecto, el Pro)")
+    s.add_argument("--rehacer", action="store_true", help="Vuelve a revisar los pares revisados con una versión anterior del prompt")
+    s.add_argument("--solo", choices=["misma", "contraria", "relacionada"],
+                   help="Con --rehacer, solo los pares cuya última revisión dio esa relación")
+    s.add_argument("--cifras", action="store_true", help="Solo los pares que cuentan en las cifras (el partido votó o presentó la iniciativa)")
+
+    sub.add_parser("programas-calcular", help="Recarga programas, emparejamientos y verificaciones y recalcula el estado (sin DeepSeek)")
+
     sub.add_parser("analizar", help="Recalcula afinidades y agregados")
 
     s = sub.add_parser("informe-importar", help="Guarda el informe de análisis (Markdown con secciones ##)")
@@ -129,6 +168,15 @@ def main(argv=None):
         from .llm.fichas_io import validar_lote
 
         sys.exit(0 if validar_lote(a.lote) else 1)
+    if a.cmd in ("programas-descargar", "programas-estado"):
+        # Solo el registro y los textos: no hace falta la base.
+        from .programas import registro
+
+        if a.cmd == "programas-descargar":
+            registro.descargar(ids=a.id.split(",") if a.id else None, forzar=a.forzar, log=log)
+        else:
+            registro.estado()
+        return
 
     con = db.connect()
     db.init(con)
@@ -189,6 +237,27 @@ def main(argv=None):
         from .territorial.recoger import estado
 
         estado(con, log=log)
+    elif a.cmd.startswith("programas-"):
+        from .programas import emparejar, leer
+        from .programas.cargar import cargar
+
+        ids = a.id.split(",") if getattr(a, "id", None) else None
+        if a.cmd == "programas-leer":
+            leer.leer(ids=ids, reintentar=a.reintentar, limite=a.limite, modelo=a.modelo, log=log)
+        elif a.cmd == "programas-rehacer-texto":
+            leer.rehacer_texto(ids, log=log)
+        elif a.cmd == "programas-rehacer-citas":
+            leer.rehacer_citas(ids=ids, log=log)
+        elif a.cmd == "programas-releer":
+            leer.releer(a.id, a.version, modelo=a.modelo, log=log)
+        elif a.cmd == "programas-emparejar":
+            emparejar.emparejar(con, ids=ids, limite=a.limite, modelo=a.modelo, log=log)
+        elif a.cmd == "programas-verificar":
+            from .programas.verificar import verificar
+
+            verificar(con, ids=ids, limite=a.limite, modelo=a.modelo, rehacer=a.rehacer, solo=a.solo, cifras=a.cifras, log=log)
+        cargar(con, log)
+        log("Para verlo en la web: python -m escrutinio web")
     elif a.cmd == "analizar":
         from .analisis import analizar
 
@@ -209,7 +278,9 @@ def main(argv=None):
         imprimir(con)
     elif a.cmd == "web":
         from .exportar_web import exportar
+        from .programas.cargar import cargar
 
+        cargar(con, log)  # lo último de data/llm/programas/
         exportar(con, log=log)
     elif a.cmd == "estado":
         from .procesar import estado

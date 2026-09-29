@@ -1,6 +1,7 @@
 "use strict";
 // Vistas de análisis (coaliciones, mapa ideológico, disciplina, enmiendas) y de activismo
-// (mis causas con scorecard y CSV, qué viene). Usa las utilidades y la base de datos de app.js.
+// (mis causas con scorecard y CSV, qué viene; los programas electorales, en programas.js). Usa las utilidades y la
+// base de datos de app.js.
 
 // ------------------------------------------------------------------ utilidades comunes
 
@@ -10,7 +11,7 @@ function subnav(items, actual, q = {}) {
   }, texto)));
 }
 const NAV_ANALISIS = [["coaliciones", "Coaliciones ganadoras"], ["mapa", "Mapa ideológico y polarización"], ["disciplina", "Disciplina y ausencias"], ["enmiendas", "Enmiendas"]];
-const NAV_ACTIVISMO = [["causas", "Mis causas"], ["viene", "Qué viene"]];
+const NAV_ACTIVISMO = [["causas", "Mis causas"], ["viene", "Qué viene"], ["programas", "Programas electorales"]];
 
 const siglas = (leg, codigo) => grupo(leg, codigo).siglas;
 const hoyISO = () => new Date().toISOString().slice(0, 10);
@@ -887,6 +888,8 @@ VISTAS.causa = async (q) => {
       el("div", {}, el("h3", {}, "Diputados que menos"), tabla(orden(dips.slice()).reverse().slice(0, 15)))));
   }
   cont.append(cardScore);
+  const prometido = bloqueCausaProgramas(causa);
+  if (prometido) cont.append(prometido);
 
   // Novedades y matriz con marcas.
   const columnas = [...sumarPor(Object.values(d.celdas).flatMap((cs) => Object.values(cs).map((c) => ({ siglas: c.siglas, si: 0, no: 0, abst: 0, div: 0, n: 1 }))), (r) => r.siglas).values()]
@@ -938,8 +941,10 @@ API.viene = (p) => {
   for (const palabra of (p.q || "").split(/\s+/).filter(Boolean)) {
     w.push("(e.titulo LIKE ? OR f.resumen LIKE ? OR f.etiquetas LIKE ?)"); a.push(...Array(3).fill(`%${palabra}%`));
   }
-  return { filas: q(`SELECT e.*, f.resumen, f.tema_principal, f.etiquetas FROM en_tramite e
-    LEFT JOIN ficha_llm f ON f.legislatura=e.legislatura AND f.expediente=e.expediente WHERE ${w.join(" AND ")}`, a) };
+  // prometen: partidos con un compromiso de su programa en la dirección de la iniciativa.
+  return { filas: q(`SELECT e.*, f.resumen, f.tema_principal, f.etiquetas, pi.prometen FROM en_tramite e
+    LEFT JOIN ficha_llm f ON f.legislatura=e.legislatura AND f.expediente=e.expediente
+    LEFT JOIN programa_iniciativa pi ON pi.legislatura=e.legislatura AND pi.expediente=e.expediente WHERE ${w.join(" AND ")}`, a) };
 };
 
 VISTAS.viene = async (q) => {
@@ -975,11 +980,14 @@ VISTAS.viene = async (q) => {
     stat("Esperan el debate en el Pleno", fmt(toma.length), "toma en consideración pendiente"),
     stat("Plazo ampliado 10 veces o más", fmt(congeladas.length), `de ${fmt(enmiendas.length)} en fase de enmiendas`)));
 
-  const fila = (e, extra) => el("tr", { class: e.votada ? "clic" : "", onclick: e.votada ? () => abrir(`i:${e.legislatura}:${e.expediente}`) : null },
+  // Se abre la ficha si ya tuvo votaciones o si está en algún programa (para ver qué prometía cada partido).
+  const fila = (e, extra) => el("tr", { class: e.votada || e.prometen ? "clic" : "", onclick: e.votada || e.prometen ? () => abrir(`i:${e.legislatura}:${e.expediente}`) : null },
     el("td", {}, el("div", { title: e.titulo }, tituloCorto(e.titulo, 150)), e.resumen ? el("div", { class: "small muted" }, e.resumen) : null,
       el("div", { class: "badges" }, e.tema_principal ? el("span", { class: "badge ia" }, temaNombre(e.tema_principal)) : null,
         el("span", { class: "badge" }, e.grupo_autor ? siglas(e.legislatura, e.grupo_autor) : e.autor || "—"),
         e.votada ? el("span", { class: "badge" }, "ya tuvo votaciones en el Pleno") : null,
+        e.prometen ? el("span", { class: "badge", title: "Llevaban en su programa electoral un compromiso en la dirección de esta iniciativa. Clic para ver cuál." },
+          `En la línea ${lista(e.prometen).length > 1 ? "de los programas" : "del programa"} de ${textoPartidos(e.prometen)}`) : null,
         e.bocg ? el("a", { class: "badge", href: e.bocg.split("\n")[0], target: "_blank", rel: "noopener", onclick: (ev) => ev.stopPropagation() }, "BOCG") : null)),
     el("td", { class: "small" }, e.fase || "—", el("div", { class: "muted" }, e.organo || "")),
     el("td", { class: "small", style: "white-space:nowrap" }, extra(e)));

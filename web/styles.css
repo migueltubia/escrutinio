@@ -466,3 +466,14 @@ button.amb-abrir:hover { background: var(--surface-2); }
 
 /* Rótulos de los ejes del mapa */
 .chart text.eje { fill: var(--muted); font-size: 11px; font-style: italic; }
+
+/* Programa electoral en el perfil de grupo */
+.compromiso { padding: 14px 0; border-top: 1px solid var(--border); }
+.compromiso:first-child { border-top: 0; padding-top: 4px; }
+.compromiso .cabecera { display: flex; flex-wrap: wrap; gap: 4px 10px; align-items: center; }
+.compromiso .texto { font-weight: 600; margin: 6px 0 4px; }
+.compromiso blockquote { margin: 0 0 8px; padding-left: 10px; border-left: 3px solid var(--border); color: var(--ink-2); font-size: 13px; }
+.punto-estado { display: inline-block; width: 9px; height: 9px; border-radius: 50%; border: 1px solid var(--axis); }
+.relacionadas { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+.relacionadas li { background: var(--surface-2); border-radius: 6px; padding: 8px 10px; font-size: 13px; }
+.relacionadas .sentido-rel { font-weight: 600; }

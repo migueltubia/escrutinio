@@ -71,11 +71,10 @@ Una ficha por asunto que llegó a votarse en el Pleno: qué es, quién lo propon
   temas: {
     titulo: "Temas",
     texto: `
-Compara los 23 temas: cuánto se vota de cada uno, cuánto sale adelante y quién lo consigue.
+Compara los 23 temas: cuánto se vota de cada uno y cuánto sale adelante.
 
 ### Cómo se lee
-- **Éxito por tema**: asuntos votados y porcentaje aprobado, separando lo que tiene fuerza de ley (leyes y decretos) de lo declarativo (PNL y mociones). Toca un tema para analizarlo a fondo.
-- **Quién consigue sacar adelante qué**: porcentaje de las iniciativas de cada proponente que salen adelante, por tema. Más oscuro, más éxito; las celdas atenuadas tienen menos de 3 iniciativas.
+- **Éxito por tema**: asuntos votados y porcentaje aprobado, separando lo que tiene fuerza de ley (leyes y decretos) de lo declarativo (PNL y mociones). Toca un tema para analizarlo a fondo, con quién propone y quién lo consigue.
 - **Etiquetas más frecuentes**: palabras clave que captan la actualidad (toca una para buscarla).
 - **Leyes que más se intenta modificar**: normas citadas en los títulos de lo votado.
 
@@ -86,13 +85,12 @@ Compara los 23 temas: cuánto se vota de cada uno, cuánto sale adelante y quié
   tema: {
     titulo: "Análisis de un tema",
     texto: `
-Todo sobre uno o varios temas: cómo vota cada grupo, quién propone, con quién coincide cada uno y la votación a votación.
+Todo sobre uno o varios temas: cómo vota cada grupo, quién propone y quién lo consigue, y la votación a votación.
 
 ### Cómo se lee
 - **Cómo vota cada grupo**: porcentaje de asuntos en que votó a favor en la votación decisiva. Cada asunto cuenta una vez: una PNL votada en 8 puntos no pesa 8 veces más que una ley. Entre paréntesis, la diferencia con su media general: «+12» quiere decir que en este tema vota a favor 12 puntos más que de costumbre.
 - **Quién propone y quién lo consigue**: asuntos del tema según quién los presentó y cómo acabaron.
-- **Con quién coincide cada grupo en este tema**: afinidad, en porcentaje de votaciones en que dos grupos votan lo mismo.
-- **Cómo ha cambiado el apoyo**: por legislatura, también en asuntos. Sirve para ver cómo cambia un partido al pasar del Gobierno a la oposición.
+- **Con quién coincide cada grupo en este tema** y **cómo cambia su apoyo de una legislatura a otra**: los enlaces llevan a Grupos, con el tema elegido, y a Comparar, que separa lo que presenta cada uno de lo que presentan los demás.
 - **Subtemas**: etiquetas de los asuntos; toca una para limitar todo el análisis a esos asuntos.
 - **Votación a votación**: una fila por votación decisiva y una columna por grupo: azul a favor, rojo en contra, gris abstención, gris claro dividido.
 
@@ -144,6 +142,29 @@ El perfil de un partido (o de un bloque de varios): cómo vota, qué propone, co
 
 ### Ten en cuenta
 - Las siglas agrupan los grupos de un mismo partido en distintas legislaturas.
+- Lo que prometió en su programa frente a lo que votó está en [Activismo · Programas electorales](#/programas).
+`,
+  },
+  programas: {
+    titulo: "Programas electorales",
+    texto: `
+Lo que prometió cada partido en su programa electoral y lo que votó después en el Pleno.
+
+### Cómo se lee
+- **Dónde votaron en contra de lo que prometieron**: los compromisos en los que el partido votó al menos una vez lo contrario de lo que prometía (*contradicho*, o *mixto* si también votó a favor en otras iniciativas relacionadas), con la cita del programa y solo esas votaciones: quién presentó la iniciativa, qué votó el partido y si gobernaba.
+- **Los programas**: cuántos compromisos tiene cada uno, cuántos son verificables y, de los que tuvieron votación en un sentido claro, cuántos **coinciden** con lo que votó el partido. La mayoría de lo prometido no llega a votarse en el Pleno.
+- **En el Gobierno y en la oposición**: la misma cifra según el partido estuviera en el Gobierno o en la oposición cuando se votó lo relacionado con cada compromiso (sale si hay programas de un partido en los dos lados).
+- **Cuánto pesa cada tema** en el programa de cada partido frente a lo que presentó después en el Congreso.
+- **Compromisos**: cada uno con la cita literal del programa y su página (el enlace abre el PDF en esa página), las iniciativas del Pleno que tratan lo mismo (**en su dirección**, **en la contraria** o sin dirección clara) y lo que votó el partido, en el Gobierno o en la oposición. Su estado: *impulsado* (presentó algo en su dirección, o lo presentó el Gobierno mientras gobernaba), *apoyado* (votó a favor de algo en su dirección o en contra de algo en la contraria), *contradicho* (lo inverso), *mixto* (votos en los dos sentidos), *abstención*, *sin votación* y *no verificable en el Parlamento* (depende del Gobierno o de otra Administración). Un programa leído que aún no se ha comparado con lo votado sale como *pendiente de comparar* y no cuenta en las cifras.
+
+### Filtros
+- **Partido**, **elección** (y la legislatura que cubre), **tema** (los mismos que en las votaciones), **tipo de acción** (legislar, derogar, bajar un impuesto…) y **estado** del compromiso. El estado solo filtra la lista de compromisos.
+
+### Ten en cuenta
+- **Sin votación no es incumplimiento**: muchas promesas se cumplen o no por real decreto, por presupuestos o por gestión, sin pasar por el Pleno.
+- Un programa más concreto tiene más compromisos verificables; conviene mirar cuántos tiene cada partido antes de comparar porcentajes.
+- Qué iniciativas tratan lo mismo que un compromiso se decide sin tener en cuenta qué partido lo prometió ni quién presentó la iniciativa. Las que van en su dirección o en la contraria se comprueban en una segunda revisión más estricta: no basta con que se llamen parecido.
+- Los partidos que votan dentro del Grupo Mixto no tienen un voto de grupo propio con el que comparar.
 `,
   },
   comparar: {
@@ -263,6 +284,7 @@ Todas las votaciones de tu causa y una puntuación de grupos y diputados según 
 ### Cómo se usa
 - En **Votación a votación**, marca en cada votación qué voto era el favorable para tu causa («A favor» o «En contra»). Puedes marcar toda la página de una vez.
 - El **scorecard** calcula, para cada grupo y diputado, el porcentaje de las votaciones marcadas en que votó como marcaste. Abstenerse o dividirse cuenta como no coincidir.
+- **¿Qué prometieron sobre esto?**: al pulsar, los compromisos concretos de los programas electorales que encajan con la causa (mismo tema, etiqueta o texto), por partido, con su estado según lo que votó después y el enlace a la página del programa.
 - **Guardar causa** la conserva en este navegador; los botones de CSV descargan las votaciones y el scorecard.
 
 ### Ten en cuenta
@@ -279,6 +301,7 @@ Lo que aún está por decidir: proyectos y proposiciones de ley abiertos en la l
 - **Esperan el debate de toma en consideración**: proposiciones que el Pleno aún no ha debatido.
 - **Paradas en comisión**: el plazo de enmiendas se ha ampliado muchas veces; suele indicar que no hay acuerdo para seguir.
 - **Por tema y por fase**, y la lista completa, descargable en CSV.
+- **En la línea del programa de…**: partidos que llevaban en su programa electoral un compromiso en la dirección de esa iniciativa. Toca la fila para ver qué prometía cada uno, con la cita y la página.
 
 ### Filtros
 - **Texto**, **temas**, **fases** y **proponentes**.
@@ -323,6 +346,7 @@ const SECCIONES_WEB = [
   ["enmiendas", "Enmiendas", "Qué grupo consigue cambiar las leyes y quién apoya las enmiendas de quién."],
   ["causas", "Mis causas", "Sigue un asunto, recibe sus novedades y puntúa a grupos y diputados con tu criterio."],
   ["viene", "Qué viene", "Leyes abiertas: plazos de enmiendas, pendientes de debate y paradas en comisión."],
+  ["programas", "Programas electorales", "Lo que prometió cada partido en su programa frente a lo que votó después: dónde votó en contra y compromiso a compromiso, con la cita."],
 ];
 
 const ACTUALIZACIONES = [
@@ -333,6 +357,7 @@ const ACTUALIZACIONES = [
   ["Tipo de las votaciones poco habituales", "Cada día", "Las que las reglas no reconocen se clasifican con una lista cerrada."],
   ["Votaciones de parlamentos autonómicos, juntas generales y ayuntamientos", "Cada día", "Cada institución, desde su propia web. Si una web no responde, esa institución se queda sin actualizar ese día y la portada lo avisa con ⚠. Varias webs no aceptan conexiones desde fuera de España, y la actualización se hace en servidores de GitHub que están fuera."],
   ["Cálculos: resultados, grupo decisivo, afinidades, coaliciones, mapa, disciplina, enmiendas", "Cada día", "Se recalculan enteros en cada actualización, con reglas fijas."],
+  ["Programas electorales: compromisos e iniciativas relacionadas", "Cada día", "Cada programa se lee una sola vez, cuando se incorpora. Cada día se buscan las iniciativas nuevas que tratan lo mismo que algún compromiso y se recalcula el estado de cada uno con los votos nuevos."],
   ["Análisis redactado de la portada", "Cada semana", "El domingo, a partir de las estadísticas calculadas."],
   ["Copia de los datos en el repositorio de GitHub", "Cada semana", "El domingo. La web publicada se actualiza cada día igualmente."],
   ["Legislaturas X a XIV", "No cambian", "Están cerradas. Solo cambiarían si el Congreso corrigiera sus datos."],

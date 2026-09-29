@@ -220,6 +220,71 @@ CREATE TABLE IF NOT EXISTS informe_ia(
 );
 """
 
+# Solo en la base de trabajo: se reconstruyen desde data/llm/programas/ y no van en los ficheros de data/bd/
+# (añadirlas a su esquema cambiaría la huella de todos y se reescribirían enteros).
+SCHEMA_PROGRAMAS = """
+-- Programas electorales y sus compromisos: se reconstruyen desde data/llm/programas/ (escrutinio/programas).
+CREATE TABLE IF NOT EXISTS programa(
+  id TEXT PRIMARY KEY,
+  eleccion TEXT,
+  fecha_eleccion TEXT,
+  cuerpo TEXT,
+  legislatura INTEGER,
+  partido TEXT,
+  titulo TEXT,
+  origen TEXT,
+  url TEXT,
+  url_oficial TEXT,
+  descargado TEXT,
+  paginas INTEGER,
+  estado TEXT,
+  leido TEXT,
+  version_prompt TEXT,
+  compromisos INTEGER,
+  verificables INTEGER,
+  formato TEXT
+);
+CREATE TABLE IF NOT EXISTS compromiso(
+  id TEXT PRIMARY KEY,
+  programa TEXT NOT NULL,
+  orden INTEGER,
+  texto TEXT,
+  cita TEXT,
+  pagina INTEGER,
+  tema TEXT,
+  etiquetas TEXT,
+  tipo_accion TEXT,
+  responsable TEXT,
+  verificable INTEGER
+);
+-- Sentido de la iniciativa respecto al compromiso: misma, contraria o relacionada. Estado: propuesto (primera
+-- pasada) o verificado (segunda revisión, programas/verificar.py).
+CREATE TABLE IF NOT EXISTS compromiso_iniciativa(
+  compromiso TEXT NOT NULL,
+  legislatura INTEGER NOT NULL,
+  expediente TEXT NOT NULL,
+  sentido TEXT,
+  justificacion TEXT,
+  origen TEXT,
+  estado TEXT,
+  rango INTEGER,
+  PRIMARY KEY(compromiso, legislatura, expediente)
+);
+-- Derivada: lo que votó el partido en lo relacionado con cada compromiso (programas/cargar.py).
+CREATE TABLE IF NOT EXISTS compromiso_estado(
+  compromiso TEXT PRIMARY KEY,
+  partido TEXT,
+  legislatura INTEGER,
+  estado TEXT,
+  impulsa INTEGER,
+  coherentes INTEGER,
+  incoherentes INTEGER,
+  abstenciones INTEGER,
+  aprobada INTEGER,
+  gobierno INTEGER
+);
+"""
+
 
 def connect(path=DB_PATH):
     DATA_DIR.mkdir(parents=True, exist_ok=True)
@@ -283,6 +348,9 @@ def init(con, catalogos=True):
     if not catalogos:
         con.commit()
         return
+    con.executescript(SCHEMA_PROGRAMAS)
+    if "formato" not in {r[1] for r in con.execute("PRAGMA table_info(programa)")}:  # pdf o html
+        con.execute("ALTER TABLE programa ADD COLUMN formato TEXT")
     from .catalogos import TIPOS_EXPEDIENTE, TEMAS
     from .territorial.modelo import TIPOS_INICIATIVA
 

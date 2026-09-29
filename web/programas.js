@@ -42,7 +42,11 @@ const ACCION_COMPROMISO = { legislar: "Legislar", derogar: "Derogar", financiar:
   bajar_impuesto: "Bajar un impuesto", subir_impuesto: "Subir un impuesto", declaracion: "Declaración", otra: "Otra medida" };
 const RESPONSABLE_COMPROMISO = { parlamento: "Depende de las Cortes", gobierno: "Depende del Gobierno", otra_administracion: "Depende de otra Administración" };
 const VOTO_PROGRAMA = { si: "votó a favor", no: "votó en contra", abstencion: "se abstuvo", dividido: "se dividió" };
-const eleccionTexto = (e) => String(e || "").replace(/^generales-(\d{4})$/, "Generales de $1");
+// «generales-2023» -> «Generales de 2023»; «generales-2019-04» -> «Generales de abril de 2019».
+const eleccionTexto = (e) => String(e || "")
+  .replace(/^generales-(\d{4})-(\d{2})$/, (_m, y, mes) => `Generales de ${["enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"][+mes - 1]} de ${y}`)
+  .replace(/^generales-(\d{4})$/, "Generales de $1");
+const ORIGEN_PROGRAMA = { "copia-prensa": "copia publicada por un medio", "archivo-web": "copia guardada en el Internet Archive" };
 const puntoEstado = (e) => el("i", { class: "punto-estado", style: `background:${ESTADO_COMPROMISO[e][1]}` });
 // Parte de los compromisos con votación en un sentido claro que coincide con el programa.
 const coinciden = (o) => { const n = (o.impulsado || 0) + (o.apoyado || 0) + (o.contradicho || 0); return { p: n ? ((o.impulsado || 0) + (o.apoyado || 0)) / n : 0, n }; };
@@ -93,7 +97,10 @@ API.programas = (p) => {
     partidos: q("SELECT DISTINCT partido FROM programa ORDER BY 1").map((r) => r.partido),
     legislaturas: q("SELECT legislatura, MIN(eleccion) AS eleccion FROM programa WHERE legislatura IS NOT NULL GROUP BY 1 ORDER BY 1 DESC"),
   };
-  return { programas, resumen, propuestas, compromisos, relacionadas, votos, total, pagina, tam, opciones };
+  // Efecto gobierno: estado de los compromisos según si el partido gobernaba en todas las votaciones relacionadas
+  // (gobierno=1) o en ninguna (gobierno=0).
+  const gobierno = q(`SELECT p.partido, ce.gobierno, ce.estado, COUNT(*) AS n ${base} AND ce.gobierno IS NOT NULL GROUP BY 1, 2, 3`, args);
+  return { programas, resumen, propuestas, compromisos, relacionadas, votos, total, pagina, tam, opciones, gobierno };
 };
 
 // Compromisos relacionados con una iniciativa (para su ficha en el panel de detalle).
@@ -159,7 +166,7 @@ VISTAS.programas = async (ruta) => {
           el("td", { style: "white-space:nowrap" }, swatch(colorSiglas(p.partido)), p.partido),
           el("td", {}, el("a", { href: p.url, target: "_blank", rel: "noopener", onclick: (e) => e.stopPropagation() }, p.titulo),
             el("div", { class: "small muted" }, [eleccionTexto(p.eleccion), `${fmt(p.paginas)} páginas`, p.legislatura ? `cubre la ${legTexto(p.legislatura)}` : null,
-              p.origen === "copia-prensa" ? "copia publicada por un medio" : null, p.estado === "pendiente" ? "pendiente de leer" : p.estado === "error" ? "no se ha podido leer" : null].filter(Boolean).join(" · "))),
+              p.legislatura && gobiernosLeg(p.legislatura) ? `gobierno: ${gobiernosLeg(p.legislatura)}` : null, ORIGEN_PROGRAMA[p.origen] || null, p.estado === "pendiente" ? "pendiente de leer" : p.estado === "error" ? "no se ha podido leer" : null].filter(Boolean).join(" · "))),
           el("td", { class: "num" }, p.estado === "leido" ? fmt(o.todos) : "—"),
           el("td", { class: "num" }, p.estado === "leido" ? `${fmt(o.verificables)} (${pct(o.verificables, o.todos)}%)` : "—"),
           el("td", { class: "num" }, co.n ? `${Math.round(100 * co.p)}%` : "—"),
@@ -167,6 +174,26 @@ VISTAS.programas = async (ruta) => {
           el("td", { class: "num" }, p.estado === "leido" ? fmt((o.sin_votacion || 0) + (o.fuera_parlamento || 0)) : "—"));
       })))));
   if (!d.resumen.length) return cont;
+
+  // 1b. Efecto gobierno: la misma cifra cuando el partido gobernaba y cuando estaba en la oposición.
+  const efecto = new Map();
+  for (const r of d.gobierno) {
+    const o = efecto.get(r.partido) || { g: {}, o: {} };
+    const lado = r.gobierno ? o.g : o.o;
+    lado[r.estado] = (lado[r.estado] || 0) + r.n;
+    efecto.set(r.partido, o);
+  }
+  const conLosDos = [...efecto.entries()].filter(([, o]) => coinciden(o.g).n && coinciden(o.o).n);
+  if (conLosDos.length) {
+    const fila = (s, lado, nombre) => {
+      const x = coinciden(lado);
+      return { label: `${s} · ${nombre}`, color: colorSiglas(s), barColor: nombre === "en el Gobierno" ? colorSiglas(s) : `color-mix(in srgb, ${colorSiglas(s)} 45%, var(--surface-1))`,
+        v: Math.round(100 * x.p), valorTexto: `${Math.round(100 * x.p)}% (de ${fmt(x.n)})`, tip: () => `${fmt(x.n)} compromisos con votación en un sentido claro`, onclick: () => ir({ g: s }) };
+    };
+    cont.append(el("div", { class: "card", style: "margin-top:16px" }, el("h3", {}, "En el Gobierno y en la oposición"),
+      el("p", { class: "small muted" }, "La misma cifra para cada partido según estuviera en el Gobierno o en la oposición cuando se votó lo relacionado con cada compromiso. Al gobernar, cuentan también las leyes y los decretos-leyes del Gobierno en la dirección de lo prometido; al gobernar en coalición o con apoyos, entran los acuerdos con los socios."),
+      barrasH(conLosDos.flatMap(([s, o]) => [fila(s, o.g, "en el Gobierno"), fila(s, o.o, "en la oposición")]), { max: 100 })));
+  }
 
   // 2. Estado de los compromisos verificables de cada partido.
   const partidos = [...porPartido.keys()].sort((a, b) => porPartido.get(b).verificables - porPartido.get(a).verificables);

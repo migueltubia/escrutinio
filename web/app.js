@@ -1091,9 +1091,9 @@ async function render() {
   const { ver, ...resto } = q;
   const clave = tab + JSON.stringify(resto) + "|" + AMBITO.clave;
   const padre = { tema: "temas", grupo: "grupos", coaliciones: "analisis", mapa: "analisis", disciplina: "analisis",
-    enmiendas: "analisis", causas: "activismo", causa: "activismo", viene: "activismo" }[tab] || tab;
+    enmiendas: "analisis", causas: "activismo", causa: "activismo", viene: "activismo", programas: "activismo" }[tab] || tab;
   document.querySelectorAll("#tabs a, #barraMovil [data-tab]").forEach((a) => a.classList.toggle("activo",
-    a.dataset.tab === padre || (a.dataset.tab === "mas" && ["comparar", "programas", "analisis", "activismo", "ayuda"].includes(padre))));
+    a.dataset.tab === padre || (a.dataset.tab === "mas" && ["comparar", "analisis", "activismo", "ayuda"].includes(padre))));
   document.querySelectorAll("#hojaMas a").forEach((a) => a.classList.toggle("activo", a.getAttribute("href") === `#/${tab}`));
   if (clave !== estadoRuta.clave) {
     estadoRuta = { tab, q: resto, clave };

@@ -1,6 +1,7 @@
 "use strict";
 // Vistas de análisis (coaliciones, mapa ideológico, disciplina, enmiendas) y de activismo
-// (mis causas con scorecard y CSV, qué viene). Usa las utilidades y la base de datos de app.js.
+// (mis causas con scorecard y CSV, qué viene; los programas electorales, en programas.js). Usa las utilidades y la
+// base de datos de app.js.
 
 // ------------------------------------------------------------------ utilidades comunes
 
@@ -10,7 +11,7 @@ function subnav(items, actual, q = {}) {
   }, texto)));
 }
 const NAV_ANALISIS = [["coaliciones", "Coaliciones ganadoras"], ["mapa", "Mapa ideológico y polarización"], ["disciplina", "Disciplina y ausencias"], ["enmiendas", "Enmiendas"]];
-const NAV_ACTIVISMO = [["causas", "Mis causas"], ["viene", "Qué viene"]];
+const NAV_ACTIVISMO = [["causas", "Mis causas"], ["viene", "Qué viene"], ["programas", "Programas electorales"]];
 
 const siglas = (leg, codigo) => grupo(leg, codigo).siglas;
 const hoyISO = () => new Date().toISOString().slice(0, 10);

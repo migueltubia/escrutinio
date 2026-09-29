@@ -28,7 +28,7 @@ ficheros `.js`, que la página carga con etiquetas `<script>`. Van troceados igu
 | --- | --- |
 | `web/datos/indice.js` | Lista de ficheros de datos con su institución, su huella y la fecha de generación |
 | `web/datos/comun.js` | Catálogos, instituciones y árbol de ámbitos, gobiernos, diputados, informe y los índices de la base |
-| `web/datos/programas.js` | Compromisos de los programas electorales, sus iniciativas relacionadas y su estado. Solo se descarga al entrar en «Programas» o al abrir una iniciativa que aparece en algún programa |
+| `web/datos/programas.js` | Compromisos de los programas electorales, sus iniciativas relacionadas y su estado. Solo se descarga al entrar en Activismo · Programas electorales, al abrir una iniciativa que aparece en algún programa o al pulsar «¿Qué prometieron sobre esto?» en una causa |
 | `web/datos/<institución>/legNN.js` | Votaciones, voto nominal, iniciativas, fichas y afinidades de la legislatura NN de esa institución (`congreso/leg15.js`, `parl-AS/leg12.js`…) |
 
 En el navegador se juntan en una sola SQLite en memoria, pero **solo los de las instituciones del
@@ -47,13 +47,13 @@ GitHub Pages.
 | Temas → ficha de tema | Cómo vota cada grupo en el tema, quién propone y quién lo consigue, afinidad, evolución por legislatura y matriz votación a votación |
 | Grupos → perfil de grupo | Su voto por tema, sus iniciativas, con quién coincide y en qué, y cuándo su voto decidió el resultado |
 | Comparar | Dos o más grupos frente a frente en los mismos asuntos: en cuántos votan igual, cuánto apoya cada uno lo que presentan los demás, a quién apoya cada uno, tema a tema y legislatura a legislatura, y asunto a asunto |
-| Programas | Lo que prometió cada partido en su programa frente a lo que votó: primero, dónde votó en contra de lo que prometía; después, los programas frente a frente, cuánto pesa cada tema y compromiso a compromiso con su cita y las iniciativas relacionadas (ver «Programas electorales»). El detalle de cada iniciativa dice qué partidos llevaban algo relacionado en su programa, y el de cada votación enlaza con él |
 | Análisis · Coaliciones ganadoras | Qué combinaciones de grupos aprueban y tumban cada cosa |
 | Análisis · Mapa ideológico y polarización | Posición de los grupos según sus votos (MDS sobre la afinidad) y polarización por trimestre |
 | Análisis · Disciplina y ausencias | Diputados que votan distinto a su grupo, votos no emitidos y votaciones que habrían cambiado con los ausentes |
 | Análisis · Enmiendas | Qué grupo consigue cambiar las leyes, quién apoya las enmiendas de quién y leyes con más enmiendas aprobadas |
 | Activismo · Mis causas | Seguimiento guardado en el navegador (texto, tema o etiqueta), novedades desde la última visita, scorecard con tu criterio, qué prometían los partidos sobre lo mismo en sus programas y CSV |
 | Activismo · Qué viene | Iniciativas abiertas de la legislatura actual: recién abiertas a enmiendas, pendientes de debate y paradas en comisión, con los partidos que llevaban en su programa algo en su dirección |
+| Activismo · Programas electorales | Lo que prometió cada partido en su programa frente a lo que votó: primero, dónde votó en contra de lo que prometía; después, los programas frente a frente, cuánto pesa cada tema y compromiso a compromiso con su cita y las iniciativas relacionadas (ver «Programas electorales»). El detalle de cada iniciativa dice qué partidos llevaban algo relacionado en su programa, y el de cada votación enlaza con él |
 | Ayuda | Qué es, qué hace, de dónde salen los datos, qué se actualiza y cada cuánto, conceptos y limitaciones. Cada pestaña tiene además su «Cómo se lee» |
 
 En listas y tablas los títulos oficiales se acortan (abreviatura del tipo, número y asunto: «RDL
@@ -319,7 +319,7 @@ oficial: en convalidaciones y votaciones de conjunto solo discrepa una votación
 ## Programas electorales: lo que prometen frente a lo que votan
 
 Implementa las fases 0 y 1 de `Programas y votos lo que dicen frente a lo que votan.md` y la sección
-«Programas» de la web: los compromisos del programa de cada partido, cada uno con su
+«Programas electorales» de Activismo en la web: los compromisos del programa de cada partido, cada uno con su
 cita literal y su página, enlazados con las iniciativas del Pleno que tratan lo mismo y con lo que votó
 el partido en ellas. Están los programas de las generales de 2023 de los partidos con grupo propio en la XV
 legislatura: PSOE, PP, VOX, Sumar, ERC, Junts, EH Bildu y PNV (los de ERC y Junts, en catalán: la cita se

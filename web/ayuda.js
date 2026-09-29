@@ -144,7 +144,7 @@ El perfil de un partido (o de un bloque de varios): cómo vota, qué propone, co
 
 ### Ten en cuenta
 - Las siglas agrupan los grupos de un mismo partido en distintas legislaturas.
-- Lo que prometió en su programa frente a lo que votó está en [Programas](#/programas).
+- Lo que prometió en su programa frente a lo que votó está en [Activismo · Programas electorales](#/programas).
 `,
   },
   programas: {
@@ -342,13 +342,13 @@ const SECCIONES_WEB = [
   ["temas", "Temas", "Éxito por tema y quién consigue sacar adelante qué. Cada tema tiene su análisis a fondo."],
   ["grupos", "Grupos", "Afinidad entre grupos, quién decide las votaciones y el perfil de cada partido o bloque."],
   ["comparar", "Comparar grupos", "Dos o más partidos frente a frente, tema a tema: dónde votan igual, dónde no y cuánto apoya cada uno lo que presentan los demás."],
-  ["programas", "Programas electorales", "Lo que prometió cada partido en su programa frente a lo que votó después, compromiso a compromiso y tema a tema."],
   ["coaliciones", "Coaliciones ganadoras", "Qué combinaciones de grupos aprueban y tumban cada cosa."],
   ["mapa", "Mapa ideológico", "Dónde se sitúa cada grupo según sus votos y cómo evoluciona la polarización."],
   ["disciplina", "Disciplina y ausencias", "Quién rompe la disciplina de voto, quién falta y qué votaciones cambiaron por las ausencias."],
   ["enmiendas", "Enmiendas", "Qué grupo consigue cambiar las leyes y quién apoya las enmiendas de quién."],
   ["causas", "Mis causas", "Sigue un asunto, recibe sus novedades y puntúa a grupos y diputados con tu criterio."],
   ["viene", "Qué viene", "Leyes abiertas: plazos de enmiendas, pendientes de debate y paradas en comisión."],
+  ["programas", "Programas electorales", "Lo que prometió cada partido en su programa frente a lo que votó después: dónde votó en contra y compromiso a compromiso, con la cita."],
 ];
 
 const ACTUALIZACIONES = [

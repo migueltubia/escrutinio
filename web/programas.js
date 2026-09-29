@@ -117,10 +117,11 @@ API.programasIniciativa = (p) => q(`SELECT c.id, c.texto, c.pagina, ci.sentido, 
   WHERE ci.legislatura=? AND ci.expediente=? ORDER BY ci.sentido='relacionada', p.partido, c.orden`, [+p.leg, p.exp]);
 
 VISTAS.programas = async (ruta) => {
-  if (!(await cargarProgramas())) return el("div", { class: "vacio" }, "Todavía no hay programas electorales.");
+  // Es una pestaña de Activismo: lo que prometieron frente a lo que votaron.
+  if (!(await cargarProgramas())) return el("div", {}, subnav(NAV_ACTIVISMO, "programas"), el("div", { class: "vacio" }, "Todavía no hay programas electorales."));
   const d = await api("programas", { g: ruta.g, leg: ruta.leg, tema: ruta.tema, accion: ruta.accion, estado: ruta.estado, pagina: ruta.pagina });
   const ir = (cambios) => irA("programas", { ...ruta, pagina: "", ...cambios });
-  const cont = el("div", {},
+  const cont = el("div", {}, subnav(NAV_ACTIVISMO, "programas"),
     el("h2", {}, "Programas electorales"),
     el("p", { class: "sub" }, "Lo que prometió cada partido en su programa y lo que votó después en el Pleno: cada compromiso con su cita y su página, las iniciativas que tratan lo mismo y el voto del partido en ellas. Los temas son los mismos que los de las votaciones."),
     formFiltros([

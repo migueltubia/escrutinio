@@ -9,7 +9,7 @@ nombres de partido, y el título, el resumen y las etiquetas de la iniciativa. T
 partido, el autor ni los votos.
 
 Lo revisado va a data/llm/programas/verificaciones/<programa>.jsonl, una línea por par, y manda sobre la
-primera pasada; un par ya revisado no se vuelve a preguntar.
+primera pasada; un par ya revisado no se vuelve a preguntar salvo que se pida (`programas-verificar --rehacer`).
 """
 
 import json
@@ -22,24 +22,27 @@ from . import registro
 from .emparejar import HILOS, RELACIONES, _sin_autor, leer_emparejamientos
 from .leer import MODELO, leer_compromisos
 
-VERSION_PROMPT = "verificar-v1"
+# v2: la v1 exigía «el mismo enfoque» y dejaba sin dirección más de la mitad de las relaciones; ahora cuenta
+# también lo que avanza en parte o con otro alcance. Solo queda fuera lo que coincide en el nombre y no en el fondo.
+VERSION_PROMPT = "verificar-v2"
 VERIFICACIONES_DIR = registro.PROGRAMAS_DIR / "verificaciones"
 POR_LLAMADA = 5
 
-SISTEMA = """Eres un analista parlamentario neutral y exigente. Recibes pares formados por un compromiso de un programa
-electoral (resumido y con su cita literal) y una iniciativa del Congreso de los Diputados (tipo, título, resumen y
-etiquetas). No se dice qué partido hizo la promesa ni quién presentó la iniciativa, ni cómo se votó. Para cada par,
-decide la relación con este criterio estricto:
-- misma: si la iniciativa saliera adelante, cumpliría total o parcialmente lo que promete el compromiso, con el mismo
-  enfoque. No basta con que traten el mismo asunto ni con que se llamen parecido: dos «leyes de familias», dos
-  «planes de choque» o dos reformas de la misma ley pueden proponer cosas distintas u opuestas.
-- contraria: la iniciativa haría lo opuesto de lo que promete el compromiso (deroga lo que promete mantener, amplía
-  lo que promete derogar, sube lo que promete bajar…).
-- relacionada: tratan la misma medida, pero con enfoques distintos, o no se puede afirmar con lo que se sabe que la
-  una cumpla o contradiga a la otra.
+SISTEMA = """Eres un analista parlamentario neutral. Recibes pares formados por un compromiso de un programa electoral
+(resumido y con su cita literal) y una iniciativa del Congreso de los Diputados (tipo, título, resumen y etiquetas).
+No se dice qué partido hizo la promesa ni quién presentó la iniciativa, ni cómo se votó. Para cada par, decide la
+relación:
+- misma: si la iniciativa saliera adelante, se avanzaría en lo que promete el compromiso, aunque sea en parte o con
+  otro alcance o enfoque (por ejemplo, el compromiso promete una jornada de 37,5 horas y la iniciativa la baja a 38; o
+  promete reforzar la sanidad pública y la iniciativa amplía una prestación concreta de la sanidad pública).
+- contraria: la iniciativa iría en sentido opuesto a lo que promete el compromiso (deroga lo que promete mantener,
+  amplía lo que promete derogar, sube lo que promete bajar…), aunque sea en parte.
+- relacionada: tratan la misma medida, pero con lo que se sabe no se puede decir si avanza o retrocede en lo
+  prometido; o solo coinciden en el nombre o el tema y el contenido va por otro lado (dos «leyes de familias» o dos
+  «planes de choque» pueden proponer cosas distintas u opuestas).
 - ninguna: no tratan la misma medida.
-Ante la duda entre misma o contraria y relacionada, elige relacionada. Justifica en una o dos frases neutras qué
-propone cada uno y por qué eliges esa relación. Responde SOLO con un objeto json:
+Ante una duda razonable entre misma o contraria y relacionada, elige relacionada. Justifica en una o dos frases
+neutras qué propone cada uno y por qué eliges esa relación. Responde SOLO con un objeto json:
 {"pares": [{"id": "p1", "relacion": "relacionada", "justificacion": "…"}]}"""
 
 # Los programas se nombran a sí mismos («desde el PSOE…»): se quita antes de enseñárselo al modelo.
@@ -71,8 +74,12 @@ def _iniciativa(con, clave):
             "etiquetas": json.loads(r["etiquetas"] or "[]")}
 
 
-def verificar(con, ids=None, limite=None, modelo=None, log=print):
-    """Revisa los pares con dirección (misma o contraria) de la primera pasada que aún no se han revisado."""
+def verificar(con, ids=None, limite=None, modelo=None, rehacer=False, log=print):
+    """Revisa los pares con dirección (misma o contraria) de la primera pasada que aún no se han revisado.
+
+    Un cambio de prompt no repite nada por sí solo: con rehacer=True (orden explícita) se vuelven a revisar los
+    pares revisados con una versión anterior; la revisión nueva se añade y manda sobre la vieja.
+    """
     if not deepseek.disponible():
         raise SystemExit("Falta DEEPSEEK_API_KEY (en .env o como variable de entorno)")
     pares, hechos = leer_emparejamientos(), leer_verificaciones()
@@ -85,7 +92,9 @@ def verificar(con, ids=None, limite=None, modelo=None, log=print):
         compromisos = {c["id"]: c for c in leer_compromisos(e["id"])}
         cola = []
         for (cid, ini), p in sorted(pares.items()):
-            if cid in compromisos and p["relacion"] in ("misma", "contraria") and (cid, ini) not in hechos:
+            hecho = hechos.get((cid, ini))
+            pendiente = not hecho or (rehacer and hecho.get("version_prompt") != VERSION_PROMPT)
+            if cid in compromisos and p["relacion"] in ("misma", "contraria") and pendiente:
                 info = _iniciativa(con, ini)
                 if info:
                     cola.append((cid, ini, p["relacion"], info))

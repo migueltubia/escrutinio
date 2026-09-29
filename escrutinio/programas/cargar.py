@@ -9,7 +9,8 @@ El estado de cada compromiso se calcula con reglas a partir del sentido de cada 
 compromiso y del apoyo del partido en su votación decisiva (con las enmiendas a la totalidad
 invertidas, como en el resto de Escrutinio): apoyar algo en la misma dirección o rechazar algo en la
 contraria es coherente; lo inverso, incoherente. Se recalcula en cada actualización, así que cuando se
-vota algo relacionado el estado cambia solo, sin volver a leer nada.
+vota algo relacionado el estado cambia solo, sin volver a leer nada. Un programa leído que aún no se ha
+comparado con ninguna iniciativa queda «por comparar», no «sin votación»: no se ha mirado nada.
 """
 
 import json
@@ -23,7 +24,8 @@ from .verificar import leer_verificaciones
 
 SALE = ("aprobada", "aprobada_en_parte", "convalidada")
 # Estados en el orden en que se enseñan.
-ESTADOS = ("impulsado", "apoyado", "mixto", "contradicho", "abstencion", "sin_votacion", "fuera_parlamento", "generico")
+ESTADOS = ("impulsado", "apoyado", "mixto", "contradicho", "abstencion", "sin_votacion", "fuera_parlamento", "por_comparar",
+           "generico")
 
 
 def en_gobierno(cuerpo, partido, fecha):
@@ -89,9 +91,11 @@ def cargar(con, log=print):
         ids = {c["id"] for c in compromisos}
         # Lo que no es «ninguna»; si la segunda revisión ya ha visto el par, manda la suya.
         filas = {}
+        comparado = False
         for (cid, ini), p in pares.items():
             if cid not in ids:
                 continue
+            comparado = True
             fila = [p["relacion"], p.get("justificacion"), "llm", "propuesto", p.get("rango")]
             v = verificaciones.get((cid, ini))
             if v and v["antes"] == p["relacion"]:
@@ -104,20 +108,20 @@ def cargar(con, log=print):
                 con.execute("INSERT INTO compromiso_iniciativa VALUES (?,?,?,?,?,?,?,?)",
                             (cid, int(leg_i), exp, sentido, just, origen, estado, rango))
                 n_pares += 1
-        calcular(con, e, leg, compromisos)
+        calcular(con, e, leg, compromisos, comparado)
     con.commit()
     if entradas:
         log(f"Programas: {len(entradas)} ({sum(e['estado'] == 'leido' for e in entradas)} leídos), "
             f"{n_comp} compromisos y {n_pares} iniciativas relacionadas")
 
 
-def calcular(con, e, leg, compromisos):
+def calcular(con, e, leg, compromisos, comparado=True):
     """Estado de cada compromiso de un programa según lo que votó el partido (tabla compromiso_estado)."""
     partido, cuerpo = e["partido"], e["cuerpo"]
     for c in compromisos:
-        if not c["verificable"]:
+        if not c["verificable"] or not comparado:
             con.execute("INSERT INTO compromiso_estado(compromiso, partido, legislatura, estado) VALUES (?,?,?,?)",
-                        (c["id"], partido, leg, "generico"))
+                        (c["id"], partido, leg, "generico" if not c["verificable"] else "por_comparar"))
             continue
         impulsa = coherentes = incoherentes = abstenciones = aprobada = 0
         gobierno = set()

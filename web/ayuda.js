@@ -154,7 +154,7 @@ Lo que prometió cada partido en su programa electoral y lo que votó después e
 
 ### Cómo se lee
 - **Los programas**: cuántos compromisos tiene cada uno, cuántos son verificables y qué parte de los que tuvieron votación en un sentido claro **coincide** con lo que votó el partido.
-- **Qué pasó con lo que prometieron**: el estado de los compromisos verificables de cada partido: *impulsado* (presentó algo en su dirección, o lo presentó el Gobierno mientras gobernaba), *apoyado* (votó a favor de algo en su dirección o en contra de algo en la contraria), *contradicho* (lo inverso), *mixto* (votos en los dos sentidos), *abstención*, *sin votación* y *no verificable en el Parlamento* (depende del Gobierno o de otra Administración).
+- **Qué pasó con lo que prometieron**: el estado de los compromisos verificables de cada partido: *impulsado* (presentó algo en su dirección, o lo presentó el Gobierno mientras gobernaba), *apoyado* (votó a favor de algo en su dirección o en contra de algo en la contraria), *contradicho* (lo inverso), *mixto* (votos en los dos sentidos), *abstención*, *sin votación* y *no verificable en el Parlamento* (depende del Gobierno o de otra Administración). Un programa leído que aún no se ha comparado con lo votado sale como *pendiente de comparar* y no cuenta en las cifras.
 - **En el Gobierno y en la oposición**: la misma cifra según el partido estuviera en el Gobierno o en la oposición cuando se votó lo relacionado con cada compromiso (sale si hay programas de un partido en los dos lados).
 - **Tema a tema**: dónde coincide más y menos cada partido con su voto, y cuánto pesa cada tema en su programa frente a lo que presentó en el Congreso.
 - **Compromisos**: cada uno con la cita literal del programa y su página (el enlace abre el PDF en esa página), las iniciativas del Pleno que tratan lo mismo (**en su dirección**, **en la contraria** o sin dirección clara) y lo que votó el partido, en el Gobierno o en la oposición.
@@ -302,6 +302,7 @@ Lo que aún está por decidir: proyectos y proposiciones de ley abiertos en la l
 - **Esperan el debate de toma en consideración**: proposiciones que el Pleno aún no ha debatido.
 - **Paradas en comisión**: el plazo de enmiendas se ha ampliado muchas veces; suele indicar que no hay acuerdo para seguir.
 - **Por tema y por fase**, y la lista completa, descargable en CSV.
+- **En la línea del programa de…**: partidos que llevaban en su programa electoral un compromiso en la dirección de esa iniciativa. Toca la fila para ver qué prometía cada uno, con la cita y la página.
 
 ### Filtros
 - **Texto**, **temas**, **fases** y **proponentes**.

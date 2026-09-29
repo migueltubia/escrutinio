@@ -34,9 +34,11 @@ const ESTADO_COMPROMISO = {
   abstencion: ["Abstención", "var(--abs)", "Se abstuvo (o se dividió) en lo relacionado que se votó."],
   sin_votacion: ["Sin votación", "var(--novota)", "No se ha votado nada relacionado en el Pleno. No quiere decir que no se haya cumplido."],
   fuera_parlamento: ["No verificable en el Parlamento", "var(--grid)", "Depende del Gobierno (real decreto, presupuestos, gestión) o de otra Administración, y no ha pasado por el Pleno como decreto-ley."],
+  por_comparar: ["Pendiente de comparar", "transparent", "El programa aún no se ha comparado con lo que se votó en la legislatura: no cuenta en las cifras."],
   generico: ["Declaración general", "transparent", "Intención sin medida concreta: se muestra, pero no cuenta en las cifras."],
 };
-const ESTADOS_VERIFICABLES = Object.keys(ESTADO_COMPROMISO).filter((e) => e !== "generico");
+// Los estados que salen de comparar el compromiso con lo votado.
+const ESTADOS_VERIFICABLES = Object.keys(ESTADO_COMPROMISO).filter((e) => e !== "generico" && e !== "por_comparar");
 const SENTIDO_COMPROMISO = { misma: "En la dirección del compromiso", contraria: "En la dirección contraria", relacionada: "Trata lo mismo, sin dirección clara" };
 const ACCION_COMPROMISO = { legislar: "Legislar", derogar: "Derogar", financiar: "Financiar", crear_organismo: "Crear un organismo",
   bajar_impuesto: "Bajar un impuesto", subir_impuesto: "Subir un impuesto", declaracion: "Declaración", otra: "Otra medida" };
@@ -167,16 +169,19 @@ VISTAS.programas = async (ruta) => {
       el("tbody", {}, d.programas.map((p) => {
         const o = porPrograma.get(p.id) || { todos: 0, verificables: 0 };
         const co = coinciden(o);
+        // Leído pero aún sin comparar con lo votado: no hay contradichos ni «sin votación» que contar.
+        const comparado = p.estado === "leido" && !o.por_comparar;
         return el("tr", { class: "clic", onclick: () => ir({ g: p.partido }) },
           el("td", { style: "white-space:nowrap" }, swatch(colorSiglas(p.partido)), p.partido),
           el("td", {}, el("a", { href: enlaceCita(p.url, p.formato, 1).href.replace(/#page=1$/, ""), target: "_blank", rel: "noopener", onclick: (e) => e.stopPropagation() }, p.titulo),
             el("div", { class: "small muted" }, [eleccionTexto(p.eleccion), p.formato === "html" ? `página web, ${fmt(p.paginas)} apartados` : `${fmt(p.paginas)} páginas`, p.legislatura ? `cubre la ${legTexto(p.legislatura)}` : null,
-              p.legislatura && gobiernosLeg(p.legislatura) ? `gobierno: ${gobiernosLeg(p.legislatura)}` : null, ORIGEN_PROGRAMA[p.origen] || null, p.estado === "pendiente" ? "pendiente de leer" : p.estado === "error" ? "no se ha podido leer" : null].filter(Boolean).join(" · "))),
+              p.legislatura && gobiernosLeg(p.legislatura) ? `gobierno: ${gobiernosLeg(p.legislatura)}` : null, ORIGEN_PROGRAMA[p.origen] || null, p.estado === "pendiente" ? "pendiente de leer" : p.estado === "error" ? "no se ha podido leer" : null,
+              p.estado === "leido" && o.por_comparar ? "pendiente de comparar con lo votado" : null].filter(Boolean).join(" · "))),
           el("td", { class: "num" }, p.estado === "leido" ? fmt(o.todos) : "—"),
           el("td", { class: "num" }, p.estado === "leido" ? `${fmt(o.verificables)} (${pct(o.verificables, o.todos)}%)` : "—"),
           el("td", { class: "num" }, co.n ? `${Math.round(100 * co.p)}%` : "—"),
-          el("td", { class: "num" }, p.estado === "leido" ? fmt(o.contradicho || 0) : "—"),
-          el("td", { class: "num" }, p.estado === "leido" ? fmt((o.sin_votacion || 0) + (o.fuera_parlamento || 0)) : "—"));
+          el("td", { class: "num" }, comparado ? fmt(o.contradicho || 0) : "—"),
+          el("td", { class: "num" }, comparado ? fmt((o.sin_votacion || 0) + (o.fuera_parlamento || 0)) : "—"));
       })))));
   if (!d.resumen.length) return cont;
 
@@ -205,11 +210,12 @@ VISTAS.programas = async (ruta) => {
   cont.append(el("div", { class: "card", style: "margin-top:16px" }, el("h3", {}, "Qué pasó con lo que prometieron"),
     el("p", { class: "small muted" }, "Compromisos verificables de cada partido según lo que votó en el Pleno. «Sin votación» no es incumplimiento: muchas promesas se cumplen o no por real decreto, por presupuestos o por gestión. Clic en un partido para ver solo los suyos."),
     el("div", { class: "legend" }, ESTADOS_VERIFICABLES.map((e) => el("span", { title: ESTADO_COMPROMISO[e][2] }, el("i", { style: `background:${ESTADO_COMPROMISO[e][1]}` }), ESTADO_COMPROMISO[e][0]))),
-    barrasH(partidos.map((s) => {
+    barrasH(partidos.filter((s) => porPartido.get(s).verificables > (porPartido.get(s).por_comparar || 0)).map((s) => {
       const o = porPartido.get(s);
-      return { label: s, color: colorSiglas(s), valorTexto: `${fmt(o.verificables)} verificables`,
+      const n = o.verificables - (o.por_comparar || 0);
+      return { label: s, color: colorSiglas(s), valorTexto: `${fmt(n)} verificables`,
         segs: ESTADOS_VERIFICABLES.map((e) => ({ v: o[e] || 0, color: ESTADO_COMPROMISO[e][1], nombre: ESTADO_COMPROMISO[e][0] })),
-        tip: (sg) => `${fmt(sg.v)} de ${fmt(o.verificables)} compromisos (${pct(sg.v, o.verificables)}%)`, onclick: () => ir({ g: s }) };
+        tip: (sg) => `${fmt(sg.v)} de ${fmt(n)} compromisos (${pct(sg.v, n)}%)`, onclick: () => ir({ g: s }) };
     }), { segs: true, normalizar: true })));
 
   // 3. Tema a tema: dónde coincide cada partido con su voto y cuánto pesa cada tema en su programa y en lo que presenta.
@@ -254,6 +260,7 @@ VISTAS.programas = async (ruta) => {
 - Cada compromiso se relaciona con las iniciativas del Pleno de la legislatura siguiente a las elecciones que tratan la misma medida, y se indica si van **en su dirección**, **en la contraria** o solo tratan lo mismo. Al decidirlo no se tiene en cuenta qué partido hizo la promesa ni quién presentó la iniciativa, y lo que va en una dirección se comprueba en una segunda revisión más estricta: no basta con que se llamen parecido.
 - Se usa lo que votó el partido en la **votación decisiva** de cada iniciativa (en las enmiendas a la totalidad, votar sí es votar contra el proyecto). Apoyar algo en la dirección del compromiso o rechazar algo en la contraria **coincide con el programa**; lo inverso, no.
 - **Sin votación no es incumplimiento**: muchas promesas se cumplen o no por real decreto, por presupuestos o por gestión. De lo que depende del Gobierno solo se tienen en cuenta los decretos-leyes, que se convalidan en el Pleno.
+- Un programa leído que aún no se ha comparado con lo votado sale como **pendiente de comparar**, no como sin votación, y no cuenta en las cifras.
 - Se indica si el partido estaba en el Gobierno o en la oposición en cada votación: votar contra una promesa propia por un acuerdo de coalición es un dato, no una anomalía.`)));
   return cont;
 };
@@ -272,7 +279,7 @@ function filaCompromiso(c, d) {
     el("div", { class: "texto" }, c.texto),
     el("blockquote", {}, `«${c.cita}»`),
     rels.length ? el("ul", { class: "relacionadas" }, rels.map((r) => filaRelacionada(r, c, d)))
-      : c.verificable ? el("p", { class: "small muted", style: "margin:0" }, "Ninguna iniciativa del Pleno relacionada.") : null);
+      : c.verificable && c.estado !== "por_comparar" ? el("p", { class: "small muted", style: "margin:0" }, "Ninguna iniciativa del Pleno relacionada.") : null);
 }
 
 function filaRelacionada(r, c, d) {
@@ -305,6 +312,20 @@ const votosPartido = (leg, exp, partido) => q(`SELECT v.legislatura, v.id, v.fec
   LEFT JOIN grupo gr ON gr.legislatura=v.legislatura AND gr.siglas=?
   LEFT JOIN voto_grupo g ON g.votacion_id=v.id AND g.grupo=gr.codigo
   WHERE v.legislatura=? AND v.expediente=? AND v.decisiva=1 AND v.tipo_votacion IN (${FONDO_SQL}) ORDER BY v.fecha`, [partido, +leg, exp]);
+
+// Partidos del índice programa_iniciativa (en comun.js, sin descargar programas.js), como texto: «PSOE y Sumar».
+function textoPartidos(v) {
+  const xs = lista(v).sort((a, b) => a.localeCompare(b, "es"));
+  return xs.length > 1 ? `${xs.slice(0, -1).join(", ")} y ${xs.at(-1)}` : xs[0] || "";
+}
+
+// Línea de la ficha de una votación: en qué programas aparece su iniciativa, con enlace a la ficha de la iniciativa.
+function lineaProgramas(leg, exp) {
+  const r = q1("SELECT partidos FROM programa_iniciativa WHERE legislatura=? AND expediente=?", [+leg, exp]);
+  if (!r) return null;
+  return el("p", { class: "small" }, el("a", { href: "#", onclick: (e) => { e.preventDefault(); abrir(`i:${leg}:${exp}`); } },
+    `Aparece en ${lista(r.partidos).length > 1 ? "los programas electorales" : "el programa electoral"} de ${textoPartidos(r.partidos)}: qué prometían →`));
+}
 
 // Bloque del detalle de una iniciativa: qué partidos llevaban en su programa algo relacionado. Solo descarga los
 // programas si la iniciativa aparece en alguno (programa_iniciativa, en comun.js).

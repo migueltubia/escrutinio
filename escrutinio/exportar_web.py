@@ -88,11 +88,13 @@ ESQUEMA_COMUN = """
 CREATE TABLE gobierno(cuerpo TEXT, desde TEXT, hasta TEXT, presidente TEXT, partido TEXT, socios TEXT,
   PRIMARY KEY(cuerpo, desde));
 -- Programas electorales (pocas filas) e iniciativas que aparecen relacionadas con algún compromiso: con esto
--- la web sabe si hace falta cargar programas.js sin descargarlo.
+-- la web sabe si hace falta cargar programas.js sin descargarlo. En partidos, los que tienen algo relacionado en
+-- su programa; en prometen, los que tienen algo en la dirección de la iniciativa.
 CREATE TABLE programa(id TEXT PRIMARY KEY, eleccion TEXT, fecha_eleccion TEXT, cuerpo TEXT, legislatura INTEGER,
   partido TEXT, titulo TEXT, origen TEXT, url TEXT, url_oficial TEXT, descargado TEXT, paginas INTEGER, estado TEXT,
   leido TEXT, compromisos INTEGER, verificables INTEGER, formato TEXT);
-CREATE TABLE programa_iniciativa(legislatura INTEGER, expediente TEXT, PRIMARY KEY(legislatura, expediente));
+CREATE TABLE programa_iniciativa(legislatura INTEGER, expediente TEXT, partidos TEXT, prometen TEXT,
+  PRIMARY KEY(legislatura, expediente));
 """
 # Compromisos de los programas, sus iniciativas relacionadas y su estado: van en programas.js, que la web
 # solo descarga al entrar en «Programas» o al abrir una iniciativa que aparece en algún programa.
@@ -149,8 +151,11 @@ def construir(con, destino, log=print):
                                       FROM compromiso_iniciativa WHERE estado<>'rechazado'""")
     copiar("compromiso_estado", """SELECT compromiso, estado, impulsa, coherentes, incoherentes, abstenciones, aprobada, gobierno
                                   FROM compromiso_estado""")
-    copiar("programa_iniciativa", """SELECT DISTINCT legislatura, expediente FROM compromiso_iniciativa
-                                    WHERE estado<>'rechazado'""")
+    copiar("programa_iniciativa", """SELECT ci.legislatura, ci.expediente, GROUP_CONCAT(DISTINCT p.partido),
+                                           GROUP_CONCAT(DISTINCT CASE WHEN ci.sentido='misma' THEN p.partido END)
+                                    FROM compromiso_iniciativa ci JOIN compromiso c ON c.id=ci.compromiso
+                                    JOIN programa p ON p.id=c.programa
+                                    WHERE ci.estado<>'rechazado' GROUP BY 1, 2""")
     if n:
         log(f"  compromisos de programas electorales: {n}")
     copiar("tema", "SELECT codigo, nombre, subtemas FROM tema")

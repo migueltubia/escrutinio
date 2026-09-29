@@ -938,8 +938,10 @@ API.viene = (p) => {
   for (const palabra of (p.q || "").split(/\s+/).filter(Boolean)) {
     w.push("(e.titulo LIKE ? OR f.resumen LIKE ? OR f.etiquetas LIKE ?)"); a.push(...Array(3).fill(`%${palabra}%`));
   }
-  return { filas: q(`SELECT e.*, f.resumen, f.tema_principal, f.etiquetas FROM en_tramite e
-    LEFT JOIN ficha_llm f ON f.legislatura=e.legislatura AND f.expediente=e.expediente WHERE ${w.join(" AND ")}`, a) };
+  // prometen: partidos con un compromiso de su programa en la dirección de la iniciativa.
+  return { filas: q(`SELECT e.*, f.resumen, f.tema_principal, f.etiquetas, pi.prometen FROM en_tramite e
+    LEFT JOIN ficha_llm f ON f.legislatura=e.legislatura AND f.expediente=e.expediente
+    LEFT JOIN programa_iniciativa pi ON pi.legislatura=e.legislatura AND pi.expediente=e.expediente WHERE ${w.join(" AND ")}`, a) };
 };
 
 VISTAS.viene = async (q) => {
@@ -975,11 +977,14 @@ VISTAS.viene = async (q) => {
     stat("Esperan el debate en el Pleno", fmt(toma.length), "toma en consideración pendiente"),
     stat("Plazo ampliado 10 veces o más", fmt(congeladas.length), `de ${fmt(enmiendas.length)} en fase de enmiendas`)));
 
-  const fila = (e, extra) => el("tr", { class: e.votada ? "clic" : "", onclick: e.votada ? () => abrir(`i:${e.legislatura}:${e.expediente}`) : null },
+  // Se abre la ficha si ya tuvo votaciones o si está en algún programa (para ver qué prometía cada partido).
+  const fila = (e, extra) => el("tr", { class: e.votada || e.prometen ? "clic" : "", onclick: e.votada || e.prometen ? () => abrir(`i:${e.legislatura}:${e.expediente}`) : null },
     el("td", {}, el("div", { title: e.titulo }, tituloCorto(e.titulo, 150)), e.resumen ? el("div", { class: "small muted" }, e.resumen) : null,
       el("div", { class: "badges" }, e.tema_principal ? el("span", { class: "badge ia" }, temaNombre(e.tema_principal)) : null,
         el("span", { class: "badge" }, e.grupo_autor ? siglas(e.legislatura, e.grupo_autor) : e.autor || "—"),
         e.votada ? el("span", { class: "badge" }, "ya tuvo votaciones en el Pleno") : null,
+        e.prometen ? el("span", { class: "badge", title: "Llevaban en su programa electoral un compromiso en la dirección de esta iniciativa. Clic para ver cuál." },
+          `En la línea ${lista(e.prometen).length > 1 ? "de los programas" : "del programa"} de ${textoPartidos(e.prometen)}`) : null,
         e.bocg ? el("a", { class: "badge", href: e.bocg.split("\n")[0], target: "_blank", rel: "noopener", onclick: (ev) => ev.stopPropagation() }, "BOCG") : null)),
     el("td", { class: "small" }, e.fase || "—", el("div", { class: "muted" }, e.organo || "")),
     el("td", { class: "small", style: "white-space:nowrap" }, extra(e)));

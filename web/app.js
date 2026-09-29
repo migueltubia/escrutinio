@@ -1935,7 +1935,8 @@ async function panelVotacion(id) {
       leidaDeActa ? el("p", { class: "procedencia" }, "Votación leída del diario de sesiones o del acta: el asunto, los totales y el voto de cada grupo salen del texto; conviene contrastarlos con el documento original.") : null,
       enlacesVotacion(v)),
     el("section", {}, el("h3", {}, "Qué es"), bloqueFicha(d.ficha), el("div", { style: "margin-top:10px" }, bloqueIniciativa(d.iniciativa)),
-      d.iniciativa ? el("p", { class: "small" }, el("a", { href: "#", onclick: (e) => { e.preventDefault(); abrir(`i:${leg}:${d.iniciativa.expediente}`); } }, "Ver la iniciativa y todas sus votaciones →")) : null));
+      d.iniciativa ? el("p", { class: "small" }, el("a", { href: "#", onclick: (e) => { e.preventDefault(); abrir(`i:${leg}:${d.iniciativa.expediente}`); } }, "Ver la iniciativa y todas sus votaciones →")) : null,
+      d.iniciativa ? lineaProgramas(leg, d.iniciativa.expediente) : null));
 
   // Por grupos.
   const filas = d.grupos.filter((g) => g.grupo !== "?").map((g) => {
@@ -1982,6 +1983,22 @@ async function panelIniciativa(leg, exp) {
   const d = await api("iniciativa", { leg, exp });
   const i = d.iniciativa;
   const programas = await bloqueProgramas(leg, exp);
+  // Las que aún no se han votado solo están en en_tramite: se abren desde «Qué viene» si están en algún programa.
+  if (!i) {
+    const t = q1("SELECT * FROM en_tramite WHERE legislatura=? AND expediente=?", [+leg, exp]);
+    if (!t) return el("div", { class: "vacio" }, "Esta iniciativa no está en los datos cargados.");
+    const ficha = enlaceIniciativa({ legislatura: +leg, expediente: exp });
+    return el("div", {},
+      el("div", { class: "muted small" }, [`Leg. ${romano(leg)}`, t.tipo].filter(Boolean).join(" · ")),
+      el("h2", {}, t.titulo),
+      el("section", {}, bloqueFicha(d.ficha)),
+      el("section", { class: "small" }, el("div", {}, el("strong", {}, `Expediente ${exp}`)), ficha ? el("div", {}, ficha) : null,
+        t.autor ? el("div", {}, "Autor: ", t.autor) : null,
+        t.fecha_presentacion ? el("div", {}, "Presentada: ", fecha(t.fecha_presentacion)) : null,
+        t.fase ? el("div", {}, "Fase: ", t.fase, t.organo ? el("span", { class: "muted" }, ` (${t.organo})`) : null) : null,
+        el("div", { class: "muted" }, "Todavía no se ha votado en el Pleno.")),
+      programas);
+  }
   return el("div", {},
     el("div", { class: "muted small" }, [infoLeg(leg).cuerpo !== "congreso" ? infoLeg(leg).cuerpo_nombre : null, `Leg. ${romano(leg)}`, i.tipo].filter(Boolean).join(" · ")),
     el("h2", {}, i.titulo),

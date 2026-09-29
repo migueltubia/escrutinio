@@ -47,13 +47,13 @@ GitHub Pages.
 | Temas → ficha de tema | Cómo vota cada grupo en el tema, quién propone y quién lo consigue, afinidad, evolución por legislatura y matriz votación a votación |
 | Grupos → perfil de grupo | Su voto por tema, sus iniciativas, con quién coincide y en qué, y cuándo su voto decidió el resultado |
 | Comparar | Dos o más grupos frente a frente en los mismos asuntos: en cuántos votan igual, cuánto apoya cada uno lo que presentan los demás, a quién apoya cada uno, tema a tema y legislatura a legislatura, y asunto a asunto |
-| Programas | Lo que prometió cada partido en su programa frente a lo que votó: los programas frente a frente, el estado de sus compromisos, tema a tema y compromiso a compromiso con su cita y las iniciativas relacionadas (ver «Programas electorales»). El detalle de cada iniciativa dice qué partidos llevaban algo relacionado en su programa |
+| Programas | Lo que prometió cada partido en su programa frente a lo que votó: los programas frente a frente, el estado de sus compromisos, tema a tema y compromiso a compromiso con su cita y las iniciativas relacionadas (ver «Programas electorales»). El detalle de cada iniciativa dice qué partidos llevaban algo relacionado en su programa, y el de cada votación enlaza con él |
 | Análisis · Coaliciones ganadoras | Qué combinaciones de grupos aprueban y tumban cada cosa |
 | Análisis · Mapa ideológico y polarización | Posición de los grupos según sus votos (MDS sobre la afinidad) y polarización por trimestre |
 | Análisis · Disciplina y ausencias | Diputados que votan distinto a su grupo, votos no emitidos y votaciones que habrían cambiado con los ausentes |
 | Análisis · Enmiendas | Qué grupo consigue cambiar las leyes, quién apoya las enmiendas de quién y leyes con más enmiendas aprobadas |
 | Activismo · Mis causas | Seguimiento guardado en el navegador (texto, tema o etiqueta), novedades desde la última visita, scorecard con tu criterio y CSV |
-| Activismo · Qué viene | Iniciativas abiertas de la legislatura actual: recién abiertas a enmiendas, pendientes de debate y paradas en comisión |
+| Activismo · Qué viene | Iniciativas abiertas de la legislatura actual: recién abiertas a enmiendas, pendientes de debate y paradas en comisión, con los partidos que llevaban en su programa algo en su dirección |
 | Ayuda | Qué es, qué hace, de dónde salen los datos, qué se actualiza y cada cuánto, conceptos y limitaciones. Cada pestaña tiene además su «Cómo se lee» |
 
 En listas y tablas los títulos oficiales se acortan (abreviatura del tipo, número y asunto: «RDL
@@ -373,7 +373,8 @@ Cómo se hace, paso a paso:
    apoyo): *impulsado* si presentó algo en su dirección (o lo presentó el Gobierno mientras
    gobernaba), *apoyado*, *contradicho*, *mixto*, *abstención*, *sin votación* y *no verificable en el
    Parlamento* (lo que depende del Gobierno o de otra Administración solo se comprueba con los
-   decretos-leyes). Sin votación no es incumplimiento, y la web lo dice.
+   decretos-leyes). Sin votación no es incumplimiento, y la web lo dice. Un programa leído que aún no
+   se ha comparado con ninguna iniciativa queda *pendiente de comparar*, que no cuenta en las cifras.
 
 La actualización diaria lee los programas registrados que estén pendientes, decide las candidatas
 nuevas (hasta 300 compromisos por ejecución), revisa las relaciones nuevas con dirección y recalcula el

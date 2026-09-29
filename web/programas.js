@@ -313,6 +313,78 @@ const votosPartido = (leg, exp, partido) => q(`SELECT v.legislatura, v.id, v.fec
   LEFT JOIN voto_grupo g ON g.votacion_id=v.id AND g.grupo=gr.codigo
   WHERE v.legislatura=? AND v.expediente=? AND v.decisiva=1 AND v.tipo_votacion IN (${FONDO_SQL}) ORDER BY v.fecha`, [partido, +leg, exp]);
 
+// ---- en una causa (Activismo): qué prometieron los partidos sobre lo mismo ----
+
+// Compromisos verificables que encajan con una causa, con los mismos criterios que sus votaciones: tema (el del
+// compromiso), etiqueta exacta, palabras en el texto, la cita o las etiquetas, y legislatura que cubre el programa.
+API.programasCausa = (p) => {
+  const w = ["c.verificable=1"], a = [];
+  condIn(w, a, "c.tema", p.tema);
+  condIn(w, a, "p.legislatura", p.leg, Number);
+  condJson(w, a, "c.etiquetas", p.etiqueta);
+  for (const palabra of (p.q || "").split(/\s+/).filter(Boolean)) {
+    w.push("(c.texto LIKE ? OR c.cita LIKE ? OR c.etiquetas LIKE ?)");
+    a.push(...Array(3).fill(`%${palabra}%`));
+  }
+  return q(`SELECT c.id, c.texto, c.cita, c.pagina, c.orden, p.partido, p.eleccion, p.fecha_eleccion, p.url, p.formato,
+      COALESCE(ce.estado, 'generico') AS estado
+    FROM compromiso c JOIN programa p ON p.id=c.programa LEFT JOIN compromiso_estado ce ON ce.compromiso=c.id
+    WHERE ${w.join(" AND ")}`, a);
+};
+
+// Causa con el bloque abierto: marcar el scorecard vuelve a pintar la vista y así no se cierra.
+let causaConProgramas = null;
+
+// Bloque de una causa: cerrado hasta que se pulsa (entonces descarga los programas). Solo sale si hay algún programa
+// leído de las legislaturas de la causa.
+function bloqueCausaProgramas(causa) {
+  if (!CATALOGO.programas) return null;
+  const [wl, al] = enSQL("legislatura", causa.leg, { conv: Number });
+  if (!q1(`SELECT 1 AS x FROM programa WHERE estado='leido' ${wl}`, al)) return null;
+  const clave = JSON.stringify([causa.q, causa.tema, causa.etiqueta, causa.leg]);
+  const cuerpo = el("div", {});
+  const abrirBloque = async () => {
+    causaConProgramas = clave;
+    cuerpo.replaceChildren(el("p", { class: "muted small" }, "Cargando los programas…"));
+    await cargarProgramas();
+    const cs = await api("programasCausa", { q: causa.q, tema: causa.tema, etiqueta: causa.etiqueta, leg: causa.leg });
+    cuerpo.replaceChildren(listaCausaProgramas(cs, causa));
+  };
+  cuerpo.append(el("button", { class: "boton", onclick: abrirBloque }, "Ver qué prometían los partidos"));
+  if (causaConProgramas === clave) abrirBloque();
+  return el("div", { class: "card", style: "margin-top:16px" }, el("h3", {}, "¿Qué prometieron sobre esto?"),
+    el("p", { class: "small muted" }, "Compromisos concretos de los programas electorales que encajan con esta causa y qué pasó con cada uno según lo que votó después el partido. Primero, los que tuvieron votación. Las declaraciones generales no se muestran."),
+    cuerpo);
+}
+
+function listaCausaProgramas(cs, causa) {
+  if (!cs.length) return el("p", { class: "muted" }, "Ningún compromiso concreto de los programas encaja con esta causa.");
+  const orden = Object.keys(ESTADO_COMPROMISO);
+  cs.sort((a, b) => orden.indexOf(a.estado) - orden.indexOf(b.estado) || b.fecha_eleccion.localeCompare(a.fecha_eleccion) || a.orden - b.orden);
+  const porPartido = new Map();
+  for (const c of cs) porPartido.set(c.partido, [...(porPartido.get(c.partido) || []), c]);
+  const item = (c) => {
+    const [nombre, , explicacion] = ESTADO_COMPROMISO[c.estado];
+    const cita = enlaceCita(c.url, c.formato, c.pagina);
+    return el("li", {},
+      el("div", {}, el("span", { class: "badge", title: explicacion }, puntoEstado(c.estado), nombre), " ", c.texto),
+      el("div", { class: "small muted" }, el("a", { href: cita.href, target: "_blank", rel: "noopener", title: `«${c.cita}»` },
+        `Programa ${c.partido}, ${eleccionTexto(c.eleccion).toLowerCase()}, ${cita.texto}`)));
+  };
+  const MUESTRA = 5;
+  const enlace = Object.entries({ tema: causa.tema, leg: causa.leg }).filter(([, v]) => v);
+  return el("div", {},
+    [...porPartido.entries()].sort((a, b) => b[1].length - a[1].length).map(([s, xs]) => {
+      const ul = el("ul", { class: "relacionadas" }, xs.slice(0, MUESTRA).map(item));
+      const mas = xs.length > MUESTRA ? el("button", { class: "boton", style: "margin-top:6px", onclick: () => { ul.replaceChildren(...xs.map(item)); mas.remove(); } }, `Ver los ${fmt(xs.length)}`) : null;
+      return el("div", { style: "margin-top:12px" },
+        el("div", { style: "margin-bottom:6px" }, swatch(colorSiglas(s)), el("b", {}, s), el("span", { class: "small muted" }, ` · ${fmt(xs.length)} ${xs.length === 1 ? "compromiso" : "compromisos"}`)),
+        ul, mas);
+    }),
+    el("p", { class: "small", style: "margin:12px 0 0" }, el("a", { href: "#/programas" + (enlace.length ? "?" + new URLSearchParams(enlace) : "") },
+      "En Programas, cada compromiso con las iniciativas relacionadas y lo que votó el partido →")));
+}
+
 // Partidos del índice programa_iniciativa (en comun.js, sin descargar programas.js), como texto: «PSOE y Sumar».
 function textoPartidos(v) {
   const xs = lista(v).sort((a, b) => a.localeCompare(b, "es"));

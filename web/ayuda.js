@@ -286,6 +286,7 @@ Todas las votaciones de tu causa y una puntuación de grupos y diputados según 
 ### Cómo se usa
 - En **Votación a votación**, marca en cada votación qué voto era el favorable para tu causa («A favor» o «En contra»). Puedes marcar toda la página de una vez.
 - El **scorecard** calcula, para cada grupo y diputado, el porcentaje de las votaciones marcadas en que votó como marcaste. Abstenerse o dividirse cuenta como no coincidir.
+- **¿Qué prometieron sobre esto?**: al pulsar, los compromisos concretos de los programas electorales que encajan con la causa (mismo tema, etiqueta o texto), por partido, con su estado según lo que votó después y el enlace a la página del programa.
 - **Guardar causa** la conserva en este navegador; los botones de CSV descargan las votaciones y el scorecard.
 
 ### Ten en cuenta

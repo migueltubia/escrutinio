@@ -887,6 +887,8 @@ VISTAS.causa = async (q) => {
       el("div", {}, el("h3", {}, "Diputados que menos"), tabla(orden(dips.slice()).reverse().slice(0, 15)))));
   }
   cont.append(cardScore);
+  const prometido = bloqueCausaProgramas(causa);
+  if (prometido) cont.append(prometido);
 
   // Novedades y matriz con marcas.
   const columnas = [...sumarPor(Object.values(d.celdas).flatMap((cs) => Object.values(cs).map((c) => ({ siglas: c.siglas, si: 0, no: 0, abst: 0, div: 0, n: 1 }))), (r) => r.siglas).values()]

@@ -52,7 +52,7 @@ GitHub Pages.
 | Análisis · Mapa ideológico y polarización | Posición de los grupos según sus votos (MDS sobre la afinidad) y polarización por trimestre |
 | Análisis · Disciplina y ausencias | Diputados que votan distinto a su grupo, votos no emitidos y votaciones que habrían cambiado con los ausentes |
 | Análisis · Enmiendas | Qué grupo consigue cambiar las leyes, quién apoya las enmiendas de quién y leyes con más enmiendas aprobadas |
-| Activismo · Mis causas | Seguimiento guardado en el navegador (texto, tema o etiqueta), novedades desde la última visita, scorecard con tu criterio y CSV |
+| Activismo · Mis causas | Seguimiento guardado en el navegador (texto, tema o etiqueta), novedades desde la última visita, scorecard con tu criterio, qué prometían los partidos sobre lo mismo en sus programas y CSV |
 | Activismo · Qué viene | Iniciativas abiertas de la legislatura actual: recién abiertas a enmiendas, pendientes de debate y paradas en comisión, con los partidos que llevaban en su programa algo en su dirección |
 | Ayuda | Qué es, qué hace, de dónde salen los datos, qué se actualiza y cada cuánto, conceptos y limitaciones. Cada pestaña tiene además su «Cómo se lee» |
 

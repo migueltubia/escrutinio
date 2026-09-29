@@ -47,7 +47,7 @@ GitHub Pages.
 | Temas → ficha de tema | Cómo vota cada grupo en el tema, quién propone y quién lo consigue, afinidad, evolución por legislatura y matriz votación a votación |
 | Grupos → perfil de grupo | Su voto por tema, sus iniciativas, con quién coincide y en qué, y cuándo su voto decidió el resultado |
 | Comparar | Dos o más grupos frente a frente en los mismos asuntos: en cuántos votan igual, cuánto apoya cada uno lo que presentan los demás, a quién apoya cada uno, tema a tema y legislatura a legislatura, y asunto a asunto |
-| Programas | Lo que prometió cada partido en su programa frente a lo que votó: los programas frente a frente, el estado de sus compromisos, tema a tema y compromiso a compromiso con su cita y las iniciativas relacionadas (ver «Programas electorales»). El detalle de cada iniciativa dice qué partidos llevaban algo relacionado en su programa, y el de cada votación enlaza con él |
+| Programas | Lo que prometió cada partido en su programa frente a lo que votó: primero, dónde votó en contra de lo que prometía; después, los programas frente a frente, cuánto pesa cada tema y compromiso a compromiso con su cita y las iniciativas relacionadas (ver «Programas electorales»). El detalle de cada iniciativa dice qué partidos llevaban algo relacionado en su programa, y el de cada votación enlaza con él |
 | Análisis · Coaliciones ganadoras | Qué combinaciones de grupos aprueban y tumban cada cosa |
 | Análisis · Mapa ideológico y polarización | Posición de los grupos según sus votos (MDS sobre la afinidad) y polarización por trimestre |
 | Análisis · Disciplina y ausencias | Diputados que votan distinto a su grupo, votos no emitidos y votaciones que habrían cambiado con los ausentes |

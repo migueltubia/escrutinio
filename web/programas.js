@@ -37,8 +37,6 @@ const ESTADO_COMPROMISO = {
   por_comparar: ["Pendiente de comparar", "transparent", "El programa aún no se ha comparado con lo que se votó en la legislatura: no cuenta en las cifras."],
   generico: ["Declaración general", "transparent", "Intención sin medida concreta: se muestra, pero no cuenta en las cifras."],
 };
-// Los estados que salen de comparar el compromiso con lo votado.
-const ESTADOS_VERIFICABLES = Object.keys(ESTADO_COMPROMISO).filter((e) => e !== "generico" && e !== "por_comparar");
 const SENTIDO_COMPROMISO = { misma: "En la dirección del compromiso", contraria: "En la dirección contraria", relacionada: "Trata lo mismo, sin dirección clara" };
 const ACCION_COMPROMISO = { legislar: "Legislar", derogar: "Derogar", financiar: "Financiar", crear_organismo: "Crear un organismo",
   bajar_impuesto: "Bajar un impuesto", subir_impuesto: "Subir un impuesto", declaracion: "Declaración", otra: "Otra medida" };
@@ -74,14 +72,17 @@ API.programas = (p) => {
   // Lo que presentó cada partido en la legislatura que cubre su programa, por tema (para comparar el peso de cada tema).
   const propuestas = q(`SELECT gr.siglas AS partido, f.tema_principal AS tema, COUNT(*) AS n ${FROM_ASUNTO}
     JOIN grupo gr ON gr.legislatura=i.legislatura AND gr.codigo=i.grupo_autor
-    JOIN programa p ON p.partido=gr.siglas AND p.legislatura=i.legislatura
+    JOIN programa p ON p.partido=gr.siglas AND p.legislatura=i.legislatura AND p.estado='leido'
     WHERE 1=1 ${wg} ${wl} GROUP BY 1, 2`, [...ag, ...al]);
   const total = q1(`SELECT COUNT(*) AS n ${base} ${we}`, [...args, ...ae]).n;
   const pagina = Math.max(1, +(p.pagina || 1));
   const tam = 25;
   const compromisos = q(`SELECT c.*, p.partido, p.url, p.formato, p.titulo AS programa_titulo, p.eleccion, ce.estado, ce.aprobada
     ${base} ${we} ORDER BY p.fecha_eleccion DESC, p.partido, c.orden LIMIT ? OFFSET ?`, [...args, ...ae, tam, (pagina - 1) * tam]);
-  const ids = compromisos.map((c) => c.id);
+  // Los que el partido votó alguna vez en contra (contradichos y mixtos), para ponerlos arriba. Son pocos: van todos.
+  const contradichos = q(`SELECT c.*, p.partido, p.url, p.formato, p.titulo AS programa_titulo, p.eleccion, ce.estado, ce.aprobada
+    ${base} AND ce.estado IN ('contradicho', 'mixto') ORDER BY ce.estado='mixto', p.fecha_eleccion DESC, p.partido, c.orden`, args);
+  const ids = [...new Set([...compromisos, ...contradichos].map((c) => c.id))];
   const marcas = ids.map(() => "?").join(",");
   // Las que aún no se han votado solo están en en_tramite (si siguen abiertas).
   const relacionadas = ids.length ? q(`SELECT ci.*, COALESCE(i.titulo, t.titulo) AS titulo, i.titulo IS NOT NULL AS votada,
@@ -107,7 +108,7 @@ API.programas = (p) => {
   // Efecto gobierno: estado de los compromisos según si el partido gobernaba en todas las votaciones relacionadas
   // (gobierno=1) o en ninguna (gobierno=0).
   const gobierno = q(`SELECT p.partido, ce.gobierno, ce.estado, COUNT(*) AS n ${base} AND ce.gobierno IS NOT NULL GROUP BY 1, 2, 3`, args);
-  return { programas, resumen, propuestas, compromisos, relacionadas, votos, total, pagina, tam, opciones, gobierno };
+  return { programas, resumen, propuestas, compromisos, contradichos, relacionadas, votos, total, pagina, tam, opciones, gobierno };
 };
 
 // Compromisos relacionados con una iniciativa (para su ficha en el panel de detalle).
@@ -149,20 +150,19 @@ VISTAS.programas = async (ruta) => {
     }
   }
 
-  // 0. La cifra rápida: qué parte de lo que prometió cada partido coincide con lo que votó.
-  const conCifra = [...porPartido.entries()].map(([s, o]) => ({ s, ...coinciden(o), a: (o.impulsado || 0) + (o.apoyado || 0) }))
-    .filter((x) => x.n).sort((a, b) => b.p - a.p);
-  if (conCifra.length) {
-    cont.append(el("div", { class: "card", style: "margin-bottom:16px" }, el("h3", {}, "¿Votan lo que prometieron?"),
-      el("p", { class: "small muted" }, "De los compromisos de cada programa que tuvieron una votación en un sentido claro, qué parte coincide con lo que votó el partido (impulsados o apoyados, frente a contradichos). Entre paréntesis, cuántos compromisos cuentan: con pocos, la cifra dice poco. Clic en un partido para ver sus compromisos; filtra por el estado «Contradicho» para ver dónde no coincide."),
-      barrasH(conCifra.map((x) => ({ label: x.s, color: colorSiglas(x.s), barColor: colorSiglas(x.s), v: Math.round(100 * x.p),
-        valorTexto: `${Math.round(100 * x.p)}% (de ${fmt(x.n)})`, tip: () => `${fmt(x.a)} de ${fmt(x.n)} compromisos coinciden con su voto`,
-        onclick: () => ir({ g: x.s }) })), { max: 100 })));
+  // 1. Dónde votaron en contra de lo que prometieron: los casos concretos, con su cita y solo las votaciones que no
+  // coinciden. Van primero porque son lo que se puede comprobar uno a uno; un porcentaje con tan pocos casos dice poco.
+  const conVoto = [...porPartido.values()].reduce((a, o) => a + ["impulsado", "apoyado", "mixto", "contradicho", "abstencion"].reduce((b, e) => b + (o[e] || 0), 0), 0);
+  if (conVoto) {
+    cont.append(el("div", { class: "card", style: "margin-bottom:16px" }, el("h3", {}, "Dónde votaron en contra de lo que prometieron"),
+      el("p", { class: "small muted" }, `De ${fmt(conVoto)} compromisos con alguna votación relacionada en el Pleno, en ${fmt(d.contradichos.length)} el partido votó al menos una vez lo contrario de lo que prometía. Cada uno, con la cita del programa y solo las votaciones que no coinciden. Fíjate en quién presentó la iniciativa y en si el partido gobernaba: votar contra lo que propone otro puede deberse al resto de su contenido o a un acuerdo de coalición.`),
+      d.contradichos.length ? el("div", {}, d.contradichos.map((c) => filaCompromiso(c, d, true)))
+        : el("p", { class: "muted" }, "Ninguno con estos filtros: en lo que se votó, votaron como prometían.")));
   }
 
-  // 1. Los programas, frente a frente.
+  // 2. Los programas, frente a frente: cuánto se promete y cuánto llega a votarse.
   cont.append(el("div", { class: "card" }, el("h3", {}, "Los programas"),
-    el("p", { class: "small muted" }, "Cuántos compromisos tiene cada programa y cuántos son verificables (un programa más concreto tiene más). «Coinciden» es la parte de los compromisos con votación en un sentido claro que quedaron impulsados o apoyados, frente a contradichos. Con los filtros de tema y acción, solo esos compromisos."),
+    el("p", { class: "small muted" }, "Cuántos compromisos tiene cada programa y cuántos son verificables (un programa más concreto tiene más). «Coinciden»: de los compromisos con votación en un sentido claro, cuántos quedaron impulsados o apoyados (el resto, contradichos). La mayoría de lo prometido no llega a votarse en el Pleno. Con los filtros de tema y acción, solo esos compromisos."),
     el("table", { class: "tabla" },
       el("thead", {}, el("tr", {}, el("th", {}, "Partido"), el("th", {}, "Programa"), el("th", { class: "num" }, "Compromisos"),
         el("th", { class: "num" }, "Verificables"), el("th", { class: "num" }, "Coinciden"), el("th", { class: "num" }, "Contradichos"), el("th", { class: "num" }, "Sin votación"))),
@@ -179,13 +179,13 @@ VISTAS.programas = async (ruta) => {
               p.estado === "leido" && o.por_comparar ? "pendiente de comparar con lo votado" : null].filter(Boolean).join(" · "))),
           el("td", { class: "num" }, p.estado === "leido" ? fmt(o.todos) : "—"),
           el("td", { class: "num" }, p.estado === "leido" ? `${fmt(o.verificables)} (${pct(o.verificables, o.todos)}%)` : "—"),
-          el("td", { class: "num" }, co.n ? `${Math.round(100 * co.p)}%` : "—"),
+          el("td", { class: "num", style: "white-space:nowrap", title: co.n ? `${Math.round(100 * co.p)}%` : "" }, co.n ? `${fmt((o.impulsado || 0) + (o.apoyado || 0))} de ${fmt(co.n)}` : "—"),
           el("td", { class: "num" }, comparado ? fmt(o.contradicho || 0) : "—"),
           el("td", { class: "num" }, comparado ? fmt((o.sin_votacion || 0) + (o.fuera_parlamento || 0)) : "—"));
       })))));
   if (!d.resumen.length) return cont;
 
-  // 1b. Efecto gobierno: la misma cifra cuando el partido gobernaba y cuando estaba en la oposición.
+  // 2b. Efecto gobierno: la misma cifra cuando el partido gobernaba y cuando estaba en la oposición.
   const efecto = new Map();
   for (const r of d.gobierno) {
     const o = efecto.get(r.partido) || { g: {}, o: {} };
@@ -205,20 +205,8 @@ VISTAS.programas = async (ruta) => {
       barrasH(conLosDos.flatMap(([s, o]) => [fila(s, o.g, "en el Gobierno"), fila(s, o.o, "en la oposición")]), { max: 100 })));
   }
 
-  // 2. Estado de los compromisos verificables de cada partido.
+  // 3. Cuánto pesa cada tema en el programa de cada partido y en lo que presentó después.
   const partidos = [...porPartido.keys()].sort((a, b) => porPartido.get(b).verificables - porPartido.get(a).verificables);
-  cont.append(el("div", { class: "card", style: "margin-top:16px" }, el("h3", {}, "Qué pasó con lo que prometieron"),
-    el("p", { class: "small muted" }, "Compromisos verificables de cada partido según lo que votó en el Pleno. «Sin votación» no es incumplimiento: muchas promesas se cumplen o no por real decreto, por presupuestos o por gestión. Clic en un partido para ver solo los suyos."),
-    el("div", { class: "legend" }, ESTADOS_VERIFICABLES.map((e) => el("span", { title: ESTADO_COMPROMISO[e][2] }, el("i", { style: `background:${ESTADO_COMPROMISO[e][1]}` }), ESTADO_COMPROMISO[e][0]))),
-    barrasH(partidos.filter((s) => porPartido.get(s).verificables > (porPartido.get(s).por_comparar || 0)).map((s) => {
-      const o = porPartido.get(s);
-      const n = o.verificables - (o.por_comparar || 0);
-      return { label: s, color: colorSiglas(s), valorTexto: `${fmt(n)} verificables`,
-        segs: ESTADOS_VERIFICABLES.map((e) => ({ v: o[e] || 0, color: ESTADO_COMPROMISO[e][1], nombre: ESTADO_COMPROMISO[e][0] })),
-        tip: (sg) => `${fmt(sg.v)} de ${fmt(n)} compromisos (${pct(sg.v, n)}%)`, onclick: () => ir({ g: s }) };
-    }), { segs: true, normalizar: true })));
-
-  // 3. Tema a tema: dónde coincide cada partido con su voto y cuánto pesa cada tema en su programa y en lo que presenta.
   const celdas = new Map();
   for (const r of d.resumen) {
     if (r.estado === "generico" || !r.tema) continue;
@@ -231,14 +219,8 @@ VISTAS.programas = async (ruta) => {
   const temas = META.temas.map((t) => t.codigo).filter((t) => partidos.some((s) => celdas.has(s + "|" + t)));
   const prop = new Map(d.propuestas.map((r) => [r.partido + "|" + r.tema, r.n]));
   const totalProp = (s) => d.propuestas.filter((r) => r.partido === s).reduce((a, r) => a + r.n, 0);
-  cont.append(el("div", { class: "card", style: "margin-top:16px" }, el("h3", {}, "Tema a tema"),
-    el("p", { class: "small muted" }, "Porcentaje de compromisos del tema, con votación en un sentido claro, que coinciden con lo que votó el partido. «·» si hay menos de 3. Clic en un partido para ver solo los suyos."),
-    mapaCalor(partidos, temas, (s, t) => { const o = celdas.get(s + "|" + t); return o ? coinciden(o) : null; }, {
-      etiquetaCol: temaNombre, minimo: 3, alClicarFila: (s) => ir({ g: s }),
-      tip: (s, t, x) => [`${Math.round(100 * x.p)}% coinciden`, `${s} · ${temaNombre(t)}`, `${fmt(x.n)} compromisos con votación en un sentido claro`],
-    }),
-    el("h3", { style: "margin-top:16px" }, "Cuánto pesa cada tema"),
-    el("p", { class: "small muted" }, "Parte de los compromisos verificables del programa que son de cada tema / parte de las iniciativas que presentó el grupo en la legislatura que cubre el programa. Si un tema pesa mucho más en el programa que en lo que presenta, se ve aquí."),
+  cont.append(el("div", { class: "card", style: "margin-top:16px" }, el("h3", {}, "Cuánto pesa cada tema"),
+    el("p", { class: "small muted" }, "Parte de los compromisos verificables del programa que son de cada tema / parte de las iniciativas que presentó el grupo en la legislatura que cubre el programa. Si un tema pesa mucho más en el programa que en lo que presenta, se ve aquí. Clic en un tema para ver sus compromisos."),
     el("table", { class: "tabla" },
       el("thead", {}, el("tr", {}, el("th", {}, "Tema"), partidos.map((s) => el("th", { class: "num" }, swatch(colorSiglas(s)), s)))),
       el("tbody", {}, temas.map((t) => el("tr", { class: "clic", onclick: () => ir({ tema: t }) }, el("td", {}, temaNombre(t)),
@@ -265,9 +247,12 @@ VISTAS.programas = async (ruta) => {
   return cont;
 };
 
-function filaCompromiso(c, d) {
+// Con soloContra, solo las iniciativas y las votaciones en las que el voto del partido no coincide con el compromiso.
+function filaCompromiso(c, d, soloContra = false) {
   const [nombre, , explicacion] = ESTADO_COMPROMISO[c.estado || "generico"];
-  const rels = d.relacionadas.filter((r) => r.compromiso === c.id);
+  const votosDe = (r) => d.votos.filter((v) => v.compromiso === c.id && v.legislatura === r.legislatura && v.expediente === r.expediente
+    && (!soloContra || coincideVoto(v, r.sentido) === false));
+  const rels = d.relacionadas.filter((r) => r.compromiso === c.id && (!soloContra || votosDe(r).length));
   const anio = (String(c.eleccion).match(/\d{4}/) || [""])[0];
   return el("article", { class: "compromiso" },
     el("div", { class: "small muted cabecera" },
@@ -278,12 +263,11 @@ function filaCompromiso(c, d) {
       c.aprobada ? el("span", { class: "badge ok" }, "Salió adelante algo en su dirección") : null),
     el("div", { class: "texto" }, c.texto),
     el("blockquote", {}, `«${c.cita}»`),
-    rels.length ? el("ul", { class: "relacionadas" }, rels.map((r) => filaRelacionada(r, c, d)))
+    rels.length ? el("ul", { class: "relacionadas" }, rels.map((r) => filaRelacionada(r, c, votosDe(r))))
       : c.verificable && c.estado !== "por_comparar" ? el("p", { class: "small muted", style: "margin:0" }, "Ninguna iniciativa del Pleno relacionada.") : null);
 }
 
-function filaRelacionada(r, c, d) {
-  const votos = d.votos.filter((v) => v.compromiso === c.id && v.legislatura === r.legislatura && v.expediente === r.expediente);
+function filaRelacionada(r, c, votos) {
   const autor = r.grupo_autor ? grupo(r.legislatura, r.grupo_autor) : null;
   return el("li", {},
     el("div", {}, el("span", { class: "sentido-rel" }, SENTIDO_COMPROMISO[r.sentido] || r.sentido), " · ",
@@ -294,12 +278,15 @@ function filaRelacionada(r, c, d) {
     r.justificacion ? el("div", { class: "small muted" }, r.justificacion) : null);
 }
 
+// Si un voto coincide con el compromiso según el sentido de la iniciativa respecto a él (null si no se puede decir).
+const coincideVoto = (v, sentido) => (sentido !== "relacionada" && (v.apoyo === "si" || v.apoyo === "no") ? (v.apoyo === "si") === (sentido === "misma") : null);
+
 // Lo que votó el partido en una votación decisiva y si coincide con su programa (según el sentido de la iniciativa
 // respecto al compromiso), con si estaba en el Gobierno o en la oposición.
 function lineaVoto(v, sentido, partido) {
   const g = gobiernoEn(infoLeg(v.legislatura).cuerpo || "congreso", v.fecha);
   const enGobierno = g && (g.partido === partido || lista(g.socios).includes(partido));
-  const coincide = sentido !== "relacionada" && (v.apoyo === "si" || v.apoyo === "no") ? (v.apoyo === "si") === (sentido === "misma") : null;
+  const coincide = coincideVoto(v, sentido);
   return el("div", { class: "small" }, `${partido} ${VOTO_PROGRAMA[v.apoyo] || "no consta"}`,
     el("span", { class: "muted" }, ` · ${META.tipos_votacion[v.tipo_votacion] || v.tipo_votacion}, ${fecha(v.fecha)} · ${enGobierno ? "en el Gobierno" : "en la oposición"}`), " ",
     coincide === null ? null : el("span", { class: `badge ${coincide ? "ok" : "ko"}` }, coincide ? "coincide con el programa" : "no coincide con el programa"));

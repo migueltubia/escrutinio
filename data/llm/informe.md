@@ -1,45 +1,56 @@
-## Volumen y tipos de votaciones por legislatura
-- La Legislatura X (2011-2016) registra 5.836 votaciones; la XII (2016-2019), 2.307; la XIV (2019-2023), 6.583; y la XV (2023-hoy), 2.175.
-- En la X destacan por volumen: ley (274 votadas), moción (224) y PNL (154); en la XIV: ley (217), moción (200) y PNL (133); en la XV: moción (189), ley (169) y PNL (135).
-- Los decretos ley votados fueron 75 en la X, 59 en la XII, 95 en la XIV y 54 en la XV; en la XIV salieron adelante 94 de 95.
-- Las votaciones internacionales fueron 126 en la X, 24 en la XII, 61 en la XIV y 58 en la XV; en la X salieron adelante las 126.
+## Panorama general de la actividad votada
+- Total de votaciones registradas: 5.836 en la Legislatura X, 2.307 en la XII, 6.583 en la XIV y 2.175 en la XV.
+- En la X, los tipos más votados fueron ley (274), moción (224), PNL (154), internacional (126) y decreto-ley (75).
+- En la XII, moción (129), ley (118), PNL (109), otro (69) y decreto-ley (59).
+- En la XIV, ley (217), moción (200), PNL (133), decreto-ley (95) y otro (69).
+- En la XV, moción (189), ley (169), PNL (135), internacional (58) y otro (57).
 
-## Resultados: qué prospera y qué se rechaza
-- En la X, de 274 leyes votadas salieron 151 y se rechazaron 113; en la XIV, de 217 leyes votadas salieron 103 y se rechazaron 62; en la XV, de 169 leyes votadas salieron 38 y se rechazaron 59.
-- En las mociones, en la X salieron 43 de 224; en la XII, 92 de 129; en la XIV, 57 de 200; en la XV, 87 de 189.
-- En las PNL, en la X salieron 80 de 154; en la XII, 85 de 109; en la XIV, 71 de 133; en la XV, 92 de 135.
-- Cautela: una PNL aprobada no tiene fuerza de ley; expresa una posición de la Cámara y no modifica por sí misma el ordenamiento jurídico. Algo similar ocurre con las mociones, que son orientaciones políticas.
+## Resultados por tipo de iniciativa
+- Leyes: salen 151 de 274 en la X; 31 de 118 en la XII; 103 de 217 en la XIV; 38 de 169 en la XV.
+- Mociones: salen 43 de 224 en la X; 92 de 129 en la XII; 57 de 200 en la XIV; 87 de 189 en la XV.
+- PNL: salen 80 de 154 en la X; 85 de 109 en la XII; 71 de 133 en la XIV; 92 de 135 en la XV.
+- Decretos-ley: salen 75 de 75 en la X; 57 de 59 en la XII; 94 de 95 en la XIV; 43 de 54 en la XV.
+- Internacional: salen 126 de 126 en la X; 24 de 24 en la XII; 60 de 61 en la XIV; 57 de 58 en la XV.
+- Cautela: una PNL aprobada no tiene fuerza de ley; su efecto es instar al Gobierno o a otros órganos, sin modificar el ordenamiento jurídico.
 
 ## Éxito de las iniciativas según el proponente
-- En la X, el Gobierno obtuvo 142 leyes de 142 votadas; el PP, 58 PNL de 58; CiU, 18 mociones de 41; PSOE, 11 PNL de 45.
-- En la XII, el Gobierno logró 13 leyes de 14; UP, 29 mociones de 37 y 13 PNL de 20; PSOE, 26 mociones de 29 y 25 PNL de 26.
-- En la XIV, el Gobierno consiguió 74 leyes de 74; PSOE, 17 leyes de 17 y 37 PNL de 37; PP, 12 mociones de 65 y 3 PNL de 26; VOX, 0 mociones de 49 y 0 PNL de 20.
-- En la XV, el Gobierno obtuvo 24 leyes de 26; PP, 46 mociones de 66 y 37 PNL de 45; PSOE, 9 leyes de 17 y 36 PNL de 39; VOX, 1 moción de 64 y 0 PNL de 14.
-- Cautela: los datos de éxito se refieren solo a iniciativas votadas con resultado; no incluyen las no votadas o retiradas.
+- Gobierno: leyes 142/142 en la X, 13/14 en la XII, 74/74 en la XIV y 24/26 en la XV.
+- PP: PNL 58/58 en la X, 30/38 en la XII, 3/26 en la XIV y 37/45 en la XV; leyes 0/19 en la XIV y 0/13 en la XV.
+- PSOE: PNL 11/45 en la X, 25/26 en la XII, 37/37 en la XIV y 36/39 en la XV; mociones 1/71 en la X y 26/29 en la XII.
+- UP: mociones 29/37 en la XII; PNL 13/20 en la XII y 6/11 en la XIV.
+- CiU: en la X, leyes 0/19, mociones 18/41 y PNL 5/13.
+- ERC: mociones 6/7 en la XII, 7/13 en la XIV y 6/9 en la XV.
+- VOX: en la XIV, leyes 0/14, mociones 0/49 y PNL 0/20; en la XV, leyes 0/16, mociones 1/64 y PNL 0/14.
+- Mixto: en la X, leyes 0/10, mociones 5/35 y PNL 0/10; en la XIV, mociones 17/30 y PNL 7/7; en la XV, mociones 27/42 y PNL 2/6.
+- Nota: los datos se refieren a iniciativas votadas con resultado, no al total de iniciativas presentadas.
+
+## Votaciones ajustadas y capacidad de decisión
+- Votaciones decisivas por 5 votos o menos: 11 en la X, 29 en la XII, 27 en la XIV y 186 en la XV.
+- Decisivo con solo abstenerse (nº de votaciones decisivas): en la X, PP 991 y CiU 1; en la XII, PSOE 230, UP 170, PP 141, Mixto 70, Cs 30, ERC 26 y PNV 9.
+- En la XIV: PSOE 574, UP 162, PP 53, VOX 34, ERC 22, Plural 20, Mixto 17, Cs 16, PNV 14 y Bildu 10.
+- En la XV: PSOE 343, PP 314, Sumar 302, VOX 219, ERC 196, Junts 190, Mixto 163, Bildu 138 y PNV 83.
+- Cautela: esta métrica es contrafactual; indica en cuántas votaciones decisivas la abstención de un grupo habría bastado para alterar el resultado, no que el grupo se abstuviera.
 
 ## Afinidades y distancias entre grupos
-- En la X, la afinidad más alta fue IU-ICV-Mixto (80%), seguida de CiU-PNV (70%); la más baja, Mixto-PP (18%) e IU-ICV-PP (19%).
-- En la XII, UP-ERC (77%), UP-Mixto (75%) y ERC-Mixto (74%) registran las afinidades más altas; ERC-PP (26%) y UP-PP (32%) figuran en la parte baja.
-- En la XIV, UP-PSOE (85%) y Bildu-ERC (79%) son las más altas; Bildu-VOX (19%) y ERC-VOX (21%) las más bajas.
-- En la XV, Mixto-Sumar (85%) y Bildu-ERC (85%) encabezan; Bildu-VOX (13%) y Sumar-VOX (13%) están en el extremo inferior.
-- Cautela: la afinidad se calcula sobre votaciones emitidas y puede variar según el tema; por ejemplo, PP-PSOE pasa del 76% en Defensa (n=46) al 3% en Energía (n=98) en la X.
+- Afinidad más alta: en la X, IU-ICV-Mixto 80%; en la XII, UP-ERC 77%; en la XIV, UP-PSOE 85%; en la XV, Mixto-Sumar 85% y Bildu-ERC 85%.
+- Afinidad más baja: en la X, Mixto-PP 18%; en la XII, ERC-PP 26%; en la XIV, Bildu-VOX 19%; en la XV, Bildu-VOX 13%.
+- Variación por tema: en la X, PP-PSOE 76% en Defensa (n=46) frente a 3% en Energía (n=98); en la XIV, UP-PSOE 100% en Agricultura, pesca y mundo rural (n=80) frente a 36% en Defensa (n=25); en la XV, Sumar-PNV 100% en Digital y tecnología (n=25) frente a 35% en Vivienda y urbanismo (n=79).
+- Votaciones de fondo con el grupo partido (≥10% en contra de su mayoría): en la X, Mixto 71,5%, CiU 2,6%, IU-ICV 1,8%, PNV 0,3%, PSOE 0,2%, UPyD 0,1% y PP 0,0%; en la XIV, Mixto 76,5%, Plural 49,9%, UP 1,1%, Bildu 0,5%, VOX 0,3%, Cs 0,2%, PP 0,1%, ERC 0,1%, PSOE 0,1% y PNV 0,1%.
+- Cautela: las afinidades se calculan sobre votaciones en las que ambos grupos participan; el número de votaciones (n) varía y los porcentajes con n pequeño pueden ser extremos.
 
-## Votaciones decisivas y margen de abstención
-- Las votaciones decisivas por 5 votos o menos fueron 11 en la X, 29 en la XII, 27 en la XIV y 186 en la XV.
-- El número de votaciones decisivas en las que bastaba la abstención de un grupo para alterar el resultado fue: en la X, PP 991 y CiU 1; en la XII, PSOE 230, UP 170 y PP 141; en la XIV, PSOE 574, UP 162 y PP 53; en la XV, PSOE 343, PP 314 y Sumar 302.
-- Cautela: este indicador no mide intención ni responsabilidad política; solo identifica en cuántas votaciones decisivas la abstención de ese grupo habría cambiado el resultado según la clasificación.
-
-## Temas y leyes más frecuentes
-- Los temas más votados varían: en la X, Economía, empresa y consumo (103), Justicia (80) y Empleo y relaciones laborales (63); en la XIV, Instituciones y calidad democrática (82), Economía (81) y Justicia (59); en la XV, Instituciones y calidad democrática (86), Justicia (78) y Sanidad (56).
-- En el conjunto de legislaturas, por éxito: Economía, empresa y consumo registra 99 leyes/decretos aprobados de 147 y 49 PNL+mociones de 105; Justicia, 61 de 170 y 15 de 49; Presupuestos y finanzas públicas, 40 de 48 y 12 de 36.
-- Las leyes más citadas como afectadas son la Ley Orgánica 10/1995, del Código Penal (48 veces), la Ley Orgánica 6/1985, del Poder Judicial (34) y la Ley Orgánica 5/1985, del Régimen Electoral General (21).
-- Las etiquetas más frecuentes incluyen cataluña (12 en la X, 14 en la XII, 13 en la XIV, 7 en la XV), violencia de género (10 en la X, 13 en la XII, 6 en la XIV, 9 en la XV) y corrupción (9 en la X, 8 en la XII, 9 en la XIV, 14 en la XV).
-- Cautela: que una ley sea citada como afectada no implica que haya sido modificada; la etiqueta temática es una clasificación orientativa.
+## Temas, etiquetas y leyes afectadas
+- Temas más votados: en la X, Economía, empresa y consumo 103, Justicia 80, Empleo y relaciones laborales 63, Instituciones y calidad democrática 59, Fiscalidad 59; en la XIV, Instituciones y calidad democrática 82, Economía, empresa y consumo 81, Justicia 59, Empleo y relaciones laborales 55, Sanidad 53; en la XV, Instituciones y calidad democrática 86, Justicia 78, Sanidad 56, Economía, empresa y consumo 56, Transporte e infraestructuras 55.
+- Éxito por tema (todas las legislaturas): Economía, empresa y consumo 99/147 en leyes/decretos y 49/105 en PNL+mociones; Justicia 61/170 y 15/49; Empleo y relaciones laborales 58/101 y 46/98; Instituciones y calidad democrática 16/74 y 27/82; Sanidad 19/76 y 33/65.
+- Etiquetas más frecuentes: en la X, cataluña 12, violencia de género 10, fraude fiscal 10, créditos extraordinarios 10 y corrupción 9; en la XIV, covid-19 78, cataluña 13, autónomos 12 y ucrania 12; en la XV, corrupción 14, dana 10, violencia de género 9 y reglamento del congreso 9.
+- Asuntos marcados emergencia: 15 en la X, 6 en la XII, 102 en la XIV y 49 en la XV; ómnibus: 4 en la X, 3 en la XII, 12 en la XIV y 10 en la XV.
+- Leyes más citadas como afectadas: 48 × Ley Orgánica 10/1995, del Código Penal; 34 × Ley Orgánica 6/1985, del Poder Judicial; 21 × Ley Orgánica 5/1985, del Régimen Electoral General; 15 × Reglamento del Congreso de los Diputados; 10 × Ley Orgánica 2/2012, de Estabilidad Presupuestaria y Sostenibilidad Financiera.
 
 ## Calidad de la clasificación y limitaciones
-- Los datos proceden de votaciones oficiales, pero la clasificación por temas, tipos y proponentes puede contener errores de asignación.
-- Los recuentos de éxito por proponente se refieren a votaciones con resultado; no contabilizan iniciativas no votadas, retiradas o caducadas.
-- La afinidad entre grupos se calcula sobre votaciones emitidas y puede variar según el tema; no implica acuerdos ni coaliciones.
-- Las PNL y mociones aprobadas no tienen fuerza de ley; los decretos ley requieren convalidación y pueden tramitarse como proyectos de ley.
-- La categoría decisivo con solo abstenerse depende de la clasificación de votaciones decisivas y del sentido de voto registrado; no atribuye intenciones.
-- En la XV se registran 186 votaciones decisivas por 5 votos o menos, un volumen superior al de legislaturas anteriores, lo que puede afectar a la comparabilidad de los indicadores.
+- Las cifras proceden de votaciones oficiales y se presentan agregadas por legislatura y tipo de iniciativa.
+- En varios tipos, la suma de «salen» y «rechazadas» no coincide con «votadas» (por ejemplo, en la X, otro: 31 salen y 5 rechazadas sobre 51 votadas); pueden existir otros resultados no desglosados.
+- «Votaciones decisivas por 5 votos o menos» y «decisivo con solo abstenerse» son indicadores contrafactuales; no implican que el grupo optara por abstenerse.
+- Las afinidades entre grupos dependen de las votaciones en que ambos participan; en temas con n reducido (por ejemplo, n=25) los porcentajes deben interpretarse con cautela.
+- La sección «votaciones de fondo con el grupo partido» mide disenso en votaciones de fondo, no la disciplina de voto en todos los tipos de votación.
+- La clasificación por temas y etiquetas es una capa adicional: una votación puede tener varias etiquetas o ninguna, y los temas agrupan iniciativas diversas.
+- La lista de diputados que más veces votaron distinto a su grupo se limita a las votaciones de fondo y a los casos con mayor número de discrepancias; no es un registro completo de toda la actividad parlamentaria.
+- Una PNL aprobada no tiene fuerza de ley ni modifica el ordenamiento jurídico; los decretos-ley y las leyes sí tienen efectos normativos, sujetos a los trámites constitucionales correspondientes.

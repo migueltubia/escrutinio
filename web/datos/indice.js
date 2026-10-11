@@ -1,11 +1,11 @@
 // Generado por `python -m escrutinio web`. Ficheros de datos que carga la web, en orden.
 window.ESCRUTINIO_INDICE = {
- "generado": "2026-10-04T12:20:46+00:00",
+ "generado": "2026-10-11T12:38:19+00:00",
  "ficheros": [
   {
    "nombre": "comun",
-   "huella": "6e0b3015e7f78318",
-   "bytes": 122684
+   "huella": "39aaa98c98fe122b",
+   "bytes": 123920
   },
   {
    "nombre": "programas",
@@ -45,8 +45,8 @@ window.ESCRUTINIO_INDICE = {
   {
    "nombre": "congreso/leg15",
    "cuerpo": "congreso",
-   "huella": "60003663299b2aa7",
-   "bytes": 756597
+   "huella": "311f6cc9f1d202a9",
+   "bytes": 755501
   },
   {
    "nombre": "parl-AN/leg9",
@@ -75,8 +75,8 @@ window.ESCRUTINIO_INDICE = {
   {
    "nombre": "parl-AN/leg13",
    "cuerpo": "parl-AN",
-   "huella": "9e9b6a83434fb3a9",
-   "bytes": 11772
+   "huella": "b79fddb97bc59048",
+   "bytes": 13264
   },
   {
    "nombre": "parl-AR/leg10",
@@ -111,8 +111,8 @@ window.ESCRUTINIO_INDICE = {
   {
    "nombre": "parl-AS/leg12",
    "cuerpo": "parl-AS",
-   "huella": "b71ea606e3a7aa2e",
-   "bytes": 143904
+   "huella": "523a663f7f5d5c86",
+   "bytes": 138592
   },
   {
    "nombre": "parl-IB/leg8",
@@ -207,8 +207,8 @@ window.ESCRUTINIO_INDICE = {
   {
    "nombre": "parl-CB/leg11",
    "cuerpo": "parl-CB",
-   "huella": "689706926692e20d",
-   "bytes": 197832
+   "huella": "ef015399eb772833",
+   "bytes": 200396
   },
   {
    "nombre": "parl-CL/leg9",
@@ -255,8 +255,8 @@ window.ESCRUTINIO_INDICE = {
   {
    "nombre": "parl-CM/leg11",
    "cuerpo": "parl-CM",
-   "huella": "f6e7bf8ebe999f3f",
-   "bytes": 84032
+   "huella": "9a1938835eef9ab4",
+   "bytes": 75308
   },
   {
    "nombre": "parl-CT/leg12",
@@ -315,8 +315,8 @@ window.ESCRUTINIO_INDICE = {
   {
    "nombre": "parl-VC/leg11",
    "cuerpo": "parl-VC",
-   "huella": "15de0ab5009a4761",
-   "bytes": 70212
+   "huella": "0171eff1a7c41c8f",
+   "bytes": 72204
   },
   {
    "nombre": "parl-EX/leg9",
@@ -339,8 +339,8 @@ window.ESCRUTINIO_INDICE = {
   {
    "nombre": "parl-EX/leg12",
    "cuerpo": "parl-EX",
-   "huella": "f0ca763d98bc57d0",
-   "bytes": 54328
+   "huella": "4ff57fd6e6639a95",
+   "bytes": 48944
   },
   {
    "nombre": "parl-GA/leg10",
@@ -363,26 +363,26 @@ window.ESCRUTINIO_INDICE = {
   {
    "nombre": "parl-MC/leg9",
    "cuerpo": "parl-MC",
-   "huella": "b558b71ec3a666a8",
-   "bytes": 19651
+   "huella": "c5cacea34d9d5416",
+   "bytes": 16035
   },
   {
    "nombre": "parl-MC/leg10",
    "cuerpo": "parl-MC",
-   "huella": "9e16de8d7d8dea8c",
-   "bytes": 85712
+   "huella": "fb0b68f18a5cf890",
+   "bytes": 98968
   },
   {
    "nombre": "parl-MC/leg11",
    "cuerpo": "parl-MC",
-   "huella": "3c71c9f877d5c65b",
-   "bytes": 155532
+   "huella": "a2e2be0ea3864010",
+   "bytes": 200444
   },
   {
    "nombre": "parl-NC/leg9",
    "cuerpo": "parl-NC",
-   "huella": "6757e9773ff5b38e",
-   "bytes": 212623
+   "huella": "f2bb2d4195194c3b",
+   "bytes": 254499
   },
   {
    "nombre": "parl-NC/leg10",
@@ -435,8 +435,8 @@ window.ESCRUTINIO_INDICE = {
   {
    "nombre": "parl-RI/leg11",
    "cuerpo": "parl-RI",
-   "huella": "60a1dbdeb7a1986c",
-   "bytes": 197640
+   "huella": "ea64651436342533",
+   "bytes": 197976
   },
   {
    "nombre": "jjgg-alava/leg6",
@@ -549,26 +549,26 @@ window.ESCRUTINIO_INDICE = {
   {
    "nombre": "jjgg-gipuzkoa/leg11",
    "cuerpo": "jjgg-gipuzkoa",
-   "huella": "55a4e87c6974facd",
-   "bytes": 55602
+   "huella": "856781abb5bbc285",
+   "bytes": 62590
   },
   {
    "nombre": "jjgg-gipuzkoa/leg12",
    "cuerpo": "jjgg-gipuzkoa",
-   "huella": "c4330ed6da56a8ae",
+   "huella": "4719aae7ea4f9a7d",
    "bytes": 48106
   },
   {
    "nombre": "cabildo-lanzarote/leg12",
    "cuerpo": "cabildo-lanzarote",
-   "huella": "cef579579dbdc30f",
-   "bytes": 65186
+   "huella": "1ddafd0367e76994",
+   "bytes": 74326
   },
   {
    "nombre": "consell-mallorca/leg10",
    "cuerpo": "consell-mallorca",
-   "huella": "c8ee393a60915bce",
-   "bytes": 92201
+   "huella": "e7a3970d35a1332e",
+   "bytes": 123677
   },
   {
    "nombre": "ayto-alicante/leg6",
@@ -585,8 +585,8 @@ window.ESCRUTINIO_INDICE = {
   {
    "nombre": "ayto-alicante/leg8",
    "cuerpo": "ayto-alicante",
-   "huella": "862c619c78b0fa08",
-   "bytes": 235165
+   "huella": "7bbcb148e0da9092",
+   "bytes": 221569
   },
   {
    "nombre": "ayto-alicante/leg9",
@@ -615,8 +615,20 @@ window.ESCRUTINIO_INDICE = {
   {
    "nombre": "ayto-l-hospitalet-de-llobregat/leg12",
    "cuerpo": "ayto-l-hospitalet-de-llobregat",
-   "huella": "165f4b0d2780f255",
-   "bytes": 9815
+   "huella": "fa4166923d8cc1fc",
+   "bytes": 10371
+  },
+  {
+   "nombre": "ayto-el-prat-de-llobregat/leg12",
+   "cuerpo": "ayto-el-prat-de-llobregat",
+   "huella": "d947bbf6abd2ea5d",
+   "bytes": 14854
+  },
+  {
+   "nombre": "ayto-sant-feliu-de-llobregat/leg12",
+   "cuerpo": "ayto-sant-feliu-de-llobregat",
+   "huella": "7bd67c780490a91d",
+   "bytes": 12601
   },
   {
    "nombre": "ayto-cordoba/leg9",
@@ -649,6 +661,12 @@ window.ESCRUTINIO_INDICE = {
    "bytes": 8058
   },
   {
+   "nombre": "ayto-lleida/leg12",
+   "cuerpo": "ayto-lleida",
+   "huella": "4948d0a17269b72c",
+   "bytes": 14748
+  },
+  {
    "nombre": "ayto-malaga/leg11",
    "cuerpo": "ayto-malaga",
    "huella": "a523bd490559d3d6",
@@ -663,8 +681,8 @@ window.ESCRUTINIO_INDICE = {
   {
    "nombre": "ayto-gijon/leg10",
    "cuerpo": "ayto-gijon",
-   "huella": "5a60deab32a41fd5",
-   "bytes": 170299
+   "huella": "27f79b0450efc356",
+   "bytes": 207731
   },
   {
    "nombre": "ayto-gijon/leg11",
@@ -699,8 +717,8 @@ window.ESCRUTINIO_INDICE = {
   {
    "nombre": "ayto-valencia/leg12",
    "cuerpo": "ayto-valencia",
-   "huella": "fca46e235e70b112",
-   "bytes": 151762
+   "huella": "2412eedbd43ba5f9",
+   "bytes": 161210
   },
   {
    "nombre": "ayto-valladolid/leg10",
@@ -717,8 +735,8 @@ window.ESCRUTINIO_INDICE = {
   {
    "nombre": "ayto-valladolid/leg12",
    "cuerpo": "ayto-valladolid",
-   "huella": "315c5ca2829a4ad8",
-   "bytes": 121840
+   "huella": "6f5db557e888265f",
+   "bytes": 106880
   },
   {
    "nombre": "ayto-zaragoza/leg10",
@@ -735,469 +753,61 @@ window.ESCRUTINIO_INDICE = {
   {
    "nombre": "ayto-zaragoza/leg12",
    "cuerpo": "ayto-zaragoza",
-   "huella": "80a383e71f836e98",
-   "bytes": 458894
+   "huella": "4a9a29550e5611bb",
+   "bytes": 467622
   }
  ],
  "avisos": {
-  "ayto-amposta": {
-   "fecha": "2026-10-04",
-   "motivo": "error",
-   "detalle": "No se pudo descargar https://dadesobertes.seu-e.cat/api/3/action/datastore_search_sql?sql=SELECT+%22CODI_ENS%22%2C%22DATA_ACORD%22%2C%22TIPUS%22%2C%22ENLLA%C3%87_ACTA%22%2C%22CODI_ACTA%22+FROM+%22b5d370d0-7916-48b6-8a69-3c7fa62a1467%22+WHERE+%22CODI_ENS%22+IN+%28801930008%2C810170005%2C827980001%2C8",
-   "hasta": null
-  },
-  "ayto-badalona": {
-   "fecha": "2026-10-04",
-   "motivo": "error",
-   "detalle": "No se pudo descargar https://dadesobertes.seu-e.cat/api/3/action/datastore_search_sql?sql=SELECT+%22CODI_ENS%22%2C%22DATA_ACORD%22%2C%22TIPUS%22%2C%22ENLLA%C3%87_ACTA%22%2C%22CODI_ACTA%22+FROM+%22b5d370d0-7916-48b6-8a69-3c7fa62a1467%22+WHERE+%22CODI_ENS%22+IN+%28801930008%2C810170005%2C827980001%2C8",
-   "hasta": null
-  },
-  "ayto-banyoles": {
-   "fecha": "2026-10-04",
-   "motivo": "error",
-   "detalle": "No se pudo descargar https://dadesobertes.seu-e.cat/api/3/action/datastore_search_sql?sql=SELECT+%22CODI_ENS%22%2C%22DATA_ACORD%22%2C%22TIPUS%22%2C%22ENLLA%C3%87_ACTA%22%2C%22CODI_ACTA%22+FROM+%22b5d370d0-7916-48b6-8a69-3c7fa62a1467%22+WHERE+%22CODI_ENS%22+IN+%28801930008%2C810170005%2C827980001%2C8",
-   "hasta": null
-  },
-  "ayto-barbera-del-valles": {
-   "fecha": "2026-10-04",
-   "motivo": "error",
-   "detalle": "No se pudo descargar https://dadesobertes.seu-e.cat/api/3/action/datastore_search_sql?sql=SELECT+%22CODI_ENS%22%2C%22DATA_ACORD%22%2C%22TIPUS%22%2C%22ENLLA%C3%87_ACTA%22%2C%22CODI_ACTA%22+FROM+%22b5d370d0-7916-48b6-8a69-3c7fa62a1467%22+WHERE+%22CODI_ENS%22+IN+%28801930008%2C810170005%2C827980001%2C8",
-   "hasta": null
-  },
-  "ayto-barcelona": {
-   "fecha": "2026-10-04",
-   "motivo": "error",
-   "detalle": "No se pudo descargar https://dadesobertes.seu-e.cat/api/3/action/datastore_search_sql?sql=SELECT+%22CODI_ENS%22%2C%22DATA_ACORD%22%2C%22TIPUS%22%2C%22ENLLA%C3%87_ACTA%22%2C%22CODI_ACTA%22+FROM+%22b5d370d0-7916-48b6-8a69-3c7fa62a1467%22+WHERE+%22CODI_ENS%22+IN+%28801930008%2C810170005%2C827980001%2C8",
-   "hasta": null
-  },
-  "ayto-blanes": {
-   "fecha": "2026-10-04",
-   "motivo": "error",
-   "detalle": "No se pudo descargar https://dadesobertes.seu-e.cat/api/3/action/datastore_search_sql?sql=SELECT+%22CODI_ENS%22%2C%22DATA_ACORD%22%2C%22TIPUS%22%2C%22ENLLA%C3%87_ACTA%22%2C%22CODI_ACTA%22+FROM+%22b5d370d0-7916-48b6-8a69-3c7fa62a1467%22+WHERE+%22CODI_ENS%22+IN+%28801930008%2C810170005%2C827980001%2C8",
-   "hasta": null
-  },
-  "ayto-calafell": {
-   "fecha": "2026-10-04",
-   "motivo": "error",
-   "detalle": "No se pudo descargar https://dadesobertes.seu-e.cat/api/3/action/datastore_search_sql?sql=SELECT+%22CODI_ENS%22%2C%22DATA_ACORD%22%2C%22TIPUS%22%2C%22ENLLA%C3%87_ACTA%22%2C%22CODI_ACTA%22+FROM+%22b5d370d0-7916-48b6-8a69-3c7fa62a1467%22+WHERE+%22CODI_ENS%22+IN+%28801930008%2C810170005%2C827980001%2C8",
-   "hasta": null
-  },
-  "ayto-calella": {
-   "fecha": "2026-10-04",
-   "motivo": "error",
-   "detalle": "No se pudo descargar https://dadesobertes.seu-e.cat/api/3/action/datastore_search_sql?sql=SELECT+%22CODI_ENS%22%2C%22DATA_ACORD%22%2C%22TIPUS%22%2C%22ENLLA%C3%87_ACTA%22%2C%22CODI_ACTA%22+FROM+%22b5d370d0-7916-48b6-8a69-3c7fa62a1467%22+WHERE+%22CODI_ENS%22+IN+%28801930008%2C810170005%2C827980001%2C8",
-   "hasta": null
-  },
-  "ayto-cambrils": {
-   "fecha": "2026-10-04",
-   "motivo": "error",
-   "detalle": "No se pudo descargar https://dadesobertes.seu-e.cat/api/3/action/datastore_search_sql?sql=SELECT+%22CODI_ENS%22%2C%22DATA_ACORD%22%2C%22TIPUS%22%2C%22ENLLA%C3%87_ACTA%22%2C%22CODI_ACTA%22+FROM+%22b5d370d0-7916-48b6-8a69-3c7fa62a1467%22+WHERE+%22CODI_ENS%22+IN+%28801930008%2C810170005%2C827980001%2C8",
-   "hasta": null
-  },
-  "ayto-castellar-del-valles": {
-   "fecha": "2026-10-04",
-   "motivo": "error",
-   "detalle": "No se pudo descargar https://dadesobertes.seu-e.cat/api/3/action/datastore_search_sql?sql=SELECT+%22CODI_ENS%22%2C%22DATA_ACORD%22%2C%22TIPUS%22%2C%22ENLLA%C3%87_ACTA%22%2C%22CODI_ACTA%22+FROM+%22b5d370d0-7916-48b6-8a69-3c7fa62a1467%22+WHERE+%22CODI_ENS%22+IN+%28801930008%2C810170005%2C827980001%2C8",
-   "hasta": null
-  },
-  "ayto-castelldefels": {
-   "fecha": "2026-10-04",
-   "motivo": "error",
-   "detalle": "No se pudo descargar https://dadesobertes.seu-e.cat/api/3/action/datastore_search_sql?sql=SELECT+%22CODI_ENS%22%2C%22DATA_ACORD%22%2C%22TIPUS%22%2C%22ENLLA%C3%87_ACTA%22%2C%22CODI_ACTA%22+FROM+%22b5d370d0-7916-48b6-8a69-3c7fa62a1467%22+WHERE+%22CODI_ENS%22+IN+%28801930008%2C810170005%2C827980001%2C8",
-   "hasta": null
-  },
-  "ayto-cerdanyola-del-valles": {
-   "fecha": "2026-10-04",
-   "motivo": "error",
-   "detalle": "No se pudo descargar https://dadesobertes.seu-e.cat/api/3/action/datastore_search_sql?sql=SELECT+%22CODI_ENS%22%2C%22DATA_ACORD%22%2C%22TIPUS%22%2C%22ENLLA%C3%87_ACTA%22%2C%22CODI_ACTA%22+FROM+%22b5d370d0-7916-48b6-8a69-3c7fa62a1467%22+WHERE+%22CODI_ENS%22+IN+%28801930008%2C810170005%2C827980001%2C8",
-   "hasta": null
-  },
-  "ayto-cornella-de-llobregat": {
-   "fecha": "2026-10-04",
-   "motivo": "error",
-   "detalle": "No se pudo descargar https://dadesobertes.seu-e.cat/api/3/action/datastore_search_sql?sql=SELECT+%22CODI_ENS%22%2C%22DATA_ACORD%22%2C%22TIPUS%22%2C%22ENLLA%C3%87_ACTA%22%2C%22CODI_ACTA%22+FROM+%22b5d370d0-7916-48b6-8a69-3c7fa62a1467%22+WHERE+%22CODI_ENS%22+IN+%28801930008%2C810170005%2C827980001%2C8",
-   "hasta": null
-  },
-  "ayto-el-masnou": {
-   "fecha": "2026-10-04",
-   "motivo": "error",
-   "detalle": "No se pudo descargar https://dadesobertes.seu-e.cat/api/3/action/datastore_search_sql?sql=SELECT+%22CODI_ENS%22%2C%22DATA_ACORD%22%2C%22TIPUS%22%2C%22ENLLA%C3%87_ACTA%22%2C%22CODI_ACTA%22+FROM+%22b5d370d0-7916-48b6-8a69-3c7fa62a1467%22+WHERE+%22CODI_ENS%22+IN+%28801930008%2C810170005%2C827980001%2C8",
-   "hasta": null
-  },
-  "ayto-el-prat-de-llobregat": {
-   "fecha": "2026-10-04",
-   "motivo": "error",
-   "detalle": "No se pudo descargar https://dadesobertes.seu-e.cat/api/3/action/datastore_search_sql?sql=SELECT+%22CODI_ENS%22%2C%22DATA_ACORD%22%2C%22TIPUS%22%2C%22ENLLA%C3%87_ACTA%22%2C%22CODI_ACTA%22+FROM+%22b5d370d0-7916-48b6-8a69-3c7fa62a1467%22+WHERE+%22CODI_ENS%22+IN+%28801930008%2C810170005%2C827980001%2C8",
-   "hasta": null
-  },
-  "ayto-el-vendrell": {
-   "fecha": "2026-10-04",
-   "motivo": "error",
-   "detalle": "No se pudo descargar https://dadesobertes.seu-e.cat/api/3/action/datastore_search_sql?sql=SELECT+%22CODI_ENS%22%2C%22DATA_ACORD%22%2C%22TIPUS%22%2C%22ENLLA%C3%87_ACTA%22%2C%22CODI_ACTA%22+FROM+%22b5d370d0-7916-48b6-8a69-3c7fa62a1467%22+WHERE+%22CODI_ENS%22+IN+%28801930008%2C810170005%2C827980001%2C8",
-   "hasta": null
-  },
-  "ayto-esparreguera": {
-   "fecha": "2026-10-04",
-   "motivo": "error",
-   "detalle": "No se pudo descargar https://dadesobertes.seu-e.cat/api/3/action/datastore_search_sql?sql=SELECT+%22CODI_ENS%22%2C%22DATA_ACORD%22%2C%22TIPUS%22%2C%22ENLLA%C3%87_ACTA%22%2C%22CODI_ACTA%22+FROM+%22b5d370d0-7916-48b6-8a69-3c7fa62a1467%22+WHERE+%22CODI_ENS%22+IN+%28801930008%2C810170005%2C827980001%2C8",
-   "hasta": null
-  },
-  "ayto-esplugues-de-llobregat": {
-   "fecha": "2026-10-04",
-   "motivo": "error",
-   "detalle": "No se pudo descargar https://dadesobertes.seu-e.cat/api/3/action/datastore_search_sql?sql=SELECT+%22CODI_ENS%22%2C%22DATA_ACORD%22%2C%22TIPUS%22%2C%22ENLLA%C3%87_ACTA%22%2C%22CODI_ACTA%22+FROM+%22b5d370d0-7916-48b6-8a69-3c7fa62a1467%22+WHERE+%22CODI_ENS%22+IN+%28801930008%2C810170005%2C827980001%2C8",
-   "hasta": null
-  },
-  "ayto-figueres": {
-   "fecha": "2026-10-04",
-   "motivo": "error",
-   "detalle": "No se pudo descargar https://dadesobertes.seu-e.cat/api/3/action/datastore_search_sql?sql=SELECT+%22CODI_ENS%22%2C%22DATA_ACORD%22%2C%22TIPUS%22%2C%22ENLLA%C3%87_ACTA%22%2C%22CODI_ACTA%22+FROM+%22b5d370d0-7916-48b6-8a69-3c7fa62a1467%22+WHERE+%22CODI_ENS%22+IN+%28801930008%2C810170005%2C827980001%2C8",
-   "hasta": null
-  },
-  "ayto-gava": {
-   "fecha": "2026-10-04",
-   "motivo": "error",
-   "detalle": "No se pudo descargar https://dadesobertes.seu-e.cat/api/3/action/datastore_search_sql?sql=SELECT+%22CODI_ENS%22%2C%22DATA_ACORD%22%2C%22TIPUS%22%2C%22ENLLA%C3%87_ACTA%22%2C%22CODI_ACTA%22+FROM+%22b5d370d0-7916-48b6-8a69-3c7fa62a1467%22+WHERE+%22CODI_ENS%22+IN+%28801930008%2C810170005%2C827980001%2C8",
-   "hasta": null
-  },
-  "ayto-girona": {
-   "fecha": "2026-10-04",
-   "motivo": "error",
-   "detalle": "No se pudo descargar https://dadesobertes.seu-e.cat/api/3/action/datastore_search_sql?sql=SELECT+%22CODI_ENS%22%2C%22DATA_ACORD%22%2C%22TIPUS%22%2C%22ENLLA%C3%87_ACTA%22%2C%22CODI_ACTA%22+FROM+%22b5d370d0-7916-48b6-8a69-3c7fa62a1467%22+WHERE+%22CODI_ENS%22+IN+%28801930008%2C810170005%2C827980001%2C8",
-   "hasta": null
-  },
-  "ayto-granollers": {
-   "fecha": "2026-10-04",
-   "motivo": "error",
-   "detalle": "No se pudo descargar https://dadesobertes.seu-e.cat/api/3/action/datastore_search_sql?sql=SELECT+%22CODI_ENS%22%2C%22DATA_ACORD%22%2C%22TIPUS%22%2C%22ENLLA%C3%87_ACTA%22%2C%22CODI_ACTA%22+FROM+%22b5d370d0-7916-48b6-8a69-3c7fa62a1467%22+WHERE+%22CODI_ENS%22+IN+%28801930008%2C810170005%2C827980001%2C8",
-   "hasta": null
-  },
-  "ayto-igualada": {
-   "fecha": "2026-10-04",
-   "motivo": "error",
-   "detalle": "No se pudo descargar https://dadesobertes.seu-e.cat/api/3/action/datastore_search_sql?sql=SELECT+%22CODI_ENS%22%2C%22DATA_ACORD%22%2C%22TIPUS%22%2C%22ENLLA%C3%87_ACTA%22%2C%22CODI_ACTA%22+FROM+%22b5d370d0-7916-48b6-8a69-3c7fa62a1467%22+WHERE+%22CODI_ENS%22+IN+%28801930008%2C810170005%2C827980001%2C8",
-   "hasta": null
-  },
-  "ayto-l-hospitalet-de-llobregat": {
-   "fecha": "2026-10-04",
-   "motivo": "error",
-   "detalle": "No se pudo descargar https://dadesobertes.seu-e.cat/api/3/action/datastore_search_sql?sql=SELECT+%22CODI_ENS%22%2C%22DATA_ACORD%22%2C%22TIPUS%22%2C%22ENLLA%C3%87_ACTA%22%2C%22CODI_ACTA%22+FROM+%22b5d370d0-7916-48b6-8a69-3c7fa62a1467%22+WHERE+%22CODI_ENS%22+IN+%28801930008%2C810170005%2C827980001%2C8",
-   "hasta": "2026-09-23"
-  },
-  "ayto-les-franqueses-del-valles": {
-   "fecha": "2026-10-04",
-   "motivo": "error",
-   "detalle": "No se pudo descargar https://dadesobertes.seu-e.cat/api/3/action/datastore_search_sql?sql=SELECT+%22CODI_ENS%22%2C%22DATA_ACORD%22%2C%22TIPUS%22%2C%22ENLLA%C3%87_ACTA%22%2C%22CODI_ACTA%22+FROM+%22b5d370d0-7916-48b6-8a69-3c7fa62a1467%22+WHERE+%22CODI_ENS%22+IN+%28801930008%2C810170005%2C827980001%2C8",
-   "hasta": null
-  },
-  "ayto-lleida": {
-   "fecha": "2026-10-04",
-   "motivo": "error",
-   "detalle": "No se pudo descargar https://dadesobertes.seu-e.cat/api/3/action/datastore_search_sql?sql=SELECT+%22CODI_ENS%22%2C%22DATA_ACORD%22%2C%22TIPUS%22%2C%22ENLLA%C3%87_ACTA%22%2C%22CODI_ACTA%22+FROM+%22b5d370d0-7916-48b6-8a69-3c7fa62a1467%22+WHERE+%22CODI_ENS%22+IN+%28801930008%2C810170005%2C827980001%2C8",
-   "hasta": null
-  },
-  "ayto-lloret-de-mar": {
-   "fecha": "2026-10-04",
-   "motivo": "error",
-   "detalle": "No se pudo descargar https://dadesobertes.seu-e.cat/api/3/action/datastore_search_sql?sql=SELECT+%22CODI_ENS%22%2C%22DATA_ACORD%22%2C%22TIPUS%22%2C%22ENLLA%C3%87_ACTA%22%2C%22CODI_ACTA%22+FROM+%22b5d370d0-7916-48b6-8a69-3c7fa62a1467%22+WHERE+%22CODI_ENS%22+IN+%28801930008%2C810170005%2C827980001%2C8",
-   "hasta": null
-  },
-  "ayto-manlleu": {
-   "fecha": "2026-10-04",
-   "motivo": "error",
-   "detalle": "No se pudo descargar https://dadesobertes.seu-e.cat/api/3/action/datastore_search_sql?sql=SELECT+%22CODI_ENS%22%2C%22DATA_ACORD%22%2C%22TIPUS%22%2C%22ENLLA%C3%87_ACTA%22%2C%22CODI_ACTA%22+FROM+%22b5d370d0-7916-48b6-8a69-3c7fa62a1467%22+WHERE+%22CODI_ENS%22+IN+%28801930008%2C810170005%2C827980001%2C8",
-   "hasta": null
-  },
-  "ayto-manresa": {
-   "fecha": "2026-10-04",
-   "motivo": "error",
-   "detalle": "No se pudo descargar https://dadesobertes.seu-e.cat/api/3/action/datastore_search_sql?sql=SELECT+%22CODI_ENS%22%2C%22DATA_ACORD%22%2C%22TIPUS%22%2C%22ENLLA%C3%87_ACTA%22%2C%22CODI_ACTA%22+FROM+%22b5d370d0-7916-48b6-8a69-3c7fa62a1467%22+WHERE+%22CODI_ENS%22+IN+%28801930008%2C810170005%2C827980001%2C8",
-   "hasta": null
-  },
-  "ayto-martorell": {
-   "fecha": "2026-10-04",
-   "motivo": "error",
-   "detalle": "No se pudo descargar https://dadesobertes.seu-e.cat/api/3/action/datastore_search_sql?sql=SELECT+%22CODI_ENS%22%2C%22DATA_ACORD%22%2C%22TIPUS%22%2C%22ENLLA%C3%87_ACTA%22%2C%22CODI_ACTA%22+FROM+%22b5d370d0-7916-48b6-8a69-3c7fa62a1467%22+WHERE+%22CODI_ENS%22+IN+%28801930008%2C810170005%2C827980001%2C8",
-   "hasta": null
-  },
-  "ayto-mataro": {
-   "fecha": "2026-10-04",
-   "motivo": "error",
-   "detalle": "No se pudo descargar https://dadesobertes.seu-e.cat/api/3/action/datastore_search_sql?sql=SELECT+%22CODI_ENS%22%2C%22DATA_ACORD%22%2C%22TIPUS%22%2C%22ENLLA%C3%87_ACTA%22%2C%22CODI_ACTA%22+FROM+%22b5d370d0-7916-48b6-8a69-3c7fa62a1467%22+WHERE+%22CODI_ENS%22+IN+%28801930008%2C810170005%2C827980001%2C8",
-   "hasta": null
-  },
-  "ayto-molins-de-rei": {
-   "fecha": "2026-10-04",
-   "motivo": "error",
-   "detalle": "No se pudo descargar https://dadesobertes.seu-e.cat/api/3/action/datastore_search_sql?sql=SELECT+%22CODI_ENS%22%2C%22DATA_ACORD%22%2C%22TIPUS%22%2C%22ENLLA%C3%87_ACTA%22%2C%22CODI_ACTA%22+FROM+%22b5d370d0-7916-48b6-8a69-3c7fa62a1467%22+WHERE+%22CODI_ENS%22+IN+%28801930008%2C810170005%2C827980001%2C8",
-   "hasta": null
-  },
-  "ayto-mollet-del-valles": {
-   "fecha": "2026-10-04",
-   "motivo": "error",
-   "detalle": "No se pudo descargar https://dadesobertes.seu-e.cat/api/3/action/datastore_search_sql?sql=SELECT+%22CODI_ENS%22%2C%22DATA_ACORD%22%2C%22TIPUS%22%2C%22ENLLA%C3%87_ACTA%22%2C%22CODI_ACTA%22+FROM+%22b5d370d0-7916-48b6-8a69-3c7fa62a1467%22+WHERE+%22CODI_ENS%22+IN+%28801930008%2C810170005%2C827980001%2C8",
-   "hasta": null
-  },
-  "ayto-montcada-i-reixac": {
-   "fecha": "2026-10-04",
-   "motivo": "error",
-   "detalle": "No se pudo descargar https://dadesobertes.seu-e.cat/api/3/action/datastore_search_sql?sql=SELECT+%22CODI_ENS%22%2C%22DATA_ACORD%22%2C%22TIPUS%22%2C%22ENLLA%C3%87_ACTA%22%2C%22CODI_ACTA%22+FROM+%22b5d370d0-7916-48b6-8a69-3c7fa62a1467%22+WHERE+%22CODI_ENS%22+IN+%28801930008%2C810170005%2C827980001%2C8",
-   "hasta": null
-  },
-  "ayto-olesa-de-montserrat": {
-   "fecha": "2026-10-04",
-   "motivo": "error",
-   "detalle": "No se pudo descargar https://dadesobertes.seu-e.cat/api/3/action/datastore_search_sql?sql=SELECT+%22CODI_ENS%22%2C%22DATA_ACORD%22%2C%22TIPUS%22%2C%22ENLLA%C3%87_ACTA%22%2C%22CODI_ACTA%22+FROM+%22b5d370d0-7916-48b6-8a69-3c7fa62a1467%22+WHERE+%22CODI_ENS%22+IN+%28801930008%2C810170005%2C827980001%2C8",
-   "hasta": null
-  },
-  "ayto-olot": {
-   "fecha": "2026-10-04",
-   "motivo": "error",
-   "detalle": "No se pudo descargar https://dadesobertes.seu-e.cat/api/3/action/datastore_search_sql?sql=SELECT+%22CODI_ENS%22%2C%22DATA_ACORD%22%2C%22TIPUS%22%2C%22ENLLA%C3%87_ACTA%22%2C%22CODI_ACTA%22+FROM+%22b5d370d0-7916-48b6-8a69-3c7fa62a1467%22+WHERE+%22CODI_ENS%22+IN+%28801930008%2C810170005%2C827980001%2C8",
-   "hasta": null
-  },
-  "ayto-palafrugell": {
-   "fecha": "2026-10-04",
-   "motivo": "error",
-   "detalle": "No se pudo descargar https://dadesobertes.seu-e.cat/api/3/action/datastore_search_sql?sql=SELECT+%22CODI_ENS%22%2C%22DATA_ACORD%22%2C%22TIPUS%22%2C%22ENLLA%C3%87_ACTA%22%2C%22CODI_ACTA%22+FROM+%22b5d370d0-7916-48b6-8a69-3c7fa62a1467%22+WHERE+%22CODI_ENS%22+IN+%28801930008%2C810170005%2C827980001%2C8",
-   "hasta": null
-  },
-  "ayto-pineda-de-mar": {
-   "fecha": "2026-10-04",
-   "motivo": "error",
-   "detalle": "No se pudo descargar https://dadesobertes.seu-e.cat/api/3/action/datastore_search_sql?sql=SELECT+%22CODI_ENS%22%2C%22DATA_ACORD%22%2C%22TIPUS%22%2C%22ENLLA%C3%87_ACTA%22%2C%22CODI_ACTA%22+FROM+%22b5d370d0-7916-48b6-8a69-3c7fa62a1467%22+WHERE+%22CODI_ENS%22+IN+%28801930008%2C810170005%2C827980001%2C8",
-   "hasta": null
-  },
-  "ayto-reus": {
-   "fecha": "2026-10-04",
-   "motivo": "error",
-   "detalle": "No se pudo descargar https://dadesobertes.seu-e.cat/api/3/action/datastore_search_sql?sql=SELECT+%22CODI_ENS%22%2C%22DATA_ACORD%22%2C%22TIPUS%22%2C%22ENLLA%C3%87_ACTA%22%2C%22CODI_ACTA%22+FROM+%22b5d370d0-7916-48b6-8a69-3c7fa62a1467%22+WHERE+%22CODI_ENS%22+IN+%28801930008%2C810170005%2C827980001%2C8",
-   "hasta": null
-  },
-  "ayto-ripollet": {
-   "fecha": "2026-10-04",
-   "motivo": "error",
-   "detalle": "No se pudo descargar https://dadesobertes.seu-e.cat/api/3/action/datastore_search_sql?sql=SELECT+%22CODI_ENS%22%2C%22DATA_ACORD%22%2C%22TIPUS%22%2C%22ENLLA%C3%87_ACTA%22%2C%22CODI_ACTA%22+FROM+%22b5d370d0-7916-48b6-8a69-3c7fa62a1467%22+WHERE+%22CODI_ENS%22+IN+%28801930008%2C810170005%2C827980001%2C8",
-   "hasta": null
-  },
-  "ayto-roses": {
-   "fecha": "2026-10-04",
-   "motivo": "error",
-   "detalle": "No se pudo descargar https://dadesobertes.seu-e.cat/api/3/action/datastore_search_sql?sql=SELECT+%22CODI_ENS%22%2C%22DATA_ACORD%22%2C%22TIPUS%22%2C%22ENLLA%C3%87_ACTA%22%2C%22CODI_ACTA%22+FROM+%22b5d370d0-7916-48b6-8a69-3c7fa62a1467%22+WHERE+%22CODI_ENS%22+IN+%28801930008%2C810170005%2C827980001%2C8",
-   "hasta": null
-  },
-  "ayto-rubi": {
-   "fecha": "2026-10-04",
-   "motivo": "error",
-   "detalle": "No se pudo descargar https://dadesobertes.seu-e.cat/api/3/action/datastore_search_sql?sql=SELECT+%22CODI_ENS%22%2C%22DATA_ACORD%22%2C%22TIPUS%22%2C%22ENLLA%C3%87_ACTA%22%2C%22CODI_ACTA%22+FROM+%22b5d370d0-7916-48b6-8a69-3c7fa62a1467%22+WHERE+%22CODI_ENS%22+IN+%28801930008%2C810170005%2C827980001%2C8",
-   "hasta": null
-  },
-  "ayto-sabadell": {
-   "fecha": "2026-10-04",
-   "motivo": "error",
-   "detalle": "No se pudo descargar https://dadesobertes.seu-e.cat/api/3/action/datastore_search_sql?sql=SELECT+%22CODI_ENS%22%2C%22DATA_ACORD%22%2C%22TIPUS%22%2C%22ENLLA%C3%87_ACTA%22%2C%22CODI_ACTA%22+FROM+%22b5d370d0-7916-48b6-8a69-3c7fa62a1467%22+WHERE+%22CODI_ENS%22+IN+%28801930008%2C810170005%2C827980001%2C8",
-   "hasta": null
-  },
-  "ayto-salou": {
-   "fecha": "2026-10-04",
-   "motivo": "error",
-   "detalle": "No se pudo descargar https://dadesobertes.seu-e.cat/api/3/action/datastore_search_sql?sql=SELECT+%22CODI_ENS%22%2C%22DATA_ACORD%22%2C%22TIPUS%22%2C%22ENLLA%C3%87_ACTA%22%2C%22CODI_ACTA%22+FROM+%22b5d370d0-7916-48b6-8a69-3c7fa62a1467%22+WHERE+%22CODI_ENS%22+IN+%28801930008%2C810170005%2C827980001%2C8",
-   "hasta": null
-  },
-  "ayto-salt": {
-   "fecha": "2026-10-04",
-   "motivo": "error",
-   "detalle": "No se pudo descargar https://dadesobertes.seu-e.cat/api/3/action/datastore_search_sql?sql=SELECT+%22CODI_ENS%22%2C%22DATA_ACORD%22%2C%22TIPUS%22%2C%22ENLLA%C3%87_ACTA%22%2C%22CODI_ACTA%22+FROM+%22b5d370d0-7916-48b6-8a69-3c7fa62a1467%22+WHERE+%22CODI_ENS%22+IN+%28801930008%2C810170005%2C827980001%2C8",
-   "hasta": "2026-09-21"
-  },
-  "ayto-sant-adria-de-besos": {
-   "fecha": "2026-10-04",
-   "motivo": "error",
-   "detalle": "No se pudo descargar https://dadesobertes.seu-e.cat/api/3/action/datastore_search_sql?sql=SELECT+%22CODI_ENS%22%2C%22DATA_ACORD%22%2C%22TIPUS%22%2C%22ENLLA%C3%87_ACTA%22%2C%22CODI_ACTA%22+FROM+%22b5d370d0-7916-48b6-8a69-3c7fa62a1467%22+WHERE+%22CODI_ENS%22+IN+%28801930008%2C810170005%2C827980001%2C8",
-   "hasta": null
-  },
-  "ayto-sant-andreu-de-la-barca": {
-   "fecha": "2026-10-04",
-   "motivo": "error",
-   "detalle": "No se pudo descargar https://dadesobertes.seu-e.cat/api/3/action/datastore_search_sql?sql=SELECT+%22CODI_ENS%22%2C%22DATA_ACORD%22%2C%22TIPUS%22%2C%22ENLLA%C3%87_ACTA%22%2C%22CODI_ACTA%22+FROM+%22b5d370d0-7916-48b6-8a69-3c7fa62a1467%22+WHERE+%22CODI_ENS%22+IN+%28801930008%2C810170005%2C827980001%2C8",
-   "hasta": null
-  },
-  "ayto-sant-boi-de-llobregat": {
-   "fecha": "2026-10-04",
-   "motivo": "error",
-   "detalle": "No se pudo descargar https://dadesobertes.seu-e.cat/api/3/action/datastore_search_sql?sql=SELECT+%22CODI_ENS%22%2C%22DATA_ACORD%22%2C%22TIPUS%22%2C%22ENLLA%C3%87_ACTA%22%2C%22CODI_ACTA%22+FROM+%22b5d370d0-7916-48b6-8a69-3c7fa62a1467%22+WHERE+%22CODI_ENS%22+IN+%28801930008%2C810170005%2C827980001%2C8",
-   "hasta": null
-  },
-  "ayto-sant-cugat-del-valles": {
-   "fecha": "2026-10-04",
-   "motivo": "error",
-   "detalle": "No se pudo descargar https://dadesobertes.seu-e.cat/api/3/action/datastore_search_sql?sql=SELECT+%22CODI_ENS%22%2C%22DATA_ACORD%22%2C%22TIPUS%22%2C%22ENLLA%C3%87_ACTA%22%2C%22CODI_ACTA%22+FROM+%22b5d370d0-7916-48b6-8a69-3c7fa62a1467%22+WHERE+%22CODI_ENS%22+IN+%28801930008%2C810170005%2C827980001%2C8",
-   "hasta": null
-  },
-  "ayto-sant-feliu-de-guixols": {
-   "fecha": "2026-10-04",
-   "motivo": "error",
-   "detalle": "No se pudo descargar https://dadesobertes.seu-e.cat/api/3/action/datastore_search_sql?sql=SELECT+%22CODI_ENS%22%2C%22DATA_ACORD%22%2C%22TIPUS%22%2C%22ENLLA%C3%87_ACTA%22%2C%22CODI_ACTA%22+FROM+%22b5d370d0-7916-48b6-8a69-3c7fa62a1467%22+WHERE+%22CODI_ENS%22+IN+%28801930008%2C810170005%2C827980001%2C8",
-   "hasta": null
-  },
-  "ayto-sant-feliu-de-llobregat": {
-   "fecha": "2026-10-04",
-   "motivo": "error",
-   "detalle": "No se pudo descargar https://dadesobertes.seu-e.cat/api/3/action/datastore_search_sql?sql=SELECT+%22CODI_ENS%22%2C%22DATA_ACORD%22%2C%22TIPUS%22%2C%22ENLLA%C3%87_ACTA%22%2C%22CODI_ACTA%22+FROM+%22b5d370d0-7916-48b6-8a69-3c7fa62a1467%22+WHERE+%22CODI_ENS%22+IN+%28801930008%2C810170005%2C827980001%2C8",
-   "hasta": null
-  },
-  "ayto-sant-joan-despi": {
-   "fecha": "2026-10-04",
-   "motivo": "error",
-   "detalle": "No se pudo descargar https://dadesobertes.seu-e.cat/api/3/action/datastore_search_sql?sql=SELECT+%22CODI_ENS%22%2C%22DATA_ACORD%22%2C%22TIPUS%22%2C%22ENLLA%C3%87_ACTA%22%2C%22CODI_ACTA%22+FROM+%22b5d370d0-7916-48b6-8a69-3c7fa62a1467%22+WHERE+%22CODI_ENS%22+IN+%28801930008%2C810170005%2C827980001%2C8",
-   "hasta": null
-  },
-  "ayto-sant-just-desvern": {
-   "fecha": "2026-10-04",
-   "motivo": "error",
-   "detalle": "No se pudo descargar https://dadesobertes.seu-e.cat/api/3/action/datastore_search_sql?sql=SELECT+%22CODI_ENS%22%2C%22DATA_ACORD%22%2C%22TIPUS%22%2C%22ENLLA%C3%87_ACTA%22%2C%22CODI_ACTA%22+FROM+%22b5d370d0-7916-48b6-8a69-3c7fa62a1467%22+WHERE+%22CODI_ENS%22+IN+%28801930008%2C810170005%2C827980001%2C8",
-   "hasta": null
-  },
-  "ayto-sant-pere-de-ribes": {
-   "fecha": "2026-10-04",
-   "motivo": "error",
-   "detalle": "No se pudo descargar https://dadesobertes.seu-e.cat/api/3/action/datastore_search_sql?sql=SELECT+%22CODI_ENS%22%2C%22DATA_ACORD%22%2C%22TIPUS%22%2C%22ENLLA%C3%87_ACTA%22%2C%22CODI_ACTA%22+FROM+%22b5d370d0-7916-48b6-8a69-3c7fa62a1467%22+WHERE+%22CODI_ENS%22+IN+%28801930008%2C810170005%2C827980001%2C8",
-   "hasta": null
-  },
-  "ayto-sant-quirze-del-valles": {
-   "fecha": "2026-10-04",
-   "motivo": "error",
-   "detalle": "No se pudo descargar https://dadesobertes.seu-e.cat/api/3/action/datastore_search_sql?sql=SELECT+%22CODI_ENS%22%2C%22DATA_ACORD%22%2C%22TIPUS%22%2C%22ENLLA%C3%87_ACTA%22%2C%22CODI_ACTA%22+FROM+%22b5d370d0-7916-48b6-8a69-3c7fa62a1467%22+WHERE+%22CODI_ENS%22+IN+%28801930008%2C810170005%2C827980001%2C8",
-   "hasta": null
-  },
-  "ayto-sant-vicenc-dels-horts": {
-   "fecha": "2026-10-04",
-   "motivo": "error",
-   "detalle": "No se pudo descargar https://dadesobertes.seu-e.cat/api/3/action/datastore_search_sql?sql=SELECT+%22CODI_ENS%22%2C%22DATA_ACORD%22%2C%22TIPUS%22%2C%22ENLLA%C3%87_ACTA%22%2C%22CODI_ACTA%22+FROM+%22b5d370d0-7916-48b6-8a69-3c7fa62a1467%22+WHERE+%22CODI_ENS%22+IN+%28801930008%2C810170005%2C827980001%2C8",
-   "hasta": null
-  },
-  "ayto-santa-coloma-de-gramenet": {
-   "fecha": "2026-10-04",
-   "motivo": "error",
-   "detalle": "No se pudo descargar https://dadesobertes.seu-e.cat/api/3/action/datastore_search_sql?sql=SELECT+%22CODI_ENS%22%2C%22DATA_ACORD%22%2C%22TIPUS%22%2C%22ENLLA%C3%87_ACTA%22%2C%22CODI_ACTA%22+FROM+%22b5d370d0-7916-48b6-8a69-3c7fa62a1467%22+WHERE+%22CODI_ENS%22+IN+%28801930008%2C810170005%2C827980001%2C8",
-   "hasta": null
-  },
-  "ayto-santa-perpetua-de-mogoda": {
-   "fecha": "2026-10-04",
-   "motivo": "error",
-   "detalle": "No se pudo descargar https://dadesobertes.seu-e.cat/api/3/action/datastore_search_sql?sql=SELECT+%22CODI_ENS%22%2C%22DATA_ACORD%22%2C%22TIPUS%22%2C%22ENLLA%C3%87_ACTA%22%2C%22CODI_ACTA%22+FROM+%22b5d370d0-7916-48b6-8a69-3c7fa62a1467%22+WHERE+%22CODI_ENS%22+IN+%28801930008%2C810170005%2C827980001%2C8",
-   "hasta": null
-  },
-  "ayto-sitges": {
-   "fecha": "2026-10-04",
-   "motivo": "error",
-   "detalle": "No se pudo descargar https://dadesobertes.seu-e.cat/api/3/action/datastore_search_sql?sql=SELECT+%22CODI_ENS%22%2C%22DATA_ACORD%22%2C%22TIPUS%22%2C%22ENLLA%C3%87_ACTA%22%2C%22CODI_ACTA%22+FROM+%22b5d370d0-7916-48b6-8a69-3c7fa62a1467%22+WHERE+%22CODI_ENS%22+IN+%28801930008%2C810170005%2C827980001%2C8",
-   "hasta": null
-  },
-  "ayto-tarragona": {
-   "fecha": "2026-10-04",
-   "motivo": "error",
-   "detalle": "No se pudo descargar https://dadesobertes.seu-e.cat/api/3/action/datastore_search_sql?sql=SELECT+%22CODI_ENS%22%2C%22DATA_ACORD%22%2C%22TIPUS%22%2C%22ENLLA%C3%87_ACTA%22%2C%22CODI_ACTA%22+FROM+%22b5d370d0-7916-48b6-8a69-3c7fa62a1467%22+WHERE+%22CODI_ENS%22+IN+%28801930008%2C810170005%2C827980001%2C8",
-   "hasta": null
-  },
-  "ayto-terrassa": {
-   "fecha": "2026-10-04",
-   "motivo": "error",
-   "detalle": "No se pudo descargar https://dadesobertes.seu-e.cat/api/3/action/datastore_search_sql?sql=SELECT+%22CODI_ENS%22%2C%22DATA_ACORD%22%2C%22TIPUS%22%2C%22ENLLA%C3%87_ACTA%22%2C%22CODI_ACTA%22+FROM+%22b5d370d0-7916-48b6-8a69-3c7fa62a1467%22+WHERE+%22CODI_ENS%22+IN+%28801930008%2C810170005%2C827980001%2C8",
-   "hasta": null
-  },
-  "ayto-tortosa": {
-   "fecha": "2026-10-04",
-   "motivo": "error",
-   "detalle": "No se pudo descargar https://dadesobertes.seu-e.cat/api/3/action/datastore_search_sql?sql=SELECT+%22CODI_ENS%22%2C%22DATA_ACORD%22%2C%22TIPUS%22%2C%22ENLLA%C3%87_ACTA%22%2C%22CODI_ACTA%22+FROM+%22b5d370d0-7916-48b6-8a69-3c7fa62a1467%22+WHERE+%22CODI_ENS%22+IN+%28801930008%2C810170005%2C827980001%2C8",
-   "hasta": null
-  },
-  "ayto-valls": {
-   "fecha": "2026-10-04",
-   "motivo": "error",
-   "detalle": "No se pudo descargar https://dadesobertes.seu-e.cat/api/3/action/datastore_search_sql?sql=SELECT+%22CODI_ENS%22%2C%22DATA_ACORD%22%2C%22TIPUS%22%2C%22ENLLA%C3%87_ACTA%22%2C%22CODI_ACTA%22+FROM+%22b5d370d0-7916-48b6-8a69-3c7fa62a1467%22+WHERE+%22CODI_ENS%22+IN+%28801930008%2C810170005%2C827980001%2C8",
-   "hasta": null
-  },
-  "ayto-vic": {
-   "fecha": "2026-10-04",
-   "motivo": "error",
-   "detalle": "No se pudo descargar https://dadesobertes.seu-e.cat/api/3/action/datastore_search_sql?sql=SELECT+%22CODI_ENS%22%2C%22DATA_ACORD%22%2C%22TIPUS%22%2C%22ENLLA%C3%87_ACTA%22%2C%22CODI_ACTA%22+FROM+%22b5d370d0-7916-48b6-8a69-3c7fa62a1467%22+WHERE+%22CODI_ENS%22+IN+%28801930008%2C810170005%2C827980001%2C8",
-   "hasta": null
-  },
-  "ayto-vila-seca": {
-   "fecha": "2026-10-04",
-   "motivo": "error",
-   "detalle": "No se pudo descargar https://dadesobertes.seu-e.cat/api/3/action/datastore_search_sql?sql=SELECT+%22CODI_ENS%22%2C%22DATA_ACORD%22%2C%22TIPUS%22%2C%22ENLLA%C3%87_ACTA%22%2C%22CODI_ACTA%22+FROM+%22b5d370d0-7916-48b6-8a69-3c7fa62a1467%22+WHERE+%22CODI_ENS%22+IN+%28801930008%2C810170005%2C827980001%2C8",
-   "hasta": null
-  },
-  "ayto-viladecans": {
-   "fecha": "2026-10-04",
-   "motivo": "error",
-   "detalle": "No se pudo descargar https://dadesobertes.seu-e.cat/api/3/action/datastore_search_sql?sql=SELECT+%22CODI_ENS%22%2C%22DATA_ACORD%22%2C%22TIPUS%22%2C%22ENLLA%C3%87_ACTA%22%2C%22CODI_ACTA%22+FROM+%22b5d370d0-7916-48b6-8a69-3c7fa62a1467%22+WHERE+%22CODI_ENS%22+IN+%28801930008%2C810170005%2C827980001%2C8",
-   "hasta": null
-  },
-  "ayto-vilafranca-del-penedes": {
-   "fecha": "2026-10-04",
-   "motivo": "error",
-   "detalle": "No se pudo descargar https://dadesobertes.seu-e.cat/api/3/action/datastore_search_sql?sql=SELECT+%22CODI_ENS%22%2C%22DATA_ACORD%22%2C%22TIPUS%22%2C%22ENLLA%C3%87_ACTA%22%2C%22CODI_ACTA%22+FROM+%22b5d370d0-7916-48b6-8a69-3c7fa62a1467%22+WHERE+%22CODI_ENS%22+IN+%28801930008%2C810170005%2C827980001%2C8",
-   "hasta": null
-  },
-  "ayto-vilanova-i-la-geltru": {
-   "fecha": "2026-10-04",
-   "motivo": "error",
-   "detalle": "No se pudo descargar https://dadesobertes.seu-e.cat/api/3/action/datastore_search_sql?sql=SELECT+%22CODI_ENS%22%2C%22DATA_ACORD%22%2C%22TIPUS%22%2C%22ENLLA%C3%87_ACTA%22%2C%22CODI_ACTA%22+FROM+%22b5d370d0-7916-48b6-8a69-3c7fa62a1467%22+WHERE+%22CODI_ENS%22+IN+%28801930008%2C810170005%2C827980001%2C8",
-   "hasta": null
-  },
-  "ayto-vilassar-de-mar": {
-   "fecha": "2026-10-04",
-   "motivo": "error",
-   "detalle": "No se pudo descargar https://dadesobertes.seu-e.cat/api/3/action/datastore_search_sql?sql=SELECT+%22CODI_ENS%22%2C%22DATA_ACORD%22%2C%22TIPUS%22%2C%22ENLLA%C3%87_ACTA%22%2C%22CODI_ACTA%22+FROM+%22b5d370d0-7916-48b6-8a69-3c7fa62a1467%22+WHERE+%22CODI_ENS%22+IN+%28801930008%2C810170005%2C827980001%2C8",
-   "hasta": null
-  },
   "jjgg-alava": {
-   "fecha": "2026-10-04",
+   "fecha": "2026-10-11",
    "motivo": "rechaza",
    "detalle": "HTTP Error 403: Forbidden",
    "hasta": "2026-07-10"
   },
   "jjgg-bizkaia": {
-   "fecha": "2026-10-04",
+   "fecha": "2026-10-11",
    "motivo": "rechaza",
    "detalle": "HTTP Error 403: Forbidden",
    "hasta": "2026-06-17"
   },
   "jjgg-gipuzkoa": {
-   "fecha": "2026-10-04",
+   "fecha": "2026-10-11",
    "motivo": "rechaza",
    "detalle": "HTTP Error 403: Forbidden",
    "hasta": "2026-09-16"
   },
   "parl-AR": {
-   "fecha": "2026-10-04",
+   "fecha": "2026-10-11",
    "motivo": "sin_respuesta",
    "detalle": "No se pudo descargar https://www.cortesaragon.es/Transcripciones-provisionales.2245.0.html?&no_cache=1: Remote end closed connection without response",
    "hasta": "2026-05-28"
   },
   "parl-CT": {
-   "fecha": "2026-10-04",
+   "fecha": "2026-10-11",
    "motivo": "sin_respuesta",
    "detalle": "No se pudo descargar https://www.parlament.cat/ext/r/pcat_portal/siap-cerca/cerca-de-documents?clear=100&p100_tipus_document=PUB_DSPCP&p100_ordenacio=LEG_DESC_TITOL_DESC&p100_cerca_executada=S: www.parlament.cat no ha respondido en esta ejecución (<urlopen error timed out>)",
    "hasta": "2026-07-23"
   },
   "parl-IB": {
-   "fecha": "2026-10-04",
+   "fecha": "2026-10-11",
    "motivo": "copia",
    "detalle": "https://www.parlamentib.es no responde (URLError)",
    "hasta": "2026-09-22"
   },
+  "parl-MC": {
+   "fecha": "2026-10-11",
+   "motivo": "error",
+   "detalle": "No se pudo descargar https://www.asambleamurcia.es/arm/actas/pleno/Und%C3%A9cima-Legislatura-%282023-a-2027%29: HTTP Error 503: Service Unavailable",
+   "hasta": "2026-06-25"
+  },
   "parl-NC": {
-   "fecha": "2026-10-04",
+   "fecha": "2026-10-11",
    "motivo": "rechaza",
    "detalle": "HTTP Error 403: Forbidden",
    "hasta": "2026-06-25"
   },
   "parl-PV": {
-   "fecha": "2026-10-04",
+   "fecha": "2026-10-11",
    "motivo": "sin_respuesta",
    "detalle": "No se pudo descargar https://www.legebiltzarra.eus/portal/es/transparencia/open-data?opcion=pleno: <urlopen error timed out>",
    "hasta": "2026-06-25"

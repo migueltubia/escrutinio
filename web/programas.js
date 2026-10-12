@@ -454,18 +454,30 @@ function lineaVoto(v, sentido, partido) {
   const g = gobiernoEn(infoLeg(v.legislatura).cuerpo || "congreso", v.fecha);
   const enGobierno = g && (g.partido === partido || lista(g.socios).includes(partido));
   const coincide = coincideVoto(v, sentido);
-  return el("div", { class: "small" }, `${partido} ${VOTO_PROGRAMA[v.apoyo] || "no consta"}`,
-    el("span", { class: "muted" }, ` · ${META.tipos_votacion[v.tipo_votacion] || v.tipo_votacion}, ${fecha(v.fecha)} · ${enGobierno ? "en el Gobierno" : "en la oposición"}`), " ",
+  // En la totalidad, «votó en contra» quiere decir que votó sí a devolver la ley: se dice tal cual.
+  const tipo = esVotacionFinal(v) && v.tipo_votacion === "articulado" ? "Votación final del texto" : META.tipos_votacion[v.tipo_votacion] || v.tipo_votacion;
+  const comoVoto = v.tipo_votacion === "totalidad" && v.apoyo === "no" ? "votó sí a devolver la ley"
+    : v.tipo_votacion === "totalidad" && v.apoyo === "si" ? "votó no a devolver la ley" : VOTO_PROGRAMA[v.apoyo] || "no consta";
+  return el("div", { class: "small" }, `${partido} ${comoVoto}`,
+    el("span", { class: "muted" }, ` · ${tipo}, ${fecha(v.fecha)} · ${enGobierno ? "en el Gobierno" : "en la oposición"}`), " ",
     coincide === null ? null : el("span", { class: `badge ${coincide ? "ok" : "ko"}` }, coincide ? "coincide con el programa" : "no coincide con el programa"));
 }
 
-// Votaciones decisivas de fondo de una iniciativa con lo que votó un partido (apoyo a la iniciativa).
-const votosPartido = (leg, exp, partido) => q(`SELECT v.legislatura, v.id, v.fecha, v.tipo_votacion,
-    CASE WHEN v.asentimiento=1 THEN 'si' ELSE ${SQL_APOYO} END AS apoyo
-  FROM votacion v
-  LEFT JOIN grupo gr ON gr.legislatura=v.legislatura AND gr.siglas=?
-  LEFT JOIN voto_grupo g ON g.votacion_id=v.id AND g.grupo=gr.codigo
-  WHERE v.legislatura=? AND v.expediente=? AND v.decisiva=1 AND v.tipo_votacion IN (${FONDO_SQL}) ORDER BY v.fecha`, [partido, +leg, exp]);
+// Votaciones decisivas de fondo de una iniciativa con lo que votó un partido (apoyo a la iniciativa) y, si la ley
+// llegó a votarse entera al final y esa no es la decisiva, también esa: un partido puede cambiar de postura después
+// de negociar enmiendas.
+function votosPartido(leg, exp, partido) {
+  const vs = q(`SELECT v.legislatura, v.id, v.fecha, v.tipo_votacion, v.decisiva, v.titulo_subgrupo, v.texto_subgrupo,
+      CASE WHEN v.asentimiento=1 THEN 'si' ELSE ${SQL_APOYO} END AS apoyo
+    FROM votacion v
+    LEFT JOIN grupo gr ON gr.legislatura=v.legislatura AND gr.siglas=?
+    LEFT JOIN voto_grupo g ON g.votacion_id=v.id AND g.grupo=gr.codigo
+    WHERE v.legislatura=? AND v.expediente=? AND ((v.decisiva=1 AND v.tipo_votacion IN (${FONDO_SQL})) OR v.tipo_votacion IN ('conjunto','articulado'))
+    ORDER BY v.fecha, v.id`, [partido, +leg, exp]);
+  const decisivas = vs.filter((v) => v.decisiva && TIPOS_FONDO.includes(v.tipo_votacion));
+  const final = vs.filter((v) => !v.decisiva && esVotacionFinal(v)).at(-1);
+  return final ? [...decisivas, final] : decisivas;
+}
 
 // ---- en una causa (Activismo): qué prometieron los partidos sobre lo mismo ----
 
@@ -555,6 +567,22 @@ function lineaProgramas(leg, exp) {
 
 // Bloque del detalle de una iniciativa: qué partidos llevaban en su programa algo relacionado. Solo descarga los
 // programas si la iniciativa aparece en alguno (programa_iniciativa, en comun.js).
+// Promesas del mismo programa y en el mismo sentido respecto a una iniciativa: el voto del partido es el mismo, así
+// que van juntas (la primera, por orden de página, con su texto; las demás, solo enlazadas).
+function agruparPromesas(cs) {
+  const grupos = new Map();
+  for (const c of cs) {
+    const k = `${c.partido}|${c.eleccion}|${c.sentido}`;
+    grupos.set(k, [...(grupos.get(k) || []), c]);
+  }
+  return [...grupos.values()].map((xs) => xs.sort((a, b) => a.pagina - b.pagina));
+}
+// Páginas en las que se repite una promesa, sin repetir la de arriba ni la misma dos veces.
+function otrasPaginas([c, ...otras]) {
+  const vistas = new Set([c.pagina]);
+  return otras.filter((o) => !vistas.has(o.pagina) && vistas.add(o.pagina));
+}
+
 async function bloqueProgramas(leg, exp) {
   if (!q1("SELECT 1 AS x FROM programa_iniciativa WHERE legislatura=? AND expediente=?", [+leg, exp])) return null;
   await cargarProgramas();
@@ -562,13 +590,17 @@ async function bloqueProgramas(leg, exp) {
   if (!cs.length) return null;
   return el("section", {}, el("h3", {}, "En los programas electorales"),
     el("p", { class: "small muted" }, "Partidos que prometieron algo sobre este asunto en las elecciones. Para cada uno, si la iniciativa iba en la línea de su promesa y si lo que votó encaja con ella."),
-    el("ul", { class: "relacionadas" }, cs.map((c) => {
+    el("ul", { class: "relacionadas" }, agruparPromesas(cs).map((grupoPromesas) => {
+      const [c] = grupoPromesas, otras = otrasPaginas(grupoPromesas);
       const votos = votosPartido(leg, exp, c.partido);
       return el("li", {},
         el("div", {}, swatch(colorSiglas(c.partido)), el("b", {}, c.partido), " · ", SENTIDO_COMPROMISO[c.sentido] || c.sentido, " · ",
           el("a", { href: enlaceCita(c.url, c.formato, c.pagina).href, target: "_blank", rel: "noopener" },
             `${eleccionTexto(c.eleccion)}, ${enlaceCita(c.url, c.formato, c.pagina).texto}`)),
         el("div", {}, c.texto),
+        // Si el programa repite la promesa en otras páginas, se enlazan aquí (pasando por encima se lee cómo lo dice).
+        otras.length ? el("div", { class: "small muted" }, "También en ", otras.map((o, i) => [i ? (i === otras.length - 1 ? " y " : ", ") : null,
+          el("a", { href: enlaceCita(o.url, o.formato, o.pagina).href, target: "_blank", rel: "noopener", title: o.texto }, `${o.formato === "html" ? "el" : "la"} ${enlaceCita(o.url, o.formato, o.pagina).texto}`)])) : null,
         votos.length ? votos.map((v) => lineaVoto(v, c.sentido, c.partido)) : el("div", { class: "small muted" }, "Todavía no se ha votado."));
     })),
     el("p", { class: "small" }, el("a", { href: "#/programas" }, "Ver todos los programas y lo que votó cada partido →")));

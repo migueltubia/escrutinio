@@ -206,12 +206,41 @@ async function api(ruta, params = {}) {
 
 const TIPOS_VOTACION = {
   pnl: "Proposición no de ley", mocion: "Moción", toma_consideracion: "Toma en consideración",
-  totalidad: "Enmienda a la totalidad", enmiendas: "Enmiendas / votos particulares", articulado: "Dictamen (articulado)",
+  totalidad: "Enmienda a la totalidad", enmiendas: "Enmiendas", articulado: "Texto de la ley (dictamen)",
   conjunto: "Votación de conjunto", enmiendas_senado: "Enmiendas del Senado", veto_senado: "Veto del Senado",
   convalidacion: "Convalidación de real decreto-ley", tramitacion_ley: "Tramitación como proyecto de ley",
   tratado: "Convenio internacional", investidura: "Investidura, confianza o censura", nombramiento: "Elección o nombramiento",
   organizacion: "Organización de la Cámara", control: "Control / propuestas de resolución", otro: "Otro",
 };
+// Qué se decide en cada tipo de votación y qué quiere decir votar sí, para quien no conoce el reglamento.
+const QUE_SE_VOTA = {
+  pnl: "Una propuesta que pide al Gobierno que haga algo. Aunque se apruebe, no cambia ninguna ley.",
+  mocion: "Una propuesta que sale de una pregunta al Gobierno y le pide que haga algo. Aunque se apruebe, no cambia ninguna ley.",
+  toma_consideracion: "Primer debate de una ley que presenta un grupo o una comunidad autónoma. Votar sí es aceptar que se tramite; si pierde, la ley no sigue.",
+  totalidad: "Primer debate de una ley. Algunos grupos piden devolverla al Gobierno sin tramitarla (o cambiarla por un texto suyo). Votar sí es estar en contra de la ley tal como viene; votar no, dejar que siga adelante.",
+  enmiendas: "Cambios que propone un grupo a una parte concreta del texto. Votar sí es apoyar ese cambio, no la ley entera.",
+  articulado: "Votación del texto de la ley, o de una parte de él, tal como salió de la comisión. Votar sí es apoyarlo.",
+  conjunto: "Votación final de la ley entera, obligatoria en las leyes orgánicas. Votar sí es apoyar la ley.",
+  enmiendas_senado: "Cambios que hizo el Senado al texto. Votar sí es aceptarlos.",
+  veto_senado: "El Senado vetó la ley y el Congreso vota si sigue adelante a pesar del veto.",
+  convalidacion: "Un decreto-ley del Gobierno ya está en vigor y el Congreso decide si se mantiene. Votar sí es mantenerlo; si pierde, se deroga.",
+  tramitacion_ley: "Si el decreto-ley, además de mantenerse, se tramita como una ley para poder cambiarlo con enmiendas.",
+  tratado: "Autorizar que España firme un convenio internacional.",
+  investidura: "Elegir presidente del Gobierno, darle la confianza o votar una moción de censura.",
+  nombramiento: "Elegir a personas para un cargo u órgano.",
+  organizacion: "Un trámite sobre cómo se debate o se tramita algo, no sobre lo que dice.",
+  control: "Propuestas que hacen los grupos después de un debate general. Piden cosas al Gobierno, pero no cambian leyes.",
+  otro: "",
+};
+// La votación final del texto de una ley ordinaria: la del dictamen entero (no la de artículos o secciones sueltas).
+const esVotacionFinal = (v) => v.tipo_votacion === "conjunto"
+  || (v.tipo_votacion === "articulado" && /^votaci[oó]n del dictamen/i.test((v.titulo_subgrupo || v.texto_subgrupo || "").trim()));
+const queSeVota = (v) => v.tipo_votacion === "articulado" && esVotacionFinal(v)
+  ? "El texto completo de la ley, tal como salió de la comisión con las enmiendas aceptadas. Votar sí es apoyar la ley."
+  : QUE_SE_VOTA[v.tipo_votacion] || "";
+// Nota corta para las listas: en la totalidad el sí va contra la ley y se lee al revés de lo que parece.
+const notaSi = (v) => v.tipo_votacion === "totalidad" ? "Aquí votar sí es pedir que la ley se devuelva al Gobierno." : null;
+
 const FAMILIAS = {
   ley: "Leyes", decreto_ley: "Decretos-leyes", pnl: "Proposiciones no de ley", mocion: "Mociones",
   internacional: "Convenios internacionales", organizacion: "Organización", control: "Control", otro: "Otros",
@@ -852,7 +881,7 @@ function chipsGrupos(v) {
     const chip = el("span", { class: "chip" + (decis.has(g.grupo) ? " decisivo" : ""), tabindex: 0 },
       el("span", { class: "sw", style: `background:${info.color}` }), info.siglas, el("span", { class: `s ${g.sentido}` }, ic));
     const recuento = g.si + g.no + g.abstencion + g.no_vota ? `Sí ${g.si} · Abst. ${g.abstencion} · No ${g.no} · No vota ${g.no_vota}` : "Voto del grupo según la fuente, sin recuento";
-    return conTip(chip, `${info.siglas}: ${txt}`, recuento,
+    return conTip(chip, `${info.siglas}: ${txt}${v.tipo_votacion === "totalidad" && g.sentido === "si" ? " a devolver la ley" : ""}`, recuento,
       decis.has(g.grupo) ? "Grupo decisivo: su voto cambiaba el resultado" : null);
   }));
 }
@@ -876,6 +905,7 @@ function filaVotacion(v) {
         // En las propuestas de resolución de un debate, lo votado es del grupo que la presenta.
         v.tipo_votacion === "control" && v.enmienda_grupo ? el("span", { class: "badge" }, "Propone: " + grupo(v.legislatura, v.enmienda_grupo).siglas)
           : v.grupo_autor ? el("span", { class: "badge" }, "Propone: " + grupo(v.legislatura, v.grupo_autor).siglas) : null),
+      notaSi(v) ? el("div", { class: "small nota-si" }, notaSi(v)) : null,
       v.resumen && v.decisiva ? el("div", { class: "resumen" }, v.resumen) : null),
     el("div", {}, barraVotos(v), chipsGrupos(v)));
 }
@@ -1880,6 +1910,7 @@ async function panelVotacion(id) {
     (v.texto_expediente || "").includes("\n") ? el("p", { class: "small muted" }, v.texto_expediente.split("\n").slice(1).join(" ").trim()) : null,
     el("div", { class: "badges" }, badgeResultado(v.resultado), el("span", { class: "badge" }, META.tipos_votacion[v.tipo_votacion]), v.decisiva ? el("span", { class: "badge" }, "votación decisiva de la iniciativa") : null,
       v.derrota ? el("span", { class: "badge" }, "derrota del Gobierno") : null),
+    queSeVota(v) ? el("p", { class: "small que-se-vota" }, el("strong", {}, "Qué se votaba. "), queSeVota(v)) : null,
     el("section", {}, barraVotos(v), el("p", { class: "small" }, explica, v.a_favor === null ? "" : ` Presentes: ${v.presentes ?? "—"}; no votan: ${v.no_votan ?? "—"}.`),
       gob ? el("p", { class: "small" }, `Gobierno de ${gob.presidente} (${partidosGobierno(gob)}).`,
         v.derrota ? ` Derrota del Gobierno: el ${gob.partido} votó ${v.resultado === "rechazada" ? "a favor y se rechazó" : "en contra y se aprobó"}.` : "") : null,
@@ -1931,6 +1962,37 @@ function tablaOtras(otras, actual) {
     el("td", {}, badgeResultado(o.resultado))))));
 }
 
+// Votaciones de una iniciativa, separadas por lo que se decidía: una ley pasa por muchas y la mayoría son de
+// enmiendas a partes del texto, que no dicen qué piensa cada grupo de la ley entera.
+function seccionVotaciones(vs) {
+  const enmiendas = vs.filter((v) => v.tipo_votacion === "enmiendas" || v.tipo_votacion === "enmiendas_senado"
+    || (v.tipo_votacion === "articulado" && !esVotacionFinal(v)));
+  const tramites = vs.filter((v) => ["organizacion", "nombramiento", "otro"].includes(v.tipo_votacion));
+  const fondo = vs.filter((v) => !enmiendas.includes(v) && !tramites.includes(v));
+  // Si son pocas o todas del mismo tipo, sin separar.
+  if (vs.length <= 3 || [enmiendas, tramites, fondo].filter((x) => x.length).length === 1) {
+    return el("section", {}, el("h3", {}, `Votaciones (${vs.length})`),
+      el("p", { class: "small muted" }, "★ votación decisiva: la que se usa para decir qué votó cada grupo sobre este asunto."),
+      el("div", { class: "lista" }, vs.map(filaVotacion)));
+  }
+  // Una línea por tipo de votación con lo que significa votar sí, en el orden en que aparecen.
+  const explicar = (xs) => {
+    const vistos = new Map();
+    for (const v of xs) {
+      const k = esVotacionFinal(v) ? "final" : v.tipo_votacion;
+      if (!vistos.has(k) && queSeVota(v)) vistos.set(k, [esVotacionFinal(v) && v.tipo_votacion === "articulado" ? "Votación final del texto" : META.tipos_votacion[v.tipo_votacion], queSeVota(v)]);
+    }
+    return [...vistos.values()].map(([nombre, txt]) => el("p", { class: "small que-se-vota" }, el("strong", {}, nombre + ". "), txt));
+  };
+  const plegable = (titulo, xs) => xs.length ? el("details", { class: "grupo-votaciones" },
+    el("summary", {}, titulo), explicar(xs), el("div", { class: "lista" }, xs.map(filaVotacion))) : null;
+  return el("section", {}, el("h3", {}, `Votaciones (${vs.length})`),
+    el("p", { class: "small muted" }, "Un mismo asunto puede votarse varias veces. Arriba, las votaciones sobre el asunto entero: son las que dicen qué pensaba cada grupo. Debajo, plegadas, las de enmiendas a partes concretas del texto y los trámites. ★ marca la votación decisiva, la que se usa para decir qué votó cada grupo."),
+    fondo.length ? [el("h4", {}, "Sobre el asunto entero"), explicar(fondo), el("div", { class: "lista" }, fondo.map(filaVotacion))] : null,
+    plegable(`Enmiendas a partes del texto (${enmiendas.length})`, enmiendas),
+    plegable(`Trámites (${tramites.length})`, tramites));
+}
+
 async function panelIniciativa(leg, exp) {
   const d = await api("iniciativa", { leg, exp });
   const i = d.iniciativa;
@@ -1956,8 +2018,7 @@ async function panelIniciativa(leg, exp) {
     el("h2", {}, i.titulo),
     el("section", {}, bloqueFicha(d.ficha)),
     el("section", {}, bloqueIniciativa(i)),
-    el("section", {}, el("h3", {}, `Votaciones (${d.votaciones.length})`), el("p", { class: "small muted" }, "★ votación decisiva"),
-      el("div", { class: "lista" }, d.votaciones.map(filaVotacion))),
+    seccionVotaciones(d.votaciones),
     programas);
 }
 

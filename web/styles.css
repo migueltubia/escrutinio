@@ -493,3 +493,9 @@ button.amb-abrir:hover { background: var(--surface-2); }
 .movil .promesas-programa { flex-wrap: wrap; gap: 4px; }
 .movil .promesas-programa .barra-promesas { flex-basis: 100%; max-width: none; }
 .movil .promesas-programa .small { white-space: normal; }
+
+/* Qué se votaba en cada tipo de votación y grupos plegables en la ficha de una iniciativa. */
+.nota-si { margin-top: 4px; color: var(--warn-text); }
+.que-se-vota { margin: 4px 0 8px; color: var(--ink-2); }
+.grupo-votaciones { margin-top: 12px; border-top: 1px solid var(--border); padding-top: 8px; }
+.grupo-votaciones > summary { cursor: pointer; font-weight: 600; padding: 4px 0; }

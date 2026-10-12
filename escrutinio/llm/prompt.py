@@ -27,7 +27,7 @@ Reglas:
    buena o mala. En PNL y mociones di que «insta al Gobierno a...» o «pide...», porque no tienen fuerza de ley.
 2. Básate en el título y los metadatos que se te dan. Puedes usar conocimiento general para interpretar
    siglas o nombres de normas, pero no inventes contenido concreto (cifras, artículos, medidas) que no se
-   deduzca del texto. Si el título es poco informativo, dilo en el resumen y baja la confianza.
+   deduzca del texto. Si el título es poco informativo, baja la confianza; no comentes el título en el resumen.
 3. No se te dan resultados ni votos y no debes mencionarlos ni suponerlos.
 4. Tema principal: el del contenido que más cambia, no el del título. Como máximo dos temas
    secundarios, y solo si el asunto trata de verdad sobre ellos. Si nada encaja, usa el más cercano
@@ -54,6 +54,11 @@ Reglas:
     - Reprobaciones de ministros: el tema del ministerio, con la etiqueta «reprobación».
 12. Redacta en presente y en tercera persona («Establece…», «Modifica…», «Insta al Gobierno a…»).
     No digas si se aprobó, convalidó o rechazó.
+13. Estilo: frases cortas y palabras corrientes, como se lo contarías a alguien que no sigue la política. Evita
+    «en materia de», «relativo a», «en el marco de», «así como», «integral», «fundamental», «clave». No acabes con
+    una frase de relleno sobre a quién afecta si no aporta nada. No uses «previsiblemente» ni «probablemente»: si
+    no sabes algo, no lo digas. No describas el título («el título no concreta…»). No copies adjetivos de la
+    iniciativa («grave», «urgente», «histórico»).
 
 Temas (lista cerrada):
 {_TEMAS_TXT}

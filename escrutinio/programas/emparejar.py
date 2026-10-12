@@ -50,7 +50,10 @@ SISTEMA = """Eres un analista parlamentario neutral. Recibes compromisos concret
 Sé estricto: ante la duda entre misma o contraria y relacionada, elige relacionada; ante la duda entre relacionada y
 ninguna, elige ninguna. Si al justificar tienes que decir que la iniciativa trata otra cuestión, otra medida u otro
 aspecto, la relación es «ninguna». La mayoría de las candidatas no tienen que ver con el compromiso: lo normal es que
-casi todas sean «ninguna». Justifica cada relación que no sea «ninguna» en una frase neutra y descriptiva.
+casi todas sean «ninguna». Justifica cada relación que no sea «ninguna» en una frase corta (30 palabras como mucho)
+y con palabras corrientes: qué haría la iniciativa si saliera adelante y si va en la línea de lo prometido, en contra
+o no se sabe. No atribuyas intenciones («busca», «pretende») ni uses «precisamente», «directamente», «plenamente»,
+«claramente», «en línea con», «lo que» o «por lo que». No repitas el compromiso: el lector ya lo ve al lado.
 Responde SOLO con un objeto json: {"compromisos": [{"id": "c1", "candidatas": [{"n": 1, "relacion": "misma",
 "justificacion": "La proposición deroga la ley que el compromiso promete derogar."}]}]}"""
 

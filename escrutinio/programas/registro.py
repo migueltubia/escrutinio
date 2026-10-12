@@ -26,7 +26,11 @@ from datetime import date
 from pathlib import Path
 
 from .. import http_util
-from ..config import LLM_DIR, RAW_DIR
+from ..config import DATA_DIR, LLM_DIR, RAW_DIR
+
+# Programas dados de alta fuera del código (p. ej. los de una elección nueva), que se suman al catálogo
+# de abajo. El flujo (programas-descargar/-leer) los lee igual. Formato y ejemplo: en el propio fichero.
+RUTA_ALTAS = DATA_DIR / "programas.json"
 
 PROGRAMAS_DIR = LLM_DIR / "programas"
 REGISTRO = PROGRAMAS_DIR / "registro.jsonl"
@@ -163,9 +167,32 @@ PROGRAMAS = [
 ]
 
 
+CAMPOS = ("id", "eleccion", "fecha_eleccion", "cuerpo", "partido", "titulo", "url", "origen", "url_oficial")
+
+
+def _altas():
+    """Programas de data/programas.json: dicts con los mismos campos. Si falta o está mal, no pasa nada."""
+    try:
+        datos = json.loads(RUTA_ALTAS.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return []
+    items = datos.get("programas", []) if isinstance(datos, dict) else datos
+    salida = []
+    for it in items:
+        if isinstance(it, dict):
+            d = {c: it.get(c) for c in CAMPOS}
+        elif isinstance(it, (list, tuple)) and len(it) >= len(CAMPOS):
+            d = dict(zip(CAMPOS, it))
+        else:
+            continue
+        if d.get("id") and d.get("url"):
+            d["origen"] = d.get("origen") or "web-partido"  # por defecto, descarga de la web del partido
+            salida.append(d)
+    return salida
+
+
 def catalogo(ids=None):
-    campos = ("id", "eleccion", "fecha_eleccion", "cuerpo", "partido", "titulo", "url", "origen", "url_oficial")
-    salida = [dict(zip(campos, p)) for p in PROGRAMAS]
+    salida = [dict(zip(CAMPOS, p)) for p in PROGRAMAS] + _altas()
     return [p for p in salida if not ids or p["id"] in ids]
 
 

@@ -88,8 +88,10 @@ def actualizar(limite_fichas=400, ia=True, informe=False, territorial=True, limi
     log(f"Hecho. Iniciativas que siguen sin ficha IA: {pendientes}")
     if territorial:
         from .territorial import estado
+        from .territorial.partidos import anunciar_pendientes
 
         estado.anunciar(con, log)  # en Actions, además, como avisos de la ejecución
+        anunciar_pendientes(log)   # grupos sin partido reconocido: posibles partidos nuevos para dar de alta
 
 
 def actualizar_territorial(con, ia=True, limite_actas=40, log=print):

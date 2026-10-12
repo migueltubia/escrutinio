@@ -1,0 +1,49 @@
+{
+  "_leeme": [
+    "Partidos dados de alta a mano, que se suman a la tabla base de escrutinio/territorial/partidos.py.",
+    "El proceso diario (GitHub Actions o local) lee este fichero al arrancar: no hay que tocar código ni la base de datos.",
+    "Cada entrada necesita solo 'patron', 'siglas' y 'color'; los demás campos son documentación y se ignoran.",
+    "  - patron: expresión regular sobre el nombre NORMALIZADO del grupo (minúsculas, sin tildes, con '-' convertido en espacio).",
+    "           Usa \\b para acotar siglas cortas, p. ej. '\\\\bsalf\\\\b', y '|' para alternativas.",
+    "  - siglas: cómo se muestra el partido en la web, igual en todas las instituciones.",
+    "  - color:  color de marca en hexadecimal (#rrggbb).",
+    "ORDEN: se prueban antes que la tabla base, de arriba abajo; pon lo más específico primero.",
+    "Para ver qué grupos aparecen sin reconocer (posibles partidos nuevos): python -m escrutinio partidos-pendientes",
+    "Los colores de los partidos nuevos son PROVISIONALES: confírmalos con la web oficial de cada uno."
+  ],
+  "partidos": [
+    {
+      "patron": "se acabo la fiesta|\\bsalf\\b",
+      "siglas": "SALF",
+      "color": "#6f4e37",
+      "nombre": "Se Acabó La Fiesta",
+      "lider": "Luis «Alvise» Pérez",
+      "ambito": "nacional",
+      "desde": "2024",
+      "fuente": "3 eurodiputados en las europeas de 2024; concurre a las generales del 29-N de 2026",
+      "nota": "Color marrón según la ficha de Wikipedia (logo: ardilla con máscara de Guy Fawkes). PROVISIONAL."
+    },
+    {
+      "patron": "democracia ?21",
+      "siglas": "Democracia 21",
+      "color": "#2b579a",
+      "nombre": "Democracia 21",
+      "lider": "Miriam González Durántez",
+      "ambito": "nacional",
+      "desde": "2026",
+      "fuente": "Partido de nueva creación (registrado en junio de 2026); concurre al 29-N por Madrid y Barcelona",
+      "nota": "Identidad visual aún no definida públicamente. Color PROVISIONAL."
+    },
+    {
+      "patron": "\\bcree\\b",
+      "siglas": "Cree",
+      "color": "#1aa7a0",
+      "nombre": "Cree",
+      "lider": "Edmundo Bal",
+      "ambito": "nacional",
+      "desde": "2024",
+      "fuente": "Fundado en febrero de 2024; de cara al 29-N negocia una coalición de centro",
+      "nota": "Color PROVISIONAL. OJO: 'cree' es palabra común; si diera falsos positivos, afina el patrón."
+    }
+  ]
+}

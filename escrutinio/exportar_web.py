@@ -38,6 +38,19 @@ from .llm.prompt import VERSION_TAXONOMIA
 CODIGO = {"si": "S", "no": "N", "abstencion": "A", "no_vota": "-"}
 DEBATE_GENERAL = "debate general"
 
+# Frases del resumen que comentan el título («El título no concreta las medidas.») en vez de describir el asunto:
+# se quitan al exportar. Solo si van detrás de otra frase, para no dejar un resumen vacío.
+_COMENTARIO_TITULO = re.compile(r"(?<=[.;])\s+[^.;]*\b(?:[Ee]l|[Dd]el|[Ss]u) título\b[^.]*\.")
+
+
+def _sin_comentario_del_titulo(resumen):
+    if not resumen:
+        return resumen
+    limpio = _COMENTARIO_TITULO.sub("", resumen).strip()
+    if limpio.endswith(";"):
+        limpio = limpio[:-1] + "."
+    return limpio if len(limpio) >= 25 else resumen
+
 ESQUEMA = """
 CREATE TABLE meta(clave TEXT PRIMARY KEY, valor TEXT);
 CREATE TABLE legislatura(id INTEGER PRIMARY KEY, romano TEXT, inicio TEXT, fin TEXT, cuerpo TEXT, numero INTEGER,
@@ -198,6 +211,7 @@ def construir(con, destino, log=print):
                          AND i.situacion IS NOT NULL AND i.situacion <> 'Cerrado')"""
     ):
         f = dict(r)
+        f["resumen"] = _sin_comentario_del_titulo(f["resumen"])
         f["etiquetas"] = json.dumps(canonicas(json.loads(f["etiquetas"] or "[]")), ensure_ascii=False)
         f["leyes_afectadas"] = json.dumps(leyes_canonicas(json.loads(f["leyes_afectadas"] or "[]")), ensure_ascii=False)
         if (f["legislatura"], f["expediente"]) in debates:

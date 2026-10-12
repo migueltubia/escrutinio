@@ -1,6 +1,6 @@
 // Generado por `python -m escrutinio web`. Ficheros de datos que carga la web, en orden.
 window.ESCRUTINIO_INDICE = {
- "generado": "2026-10-11T12:38:19+00:00",
+ "generado": "2026-10-12T19:34:36+00:00",
  "ficheros": [
   {
    "nombre": "comun",
@@ -15,20 +15,20 @@ window.ESCRUTINIO_INDICE = {
   {
    "nombre": "congreso/leg10",
    "cuerpo": "congreso",
-   "huella": "41c377518f943a5d",
-   "bytes": 1396181
+   "huella": "e6bc158fe1ee7609",
+   "bytes": 1366401
   },
   {
    "nombre": "congreso/leg11",
    "cuerpo": "congreso",
-   "huella": "f98606e86c6fa3fc",
-   "bytes": 54905
+   "huella": "9e934a02e19cb896",
+   "bytes": 39025
   },
   {
    "nombre": "congreso/leg12",
    "cuerpo": "congreso",
-   "huella": "c1f67b7f40b42c83",
-   "bytes": 621677
+   "huella": "7acd0c956adc4592",
+   "bytes": 601893
   },
   {
    "nombre": "congreso/leg13",
@@ -39,38 +39,38 @@ window.ESCRUTINIO_INDICE = {
   {
    "nombre": "congreso/leg14",
    "cuerpo": "congreso",
-   "huella": "da5b32f99e4b7046",
-   "bytes": 1640621
+   "huella": "55e838a8895ac123",
+   "bytes": 1611645
   },
   {
    "nombre": "congreso/leg15",
    "cuerpo": "congreso",
-   "huella": "311f6cc9f1d202a9",
-   "bytes": 755501
+   "huella": "4da888e6147e301c",
+   "bytes": 753821
   },
   {
    "nombre": "parl-AN/leg9",
    "cuerpo": "parl-AN",
-   "huella": "cc318ece3fc55c0f",
-   "bytes": 134011
+   "huella": "17b470e5f0e3965d",
+   "bytes": 121783
   },
   {
    "nombre": "parl-AN/leg10",
    "cuerpo": "parl-AN",
-   "huella": "8a4d980ad508c844",
-   "bytes": 287800
+   "huella": "9017f07f118573d4",
+   "bytes": 275024
   },
   {
    "nombre": "parl-AN/leg11",
    "cuerpo": "parl-AN",
-   "huella": "e518f350fd53c20c",
-   "bytes": 174212
+   "huella": "3c48ca36cd2817bb",
+   "bytes": 160612
   },
   {
    "nombre": "parl-AN/leg12",
    "cuerpo": "parl-AN",
-   "huella": "c4d572c8fedecead",
-   "bytes": 303760
+   "huella": "9dac13e5e6e47a0b",
+   "bytes": 290596
   },
   {
    "nombre": "parl-AN/leg13",
@@ -81,14 +81,14 @@ window.ESCRUTINIO_INDICE = {
   {
    "nombre": "parl-AR/leg10",
    "cuerpo": "parl-AR",
-   "huella": "1993edc53421f5f5",
-   "bytes": 180012
+   "huella": "3211f9e971b31671",
+   "bytes": 170480
   },
   {
    "nombre": "parl-AR/leg11",
    "cuerpo": "parl-AR",
-   "huella": "088145e027255cd3",
-   "bytes": 167328
+   "huella": "35f39a16c122c13c",
+   "bytes": 155008
   },
   {
    "nombre": "parl-AR/leg12",
@@ -99,20 +99,20 @@ window.ESCRUTINIO_INDICE = {
   {
    "nombre": "parl-AS/leg10",
    "cuerpo": "parl-AS",
-   "huella": "b954826c02a352a7",
-   "bytes": 392624
+   "huella": "9a6bcc5a2ed84edc",
+   "bytes": 379156
   },
   {
    "nombre": "parl-AS/leg11",
    "cuerpo": "parl-AS",
-   "huella": "ea26d2c64a22912c",
-   "bytes": 326204
+   "huella": "8c7f9cefe2e64b24",
+   "bytes": 312612
   },
   {
    "nombre": "parl-AS/leg12",
    "cuerpo": "parl-AS",
-   "huella": "523a663f7f5d5c86",
-   "bytes": 138592
+   "huella": "a32c61e96b27d64d",
+   "bytes": 138328
   },
   {
    "nombre": "parl-IB/leg8",
@@ -165,26 +165,26 @@ window.ESCRUTINIO_INDICE = {
   {
    "nombre": "parl-CN/leg8",
    "cuerpo": "parl-CN",
-   "huella": "be1ea9dbbc3e7d29",
-   "bytes": 142819
+   "huella": "a2492a040a734830",
+   "bytes": 142811
   },
   {
    "nombre": "parl-CN/leg9",
    "cuerpo": "parl-CN",
-   "huella": "afde31e3d94ad547",
-   "bytes": 196471
+   "huella": "b2ba33f3a7f29587",
+   "bytes": 195931
   },
   {
    "nombre": "parl-CN/leg10",
    "cuerpo": "parl-CN",
-   "huella": "261d3ed85f5eb203",
-   "bytes": 181948
+   "huella": "9ccfad19988e8c0e",
+   "bytes": 168268
   },
   {
    "nombre": "parl-CN/leg11",
    "cuerpo": "parl-CN",
-   "huella": "dfec2433ff153057",
-   "bytes": 168156
+   "huella": "509856c6b98287c0",
+   "bytes": 167432
   },
   {
    "nombre": "parl-CB/leg8",
@@ -213,26 +213,26 @@ window.ESCRUTINIO_INDICE = {
   {
    "nombre": "parl-CL/leg9",
    "cuerpo": "parl-CL",
-   "huella": "a0580561b4af2352",
-   "bytes": 312599
+   "huella": "5cc373bce455c574",
+   "bytes": 301747
   },
   {
    "nombre": "parl-CL/leg10",
    "cuerpo": "parl-CL",
-   "huella": "d5e1a07e8319cafa",
-   "bytes": 133388
+   "huella": "e05236b723c4aa48",
+   "bytes": 125772
   },
   {
    "nombre": "parl-CL/leg11",
    "cuerpo": "parl-CL",
-   "huella": "3e1ced7aefd15c3a",
-   "bytes": 234900
+   "huella": "60b977c151adf85f",
+   "bytes": 223856
   },
   {
    "nombre": "parl-CL/leg12",
    "cuerpo": "parl-CL",
-   "huella": "41acb4721802ebd5",
-   "bytes": 6828
+   "huella": "a86dc3b55b99a579",
+   "bytes": 6772
   },
   {
    "nombre": "parl-CM/leg8",
@@ -261,20 +261,20 @@ window.ESCRUTINIO_INDICE = {
   {
    "nombre": "parl-CT/leg12",
    "cuerpo": "parl-CT",
-   "huella": "88b47f349f60c7af",
-   "bytes": 256860
+   "huella": "2c23469a0055be93",
+   "bytes": 246356
   },
   {
    "nombre": "parl-CT/leg14",
    "cuerpo": "parl-CT",
-   "huella": "623d7b873538e4ec",
-   "bytes": 284688
+   "huella": "ff3dc488e86ca1c9",
+   "bytes": 274236
   },
   {
    "nombre": "parl-CT/leg15",
    "cuerpo": "parl-CT",
-   "huella": "50dc2b01c4b88355",
-   "bytes": 215416
+   "huella": "504da51340b4eef7",
+   "bytes": 215008
   },
   {
    "nombre": "parl-VC/leg5",
@@ -309,218 +309,218 @@ window.ESCRUTINIO_INDICE = {
   {
    "nombre": "parl-VC/leg10",
    "cuerpo": "parl-VC",
-   "huella": "9ad8148f1e2ad26e",
-   "bytes": 214992
+   "huella": "19332fd39e3a0b14",
+   "bytes": 207056
   },
   {
    "nombre": "parl-VC/leg11",
    "cuerpo": "parl-VC",
-   "huella": "0171eff1a7c41c8f",
-   "bytes": 72204
+   "huella": "010656260e617123",
+   "bytes": 106788
   },
   {
    "nombre": "parl-EX/leg9",
    "cuerpo": "parl-EX",
-   "huella": "32c46ab4ac5552cd",
-   "bytes": 404087
+   "huella": "fbc81867ebce3195",
+   "bytes": 391767
   },
   {
    "nombre": "parl-EX/leg10",
    "cuerpo": "parl-EX",
-   "huella": "dc7ea24f5f0c3ac8",
-   "bytes": 292392
+   "huella": "fd91e366319a7625",
+   "bytes": 280684
   },
   {
    "nombre": "parl-EX/leg11",
    "cuerpo": "parl-EX",
-   "huella": "7550995633de94e4",
-   "bytes": 202828
+   "huella": "c951b1c818aafcea",
+   "bytes": 189724
   },
   {
    "nombre": "parl-EX/leg12",
    "cuerpo": "parl-EX",
-   "huella": "4ff57fd6e6639a95",
-   "bytes": 48944
+   "huella": "09d2afbd6066a4bb",
+   "bytes": 51356
   },
   {
    "nombre": "parl-GA/leg10",
    "cuerpo": "parl-GA",
-   "huella": "e7fa967335b8d58e",
-   "bytes": 388416
+   "huella": "d4437d9f2b21c457",
+   "bytes": 375548
   },
   {
    "nombre": "parl-GA/leg11",
    "cuerpo": "parl-GA",
-   "huella": "08aeec37fe4603db",
-   "bytes": 246012
+   "huella": "42978b23e9ab16ef",
+   "bytes": 245412
   },
   {
    "nombre": "parl-GA/leg12",
    "cuerpo": "parl-GA",
-   "huella": "6c67f79a52f77ac5",
-   "bytes": 165516
+   "huella": "bd555bdf6655d418",
+   "bytes": 165828
   },
   {
    "nombre": "parl-MC/leg9",
    "cuerpo": "parl-MC",
-   "huella": "c5cacea34d9d5416",
-   "bytes": 16035
+   "huella": "5fc463d6b53cf90f",
+   "bytes": 17875
   },
   {
    "nombre": "parl-MC/leg10",
    "cuerpo": "parl-MC",
-   "huella": "fb0b68f18a5cf890",
-   "bytes": 98968
+   "huella": "196c0557191b08ca",
+   "bytes": 98500
   },
   {
    "nombre": "parl-MC/leg11",
    "cuerpo": "parl-MC",
-   "huella": "a2e2be0ea3864010",
-   "bytes": 200444
+   "huella": "a63db038c54d621f",
+   "bytes": 199360
   },
   {
    "nombre": "parl-NC/leg9",
    "cuerpo": "parl-NC",
-   "huella": "f2bb2d4195194c3b",
-   "bytes": 254499
+   "huella": "01bfa44e67208052",
+   "bytes": 252603
   },
   {
    "nombre": "parl-NC/leg10",
    "cuerpo": "parl-NC",
-   "huella": "62c0a44b33d2561b",
-   "bytes": 214156
+   "huella": "c0e3a93829b6ff75",
+   "bytes": 213296
   },
   {
    "nombre": "parl-NC/leg11",
    "cuerpo": "parl-NC",
-   "huella": "d94d4f79b734ed75",
-   "bytes": 176796
+   "huella": "74be2b8bc102017e",
+   "bytes": 175428
   },
   {
    "nombre": "parl-PV/leg10",
    "cuerpo": "parl-PV",
-   "huella": "9d2bb165647137b6",
-   "bytes": 383832
+   "huella": "56281dc725fb595d",
+   "bytes": 381884
   },
   {
    "nombre": "parl-PV/leg11",
    "cuerpo": "parl-PV",
-   "huella": "0469af1949b0e9c6",
-   "bytes": 278640
+   "huella": "766d859b3193a01f",
+   "bytes": 276560
   },
   {
    "nombre": "parl-PV/leg12",
    "cuerpo": "parl-PV",
-   "huella": "ec5d65b6d4f44d97",
-   "bytes": 341944
+   "huella": "2dcacaadf105666e",
+   "bytes": 340144
   },
   {
    "nombre": "parl-PV/leg13",
    "cuerpo": "parl-PV",
-   "huella": "093cc0dc3b7c0bbf",
-   "bytes": 202168
+   "huella": "a36bcc0876aa20e9",
+   "bytes": 201400
   },
   {
    "nombre": "parl-RI/leg9",
    "cuerpo": "parl-RI",
-   "huella": "bb0d6ebe6a407458",
-   "bytes": 167235
+   "huella": "bc81fa4899168c4e",
+   "bytes": 155779
   },
   {
    "nombre": "parl-RI/leg10",
    "cuerpo": "parl-RI",
-   "huella": "feaee6d47d26d82d",
-   "bytes": 209460
+   "huella": "a47e93cf43f11101",
+   "bytes": 194940
   },
   {
    "nombre": "parl-RI/leg11",
    "cuerpo": "parl-RI",
-   "huella": "ea64651436342533",
-   "bytes": 197976
+   "huella": "c9f12c5a2a4062e3",
+   "bytes": 197712
   },
   {
    "nombre": "jjgg-alava/leg6",
    "cuerpo": "jjgg-alava",
-   "huella": "87bd32357e49184d",
-   "bytes": 156946
+   "huella": "f471aefa552148d1",
+   "bytes": 147358
   },
   {
    "nombre": "jjgg-alava/leg7",
    "cuerpo": "jjgg-alava",
-   "huella": "abd1a7633b9acd34",
-   "bytes": 154966
+   "huella": "3b0a17a8b335a072",
+   "bytes": 145082
   },
   {
    "nombre": "jjgg-alava/leg8",
    "cuerpo": "jjgg-alava",
-   "huella": "c1651d5732472f7d",
-   "bytes": 108738
+   "huella": "e8053f52295b9187",
+   "bytes": 101366
   },
   {
    "nombre": "jjgg-alava/leg9",
    "cuerpo": "jjgg-alava",
-   "huella": "e8426ba6518c1c72",
-   "bytes": 171018
+   "huella": "9f88112d6ee173ab",
+   "bytes": 160266
   },
   {
    "nombre": "jjgg-alava/leg10",
    "cuerpo": "jjgg-alava",
-   "huella": "3cf03edaf6796639",
-   "bytes": 173099
+   "huella": "2e5eb04edb806193",
+   "bytes": 162139
   },
   {
    "nombre": "jjgg-alava/leg11",
    "cuerpo": "jjgg-alava",
-   "huella": "3c89bddbec3c5dd6",
-   "bytes": 177919
+   "huella": "7e0fb941d63ad320",
+   "bytes": 168239
   },
   {
    "nombre": "jjgg-alava/leg12",
    "cuerpo": "jjgg-alava",
-   "huella": "25cdd555c99c407b",
-   "bytes": 130175
+   "huella": "424309f3a93dfcad",
+   "bytes": 119967
   },
   {
    "nombre": "jjgg-bizkaia/leg6",
    "cuerpo": "jjgg-bizkaia",
-   "huella": "4c04c250b0d2b8f5",
-   "bytes": 64400
+   "huella": "783b02a0b8b9fc98",
+   "bytes": 64056
   },
   {
    "nombre": "jjgg-bizkaia/leg7",
    "cuerpo": "jjgg-bizkaia",
-   "huella": "8a53344eca016c1d",
-   "bytes": 47180
+   "huella": "b459abd7c193bd00",
+   "bytes": 47060
   },
   {
    "nombre": "jjgg-bizkaia/leg8",
    "cuerpo": "jjgg-bizkaia",
-   "huella": "5d3eeaf14a9d600b",
-   "bytes": 76856
+   "huella": "a305bebe655a6af9",
+   "bytes": 76228
   },
   {
    "nombre": "jjgg-bizkaia/leg9",
    "cuerpo": "jjgg-bizkaia",
-   "huella": "1464e448961eaf9b",
-   "bytes": 109316
+   "huella": "59ed27ca849bc122",
+   "bytes": 107864
   },
   {
    "nombre": "jjgg-bizkaia/leg10",
    "cuerpo": "jjgg-bizkaia",
-   "huella": "3509e0406e8850f5",
-   "bytes": 123021
+   "huella": "3494b1a9c2b66e91",
+   "bytes": 121993
   },
   {
    "nombre": "jjgg-bizkaia/leg11",
    "cuerpo": "jjgg-bizkaia",
-   "huella": "f62b344cb04f256e",
-   "bytes": 111753
+   "huella": "e0fbe7cb40f5d9a2",
+   "bytes": 110901
   },
   {
    "nombre": "jjgg-bizkaia/leg12",
    "cuerpo": "jjgg-bizkaia",
-   "huella": "7d3e3bca809f069b",
-   "bytes": 80437
+   "huella": "4fae043e321092f4",
+   "bytes": 79557
   },
   {
    "nombre": "jjgg-gipuzkoa/leg7",
@@ -531,92 +531,92 @@ window.ESCRUTINIO_INDICE = {
   {
    "nombre": "jjgg-gipuzkoa/leg8",
    "cuerpo": "jjgg-gipuzkoa",
-   "huella": "b5ca3818eb628616",
-   "bytes": 42777
+   "huella": "79884afa80c0e24b",
+   "bytes": 37365
   },
   {
    "nombre": "jjgg-gipuzkoa/leg9",
    "cuerpo": "jjgg-gipuzkoa",
-   "huella": "4b890d2248a92827",
-   "bytes": 70049
+   "huella": "f8ce86fe9bdac767",
+   "bytes": 62721
   },
   {
    "nombre": "jjgg-gipuzkoa/leg10",
    "cuerpo": "jjgg-gipuzkoa",
-   "huella": "321dfa20d059f5a6",
-   "bytes": 46950
+   "huella": "41e62a9825db5723",
+   "bytes": 41398
   },
   {
    "nombre": "jjgg-gipuzkoa/leg11",
    "cuerpo": "jjgg-gipuzkoa",
-   "huella": "856781abb5bbc285",
-   "bytes": 62590
+   "huella": "d5f81df945533276",
+   "bytes": 61926
   },
   {
    "nombre": "jjgg-gipuzkoa/leg12",
    "cuerpo": "jjgg-gipuzkoa",
-   "huella": "4719aae7ea4f9a7d",
-   "bytes": 48106
+   "huella": "53f1738d7d66c4cf",
+   "bytes": 47590
   },
   {
    "nombre": "cabildo-lanzarote/leg12",
    "cuerpo": "cabildo-lanzarote",
-   "huella": "1ddafd0367e76994",
-   "bytes": 74326
+   "huella": "8eccbdde86aaf4d1",
+   "bytes": 73434
   },
   {
    "nombre": "consell-mallorca/leg10",
    "cuerpo": "consell-mallorca",
-   "huella": "e7a3970d35a1332e",
-   "bytes": 123677
+   "huella": "7de8977b4375e65e",
+   "bytes": 122281
   },
   {
    "nombre": "ayto-alicante/leg6",
    "cuerpo": "ayto-alicante",
-   "huella": "ec6046f916366d78",
-   "bytes": 264453
+   "huella": "710337233f2cb24c",
+   "bytes": 248237
   },
   {
    "nombre": "ayto-alicante/leg7",
    "cuerpo": "ayto-alicante",
-   "huella": "660adc3947a98ea3",
-   "bytes": 184125
+   "huella": "ceb1a288cb43fb64",
+   "bytes": 170417
   },
   {
    "nombre": "ayto-alicante/leg8",
    "cuerpo": "ayto-alicante",
-   "huella": "7bbcb148e0da9092",
-   "bytes": 221569
+   "huella": "daba0565b42dce1e",
+   "bytes": 221109
   },
   {
    "nombre": "ayto-alicante/leg9",
    "cuerpo": "ayto-alicante",
-   "huella": "49c59db2ebd90836",
-   "bytes": 402457
+   "huella": "8f77dc5ca358afff",
+   "bytes": 401025
   },
   {
    "nombre": "ayto-alicante/leg10",
    "cuerpo": "ayto-alicante",
-   "huella": "f802d20b9a54d17e",
-   "bytes": 347422
+   "huella": "54f87289d10cee66",
+   "bytes": 346542
   },
   {
    "nombre": "ayto-alicante/leg11",
    "cuerpo": "ayto-alicante",
-   "huella": "19a5c187a95f6f01",
-   "bytes": 409998
+   "huella": "32deb122b8dbfb14",
+   "bytes": 409378
   },
   {
    "nombre": "ayto-alicante/leg12",
    "cuerpo": "ayto-alicante",
-   "huella": "4548d516f73404b0",
-   "bytes": 289986
+   "huella": "86e378dd79763656",
+   "bytes": 275010
   },
   {
    "nombre": "ayto-l-hospitalet-de-llobregat/leg12",
    "cuerpo": "ayto-l-hospitalet-de-llobregat",
-   "huella": "fa4166923d8cc1fc",
-   "bytes": 10371
+   "huella": "99fbb564ce6a7d66",
+   "bytes": 10339
   },
   {
    "nombre": "ayto-el-prat-de-llobregat/leg12",
@@ -627,38 +627,38 @@ window.ESCRUTINIO_INDICE = {
   {
    "nombre": "ayto-sant-feliu-de-llobregat/leg12",
    "cuerpo": "ayto-sant-feliu-de-llobregat",
-   "huella": "7bd67c780490a91d",
-   "bytes": 12601
+   "huella": "0bff4e5a469f0b0c",
+   "bytes": 12565
   },
   {
    "nombre": "ayto-cordoba/leg9",
    "cuerpo": "ayto-cordoba",
-   "huella": "f38f5bb7b305ae4d",
-   "bytes": 360384
+   "huella": "e961f20c07d8af41",
+   "bytes": 342272
   },
   {
    "nombre": "ayto-cordoba/leg10",
    "cuerpo": "ayto-cordoba",
-   "huella": "f474d7bcf339451f",
-   "bytes": 360821
+   "huella": "cc97c054cd24b30e",
+   "bytes": 343941
   },
   {
    "nombre": "ayto-cordoba/leg11",
    "cuerpo": "ayto-cordoba",
-   "huella": "7a806824fbc75c1f",
-   "bytes": 367009
+   "huella": "7eaa8330ddc850b4",
+   "bytes": 366089
   },
   {
    "nombre": "ayto-cordoba/leg12",
    "cuerpo": "ayto-cordoba",
-   "huella": "a1454da2042eb3ce",
-   "bytes": 337193
+   "huella": "b6e48acf7c2777b5",
+   "bytes": 336317
   },
   {
    "nombre": "ayto-salt/leg12",
    "cuerpo": "ayto-salt",
-   "huella": "b36773a02720e4ad",
-   "bytes": 8058
+   "huella": "90c7cce0b7e32afd",
+   "bytes": 7954
   },
   {
    "nombre": "ayto-lleida/leg12",
@@ -669,145 +669,139 @@ window.ESCRUTINIO_INDICE = {
   {
    "nombre": "ayto-malaga/leg11",
    "cuerpo": "ayto-malaga",
-   "huella": "a523bd490559d3d6",
-   "bytes": 574236
+   "huella": "d320a62508d27da5",
+   "bytes": 573136
   },
   {
    "nombre": "ayto-malaga/leg12",
    "cuerpo": "ayto-malaga",
-   "huella": "f08485a5bfc1e033",
-   "bytes": 442988
+   "huella": "309d43c3ba3b765d",
+   "bytes": 441372
   },
   {
    "nombre": "ayto-gijon/leg10",
    "cuerpo": "ayto-gijon",
-   "huella": "27f79b0450efc356",
-   "bytes": 207731
+   "huella": "ccbc8a116af6f6cb",
+   "bytes": 207247
   },
   {
    "nombre": "ayto-gijon/leg11",
    "cuerpo": "ayto-gijon",
-   "huella": "12195f4953647e36",
-   "bytes": 229943
+   "huella": "9d5dd987fd61b63d",
+   "bytes": 229107
   },
   {
    "nombre": "ayto-gijon/leg12",
    "cuerpo": "ayto-gijon",
-   "huella": "1d9cb1fe371263e1",
-   "bytes": 161299
+   "huella": "7e2c1543ff5a49d8",
+   "bytes": 160471
   },
   {
    "nombre": "ayto-laspalmas/leg12",
    "cuerpo": "ayto-laspalmas",
-   "huella": "1c7e6eea0590e093",
-   "bytes": 112031
+   "huella": "32bd4f82f04362f4",
+   "bytes": 111287
   },
   {
    "nombre": "ayto-valencia/leg10",
    "cuerpo": "ayto-valencia",
-   "huella": "1dfe6633f4165404",
-   "bytes": 22518
+   "huella": "4e67f5cafbeb240f",
+   "bytes": 16162
   },
   {
    "nombre": "ayto-valencia/leg11",
    "cuerpo": "ayto-valencia",
-   "huella": "750d73bbf7581180",
-   "bytes": 134530
+   "huella": "da508855aac3a44d",
+   "bytes": 123522
   },
   {
    "nombre": "ayto-valencia/leg12",
    "cuerpo": "ayto-valencia",
-   "huella": "2412eedbd43ba5f9",
-   "bytes": 161210
+   "huella": "ebad5aeca86b2490",
+   "bytes": 159858
   },
   {
    "nombre": "ayto-valladolid/leg10",
    "cuerpo": "ayto-valladolid",
-   "huella": "8a35b21cc61c1763",
-   "bytes": 191772
+   "huella": "a84a1809a4f05503",
+   "bytes": 189168
   },
   {
    "nombre": "ayto-valladolid/leg11",
    "cuerpo": "ayto-valladolid",
-   "huella": "f254f4e911eeacf1",
-   "bytes": 200864
+   "huella": "900aaf7325294480",
+   "bytes": 200148
   },
   {
    "nombre": "ayto-valladolid/leg12",
    "cuerpo": "ayto-valladolid",
-   "huella": "6f5db557e888265f",
-   "bytes": 106880
+   "huella": "a7c226cc50303278",
+   "bytes": 106396
   },
   {
    "nombre": "ayto-zaragoza/leg10",
    "cuerpo": "ayto-zaragoza",
-   "huella": "ca1ec69eb3b02cc9",
-   "bytes": 1109970
+   "huella": "c43a9ed63be159ed",
+   "bytes": 1090194
   },
   {
    "nombre": "ayto-zaragoza/leg11",
    "cuerpo": "ayto-zaragoza",
-   "huella": "b3e72897d6c1567c",
-   "bytes": 924086
+   "huella": "5c87704d8a03fca2",
+   "bytes": 909698
   },
   {
    "nombre": "ayto-zaragoza/leg12",
    "cuerpo": "ayto-zaragoza",
-   "huella": "4a9a29550e5611bb",
-   "bytes": 467622
+   "huella": "99e3e34e65552866",
+   "bytes": 466386
   }
  ],
  "avisos": {
   "jjgg-alava": {
-   "fecha": "2026-10-11",
+   "fecha": "2026-10-12",
    "motivo": "rechaza",
    "detalle": "HTTP Error 403: Forbidden",
    "hasta": "2026-07-10"
   },
   "jjgg-bizkaia": {
-   "fecha": "2026-10-11",
+   "fecha": "2026-10-12",
    "motivo": "rechaza",
    "detalle": "HTTP Error 403: Forbidden",
    "hasta": "2026-06-17"
   },
   "jjgg-gipuzkoa": {
-   "fecha": "2026-10-11",
+   "fecha": "2026-10-12",
    "motivo": "rechaza",
    "detalle": "HTTP Error 403: Forbidden",
    "hasta": "2026-09-16"
   },
   "parl-AR": {
-   "fecha": "2026-10-11",
+   "fecha": "2026-10-12",
    "motivo": "sin_respuesta",
    "detalle": "No se pudo descargar https://www.cortesaragon.es/Transcripciones-provisionales.2245.0.html?&no_cache=1: Remote end closed connection without response",
    "hasta": "2026-05-28"
   },
-  "parl-CT": {
-   "fecha": "2026-10-11",
-   "motivo": "sin_respuesta",
-   "detalle": "No se pudo descargar https://www.parlament.cat/ext/r/pcat_portal/siap-cerca/cerca-de-documents?clear=100&p100_tipus_document=PUB_DSPCP&p100_ordenacio=LEG_DESC_TITOL_DESC&p100_cerca_executada=S: www.parlament.cat no ha respondido en esta ejecución (<urlopen error timed out>)",
-   "hasta": "2026-07-23"
-  },
   "parl-IB": {
-   "fecha": "2026-10-11",
+   "fecha": "2026-10-12",
    "motivo": "copia",
    "detalle": "https://www.parlamentib.es no responde (URLError)",
    "hasta": "2026-09-22"
   },
   "parl-MC": {
-   "fecha": "2026-10-11",
+   "fecha": "2026-10-12",
    "motivo": "error",
    "detalle": "No se pudo descargar https://www.asambleamurcia.es/arm/actas/pleno/Und%C3%A9cima-Legislatura-%282023-a-2027%29: HTTP Error 503: Service Unavailable",
    "hasta": "2026-06-25"
   },
   "parl-NC": {
-   "fecha": "2026-10-11",
+   "fecha": "2026-10-12",
    "motivo": "rechaza",
    "detalle": "HTTP Error 403: Forbidden",
    "hasta": "2026-06-25"
   },
   "parl-PV": {
-   "fecha": "2026-10-11",
+   "fecha": "2026-10-12",
    "motivo": "sin_respuesta",
    "detalle": "No se pudo descargar https://www.legebiltzarra.eus/portal/es/transparencia/open-data?opcion=pleno: <urlopen error timed out>",
    "hasta": "2026-06-25"

@@ -81,14 +81,14 @@
   "bytes": 159744
  },
  "parl-AR/leg10": {
-  "huella": "9def545c92053e3ddc4b04da42183b5612875b4fcf905bc02af1c7ab3de6fd0b",
+  "huella": "86c1c0caece9ee20591e21419abae7d638e2312259615dee134c4ec572d7c433",
   "votaciones": 1594,
   "iniciativas": 510,
   "fichas": 0,
   "bytes": 1077248
  },
  "parl-AR/leg11": {
-  "huella": "143cf8b90d14fc01bc4f406b77f1a898cfc3a035f8a23e512ea4f0d48cdebabf",
+  "huella": "82f72c4a301e86d60a2b84df8759848f884cf7dbcefdb342266868f6f62f6450",
   "votaciones": 1500,
   "iniciativas": 540,
   "fichas": 0,
@@ -347,31 +347,31 @@
   "bytes": 606208
  },
  "parl-VC/leg10": {
-  "huella": "703ae785414c9842f8d873c95905ff43e726d29aeacacc08ec8c46689f709e66",
+  "huella": "4842e24babee9841b4bca8c4ccbaebffc384daeff07cfe463a744f9fdc2400de",
   "votaciones": 566,
   "iniciativas": 316,
-  "fichas": 57,
-  "bytes": 880640
+  "fichas": 101,
+  "bytes": 897024
  },
  "parl-VC/leg11": {
-  "huella": "f77697d5caef882136222f44147f828bdf18ee5e89f71c002d2cc981deee280d",
+  "huella": "84cfc7e8cfd0b89684ec0e89b9259d6d3152255bce7067eedc4d89d3103864fb",
   "votaciones": 362,
   "iniciativas": 301,
-  "fichas": 0,
-  "bytes": 446464
+  "fichas": 301,
+  "bytes": 565248
  },
  "parl-EX/leg9": {
-  "huella": "05375cab573c708cb2cbaadce5c6679c7904dfa281036295b06026283f83ed50",
+  "huella": "be3a70269be1299f244fcb60f981026cd365611a9c7b2496c4f0497959ac3e8e",
   "votaciones": 1972,
   "iniciativas": 607,
-  "fichas": 608,
-  "bytes": 2383872
+  "fichas": 615,
+  "bytes": 2387968
  },
  "parl-EX/leg10": {
-  "huella": "d671f25832233714725d6cd53964f91b5aae5ab2110bff1b46e1d471b5407f7e",
+  "huella": "dd444120d48f1752156680938bef853f9d9d0d1bdaa266216fe033a0b3cb0c86",
   "votaciones": 1097,
   "iniciativas": 368,
-  "fichas": 371,
+  "fichas": 375,
   "bytes": 1413120
  },
  "parl-EX/leg11": {
@@ -382,11 +382,11 @@
   "bytes": 831488
  },
  "parl-EX/leg12": {
-  "huella": "678e338c1f91086b9fa6caef1f7b83f98fb3cd5ab1b423e867325d56ef0e767c",
+  "huella": "94c7aa9551967d0ca48316253880253fa68ca6b4973082f0c604e58ed636ffe1",
   "votaciones": 105,
   "iniciativas": 52,
-  "fichas": 39,
-  "bytes": 315392
+  "fichas": 52,
+  "bytes": 319488
  },
  "parl-GA/leg10": {
   "huella": "b4f4aaac77ab2747791cfed93b204e6cf0ade41c2f9ba899c6a9ef730eea0b63",
@@ -396,25 +396,25 @@
   "bytes": 1785856
  },
  "parl-GA/leg11": {
-  "huella": "5be11a6e7ece20e98b8da67fbdf71bb5f3bc210b30b7ff620924b2c8370a948c",
+  "huella": "90d0420e884fde3dcbb9adbdc1503209c0f241994016dbeb719121150d3c80c6",
   "votaciones": 947,
   "iniciativas": 711,
-  "fichas": 709,
+  "fichas": 711,
   "bytes": 1236992
  },
  "parl-GA/leg12": {
-  "huella": "99c3ec2ff3375a923ece77d415c65397fdb9ccb52b4669bce6f5d2be8aa0b37b",
+  "huella": "f6b0fcfe3b08793cf0643af4801f55c83641f7011dbae9f3842cd494abaf2755",
   "votaciones": 643,
   "iniciativas": 458,
-  "fichas": 451,
-  "bytes": 856064
+  "fichas": 458,
+  "bytes": 860160
  },
  "parl-MC/leg9": {
-  "huella": "fe5570fbf691ce2262262e425bf30ecbe8f174ab5b7e85b29c29e7b433c2b076",
+  "huella": "16a86a501fa622b81ca23aa906d10e5fc496166c34ed7a89cff20f43c1e1de03",
   "votaciones": 68,
   "iniciativas": 30,
-  "fichas": 8,
-  "bytes": 188416
+  "fichas": 30,
+  "bytes": 200704
  },
  "parl-MC/leg10": {
   "huella": "46a99b2d51e4d0fb3d7064183856d8cc179daeb2838e355c16c2ca3f96065f01",
@@ -452,7 +452,7 @@
   "bytes": 892928
  },
  "parl-PV/leg10": {
-  "huella": "59cabed7b40b6a48d15c152c817a97ffe0306d6c23c53733099c2c431430cc4d",
+  "huella": "2e365c6221572b83d9384a03df90507988fd54f676a72616ed2c832ca518e65a",
   "votaciones": 1979,
   "iniciativas": 619,
   "fichas": 563,
@@ -683,11 +683,11 @@
   "bytes": 937984
  },
  "ayto-alicante/leg9": {
-  "huella": "27dc827b22022435363218d30382c944e2b460184a30404510787ccb7f0663ec",
+  "huella": "d35d80e4df6d8bfd18eaba371adf303ec0b9d95943133ded12ff4ad7f8bc3ad6",
   "votaciones": 979,
   "iniciativas": 950,
   "fichas": 950,
-  "bytes": 1564672
+  "bytes": 1560576
  },
  "ayto-alicante/leg10": {
   "huella": "62cf151e42bb3f73c3b04b226c43e0b9942ed3d20e61f2810e1924b7484de826",
@@ -858,7 +858,7 @@
   "bytes": 647168
  },
  "ayto-zaragoza/leg10": {
-  "huella": "37745fc18628d88ee8fc766a65426eb00f80cd6eda680e103c6de6bf37434e55",
+  "huella": "c3c9e6b23f29334c98dd6132a8355c2ea6c56109fe6bf634e84402aa2e833a14",
   "votaciones": 3302,
   "iniciativas": 2633,
   "fichas": 2633,

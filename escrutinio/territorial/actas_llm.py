@@ -22,9 +22,11 @@ import json
 import re
 import time
 import zlib
-from datetime import datetime, timezone
+from concurrent.futures import ThreadPoolExecutor
+from datetime import date, datetime, timezone
 from pathlib import Path
 
+from .. import plazo
 from ..config import LLM_DIR
 from ..texto import tokens
 from . import estado
@@ -39,6 +41,8 @@ MIN_PARTIR = 2_000  # un trozo cuya respuesta no cabe se parte en dos mientras t
 # El modelo razona antes de responder y ese razonamiento cuenta dentro de max_tokens: con 8.000 se lo comía
 # entero y no llegaba a escribir nada. La API admite hasta 384K; sin fijarlo, el defecto en modo thinking es 64K.
 MAX_TOKENS = 32_000
+HILOS_ACTAS = 5  # documentos que se leen a la vez con DeepSeek
+MINUTOS_LISTADO = 5  # tope de cada conector para listar sus documentos pendientes
 
 SISTEMA = """Eres un analista parlamentario. Recibes el texto (condensado) de un diario de sesiones o de un acta de
 pleno de una institución española: un parlamento autonómico, unas juntas generales, un cabildo o consell
@@ -371,43 +375,100 @@ def cargar_guardadas(con, log=print):
 
 # ------------------------------------------------------------------ documentos pendientes
 
+LISTADOS = ACTAS_DIR / "listados.json"  # conector -> último día en que su listado entero no dejó nada pendiente
+REPASO_DIAS = 30  # cada cuánto se vuelve a recorrer el listado entero aunque no quedara nada pendiente
+
+
+def _listados():
+    try:
+        return json.loads(LISTADOS.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return {}
+
+
+def _contexto_listado(m, listado, log):
+    """Contexto para listar los documentos de un conector.
+
+    Los conectores listan de lo más reciente a lo más antiguo y aquí se saltan los ya procesados, así que,
+    recorriendo el listado entero, cada ejecución sigue con el atraso donde lo dejó la anterior. Cuando un
+    recorrido entero no deja nada pendiente, ya no hay atraso: hasta el repaso siguiente basta con lo publicado
+    desde ese día (con el margen del conector). Así no se piden cada día las listas de todos los años.
+    """
+    if listado and (date.today() - date.fromisoformat(listado)).days < REPASO_DIAS:
+        return Contexto(desde={c.codigo: listado for c in m.CUERPOS}, log=log)
+    return Contexto(completo=True, log=log)
+
+
 def documentos_pendientes(con, fuentes=None, limite=None, log=print):
     """[(modulo, ctx, Documento)] de los conectores con documentos() que aún no se han procesado."""
     from .fuentes import MODULOS
 
-    # Sin «desde»: los conectores listan de lo más reciente a lo más antiguo y aquí se saltan los ya
-    # procesados, así que cada ejecución sigue con el atraso donde lo dejó la anterior.
-    ctx = Contexto(completo=True, log=log)
+    listados = _listados()
+    cambiados = False
     modulos = [(n, m) for n, m in MODULOS.items()
                if hasattr(m, "documentos") and (n in fuentes if fuentes else getattr(m, "ACTIVO", True))]
     # Cupo por conector: así el atraso de uno (cientos de diarios antiguos) no deja sin turno a los demás.
     cupo = max(2, -(-limite // len(modulos))) if limite and modulos else None
-    out = []
+    # Días que ya tienen votaciones de datos estructurados o leídas con reglas: su diario no se manda al LLM
+    # (saldrían repetidas), salvo que el conector diga que sus actas completan esos datos. Se leen aquí: la base
+    # solo se usa desde este hilo.
+    con_votos = {}
     for nombre, m in modulos:
-        hechos = {c.codigo: procesados(c.codigo) for c in m.CUERPOS}
-        # Días que ya tienen votaciones de datos estructurados o leídas con reglas: su diario no se manda al
-        # LLM (saldrían repetidas), salvo que el conector diga que sus actas completan esos datos.
-        completan = getattr(m, "DOCUMENTOS_COMPLETAN", False)
-        con_votos = set() if completan else {(r[0], r[1]) for r in con.execute(
+        con_votos[nombre] = set() if getattr(m, "DOCUMENTOS_COMPLETAN", False) else {(r[0], r[1]) for r in con.execute(
             f"""SELECT DISTINCT camara, fecha FROM votacion WHERE COALESCE(fuente, '') NOT LIKE '%llm'
                 AND camara IN ({','.join('?' * len(m.CUERPOS))})""", [c.codigo for c in m.CUERPOS])}
-        propios, vistos, inicio = 0, 0, time.time()
+
+    def listar(nombre, m):
+        """(documentos pendientes, error, recorrido entero sin nada pendiente) de un conector."""
+        hechos = {c.codigo: procesados(c.codigo) for c in m.CUERPOS}
+        ctx = _contexto_listado(m, listados.get(nombre), log)
+        docs, vistos, error, cortado, inicio = [], 0, None, False, time.time()
+        try:
+            # Con tope: un listado lento (algunos leen cada diario para saber si hace falta el LLM) no puede
+            # comerse el tiempo de leer con DeepSeek. Lo encontrado hasta el corte vale.
+            with plazo.limite_hilo(MINUTOS_LISTADO):
+                for doc in m.documentos(ctx):
+                    vistos += 1
+                    if doc.url not in hechos.get(doc.cuerpo, ()) and (doc.cuerpo, doc.fecha) not in con_votos[nombre]:
+                        docs.append((m, ctx, doc))
+                        if cupo and len(docs) >= cupo:
+                            break
+                    if plazo.agotado():
+                        raise plazo.TiempoAgotado("tope del listado")
+        except plazo.TiempoAgotado:  # no es un fallo de la web: lo que falte se lista otro día
+            cortado = True
+            log(f"  ! {nombre}: se ha acabado el tiempo para listar; se sigue en la próxima ejecución")
+        except Exception as e:  # web caída: se sigue con los demás
+            error = e
+            log(f"  ! {nombre}: no se pudieron listar los documentos: {type(e).__name__}: {e}")
+        # Sin caché (GitHub Actions) algún listado puede tardar mucho: así se ve cuál.
+        log(f"  {nombre}: {len(docs)} pendientes de {vistos} documentos vistos; {round(time.time() - inicio)} s"
+            + ("" if ctx.completo else f" (desde {listados[nombre]})"))
+        # Recorrido entero, sin nada pendiente y sin descargas fallidas (un conector puede tragarse el error de una
+        # lista y seguir): ya no hay atraso.
+        terminado = ctx.completo and not docs and not error and not cortado and not ctx.fallos and \
+            all(motivo == "copia" for motivo, _d in ctx.avisos.values())
+        return docs, error, terminado
+
+    # Cada conector espera a una web distinta: se listan a la vez y la fase dura lo que el más lento.
+    with ThreadPoolExecutor(max_workers=8) as pool:
+        resultados = [(n, m, pool.submit(listar, n, m)) for n, m in modulos]
+    out = []
+    for nombre, m, futuro in resultados:
+        docs, error, terminado = futuro.result()
+        out.extend(docs)
         # Las fuentes que solo tienen diarios (sin `descargar`) se anotan aquí para el aviso de la web.
         solo_diarios = [c.codigo for c in m.CUERPOS] if not hasattr(m, "descargar") else []
-        try:
-            for doc in m.documentos(ctx):
-                vistos += 1
-                if doc.url not in hechos.get(doc.cuerpo, ()) and (doc.cuerpo, doc.fecha) not in con_votos:
-                    out.append((m, ctx, doc))
-                    propios += 1
-                    if cupo and propios >= cupo:
-                        break
+        if error:
+            estado.anotar(con, nombre, solo_diarios, estado.motivo(error), str(error))
+        else:
             estado.anotar(con, nombre, solo_diarios)
-        except Exception as e:  # web caída: se sigue con los demás
-            log(f"  ! {nombre}: no se pudieron listar los documentos: {type(e).__name__}: {e}")
-            estado.anotar(con, nombre, solo_diarios, estado.motivo(e), str(e))
-        # Sin caché (GitHub Actions) algún listado puede tardar mucho: así se ve cuál.
-        log(f"  {nombre}: {propios} pendientes de {vistos} documentos vistos; {round(time.time() - inicio)} s")
+        if terminado:
+            listados[nombre] = date.today().isoformat()
+            cambiados = True
+    if cambiados:
+        LISTADOS.parent.mkdir(parents=True, exist_ok=True)
+        LISTADOS.write_text(json.dumps(listados, indent=1, sort_keys=True) + "\n", encoding="utf-8")
     # Lo más reciente primero, sea de donde sea.
     out.sort(key=lambda t: t[2].fecha, reverse=True)
     return out[:limite] if limite else out
@@ -422,7 +483,7 @@ def _escanos(doc):
 
 def procesar_deepseek(con, limite=40, fuentes=None, log=print):
     """Extrae con DeepSeek las votaciones de los documentos pendientes y las carga."""
-    from .. import plazo, territorio
+    from .. import territorio
     from ..llm import deepseek
     from .cargar import Cargador
 
@@ -432,19 +493,22 @@ def procesar_deepseek(con, limite=40, fuentes=None, log=print):
     pendientes = documentos_pendientes(con, fuentes=fuentes, limite=limite, log=log)
     log(f"Actas y diarios con DeepSeek: {len(pendientes)} documentos pendientes (límite {limite})")
     cuerpos = {c.codigo: c for c in territorio.cuerpos()}
-    total = 0
-    for n, (m, ctx, doc) in enumerate(pendientes):
+
+    def leer(m, ctx, doc):
+        """(votaciones, modelo) de un documento; None si falla o no queda tiempo (se reintenta otro día).
+        Va en un hilo: no toca la base."""
         if plazo.agotado(deepseek.MINIMO_PARA_LLAMAR):
-            log(f"  Se ha acabado el tiempo: {len(pendientes) - n} documentos quedan para la próxima ejecución")
-            break
+            return None
         try:
             texto = condensar(texto_documento(m, ctx, doc))
         except Exception as e:
             log(f"  ! {doc.cuerpo} {doc.fecha}: no se pudo leer {doc.url}: {e}")
-            continue
-        votaciones, modelo, fallo = [], None, False
+            return None
+        votaciones, modelo = [], None
         cola, leidas = trozos(texto), 0
         while cola:
+            if plazo.agotado(deepseek.MINIMO_PARA_LLAMAR):
+                return None  # a medias no se guarda: se lee entero en la próxima ejecución
             parte = cola.pop(0)
             usuario = (f"Institución: {cuerpos[doc.cuerpo].nombre}. Sesión plenaria del {doc.fecha}"
                        + (f" (parte {leidas + 1})" if leidas else "") + ".\n\nTexto:\n" + parte)
@@ -458,20 +522,32 @@ def procesar_deepseek(con, limite=40, fuentes=None, log=print):
                     cola[:0] = mitades
                     continue
                 log(f"  ! {doc.cuerpo} {doc.fecha}: {e}")
-                fallo = True
-                break
+                return None
             leidas += 1
             modelo = f"deepseek:{modelo_real}"
             votaciones += limpiar_votaciones(datos.get("votaciones"), _escanos(doc))
-        if fallo:
-            continue  # se reintentará en la próxima ejecución
-        registro = guardar_registro(doc, votaciones, modelo)
-        fusion = Fusion(con, Cargador(con, cuerpos, "actas-llm"))
-        fusion.guardar_todas(a_votaciones(registro))
-        con.commit()
-        total += len(votaciones)
-        log(f"  {doc.cuerpo} {doc.fecha}: {len(votaciones)} votaciones")
-    log(f"Actas y diarios: {total} votaciones extraídas de {len(pendientes)} documentos")
+        return votaciones, modelo
+
+    total, hechos = 0, 0
+    # Cada respuesta tarda minutos (el modelo razona antes de contestar): se piden HILOS_ACTAS a la vez y se
+    # guardan en orden desde este hilo.
+    with ThreadPoolExecutor(HILOS_ACTAS) as hilos:
+        futuros = [(doc, hilos.submit(leer, m, ctx, doc)) for m, ctx, doc in pendientes]
+        for doc, futuro in futuros:
+            leido = futuro.result()
+            if leido is None:
+                continue
+            votaciones, modelo = leido
+            registro = guardar_registro(doc, votaciones, modelo)
+            fusion = Fusion(con, Cargador(con, cuerpos, "actas-llm"))
+            fusion.guardar_todas(a_votaciones(registro))
+            con.commit()
+            total += len(votaciones)
+            hechos += 1
+            log(f"  {doc.cuerpo} {doc.fecha}: {len(votaciones)} votaciones")
+    if hechos < len(pendientes):
+        log(f"  {len(pendientes) - hechos} documentos sin leer (fallo o sin tiempo): quedan para la próxima ejecución")
+    log(f"Actas y diarios: {total} votaciones extraídas de {hechos} documentos")
     return total
 
 

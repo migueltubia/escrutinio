@@ -1,11 +1,14 @@
 """Recogida de votaciones autonómicas y locales: todos los conectores, de forma incremental.
 
 Cada conector pide solo lo publicado desde la última votación que ya está en la base (con un
-margen de días, por si algo se publicó tarde). Un conector que falla (web caída, cambio de
-formato) no para a los demás: se anota y se sigue. Al final se procesa todo con reglas.
+margen de días, por si algo se publicó tarde). Van varios a la vez (CONECTORES_A_LA_VEZ), cada uno
+con su tope de tiempo. Un conector que falla (web caída, cambio de formato) no para a los demás:
+se anota y se sigue. Al final se procesa todo con reglas.
 """
 
+import queue
 import time
+from concurrent.futures import ThreadPoolExecutor
 
 from .. import plazo, territorio
 from . import estado as estado_fuente  # con alias: la función estado() de abajo taparía el módulo
@@ -14,6 +17,7 @@ from .contexto import Contexto
 from .fuentes import ERRORES, MODULOS
 from .procesar import procesar
 
+CONECTORES_A_LA_VEZ = 6
 
 def _por_turno(con, modulos):
     """Primero los conectores que llevan más días sin ejecutarse: si se acaba el tiempo, los que se quedan
@@ -23,6 +27,54 @@ def _por_turno(con, modulos):
     except Exception:  # aún no existe la tabla
         ultima = {}
     return sorted(modulos.items(), key=lambda kv: ultima.get(kv[0]) or "")
+
+
+def _descargar(nombre, m, ctx, cola, minutos, log):
+    """Hilo de un conector: deja en la cola («inicio»), cada objeto («obj») y cómo acaba («fin», «tiempo» con los
+    segundos o «fallo» con la excepción); «sin_turno» si ya no queda tiempo para empezar. Siempre acaba con uno de
+    esos avisos, para que el hilo principal no se quede esperando."""
+    if plazo.agotado(60):
+        cola.put((nombre, "sin_turno", None))
+        return
+    cola.put((nombre, "inicio", (m, ctx)))
+    log(f"== {nombre}: " + ", ".join(c.codigo for c in m.CUERPOS)
+        + "".join(f" (desde {ctx.desde(c.codigo)})" for c in m.CUERPOS[:1] if ctx.desde(c.codigo)))
+    inicio = time.time()
+    try:
+        with plazo.limite_hilo(minutos):
+            for obj in m.descargar(ctx):
+                cola.put((nombre, "obj", obj))
+                if plazo.agotado():
+                    raise plazo.TiempoAgotado("tope de tiempo del conector")
+            if plazo.agotado():  # el conector se tragó el corte de alguna descarga y terminó antes de tiempo
+                raise plazo.TiempoAgotado("tope de tiempo del conector")
+        cola.put((nombre, "fin", None))
+    except plazo.TiempoAgotado:  # no es un fallo de la web: lo ya cargado se queda y se sigue otro día
+        cola.put((nombre, "tiempo", round(time.time() - inicio)))
+    except BaseException as e:  # la web ha fallado: lo ya cargado se queda
+        cola.put((nombre, "fallo", e))
+
+
+def _cerrar(con, nombre, m, ctx, cargador, errores, inicio, como, dato, log):
+    """Cierra la recogida de un conector (en el hilo principal) y devuelve su resumen."""
+    cortado = como != "fin"
+    fallo = dato if como == "fallo" else None
+    if como == "tiempo":
+        log(f"  ! {nombre}: se ha acabado su tiempo ({dato} s); se sigue en la próxima ejecución")
+    elif fallo:
+        errores += 1
+        log(f"  ! {nombre}: la recogida se ha interrumpido: {type(fallo).__name__}: {fallo}")
+    if not cortado:
+        cargador.limpiar_sesiones()
+    for c in m.CUERPOS:  # para avisar en la web de las instituciones que se quedan sin actualizar
+        motivo, detalle = (estado_fuente.motivo(fallo), str(fallo)) if fallo else ctx.avisos.get(c.codigo, (None, None))
+        if como == "tiempo" and isinstance(motivo, str) and "tiempo" in (detalle or ""):
+            motivo = detalle = None  # el aviso venía del corte por tiempo, no de la web
+        estado_fuente.anotar(con, nombre, [c.codigo], motivo, detalle)
+    con.commit()
+    resumen = {**cargador.n, "errores": errores, "segundos": round(time.time() - inicio), "cortado": cortado}
+    log(f"  {nombre}: {dict(cargador.n) or 'nada nuevo'}; {errores} errores; {resumen['segundos']} s")
+    return resumen
 
 
 def recoger(con, fuentes=None, completo=False, incluir_inactivos=False, minutos_max=10, borrar=False, log=print):
@@ -40,59 +92,46 @@ def recoger(con, fuentes=None, completo=False, incluir_inactivos=False, minutos_
         for nombre in fuentes:
             for c in getattr(MODULOS.get(nombre), "CUERPOS", []):
                 borrar_cuerpo(con, c.codigo, log)
-    ctx = Contexto(desde=ultimas_fechas(con), completo=completo, log=log)
+    desde = ultimas_fechas(con)
     for nombre, error in ERRORES.items():
         log(f"  ! {nombre}: no se pudo cargar el conector ({error})")
+    elegidos = [(nombre, m) for nombre, m in _por_turno(con, MODULOS)
+                if (not fuentes or nombre in fuentes) and hasattr(m, "descargar")
+                and (fuentes or incluir_inactivos or getattr(m, "ACTIVO", True))]
     resumen, sin_turno = {}, []
-    for nombre, m in _por_turno(con, MODULOS):
-        if fuentes and nombre not in fuentes:
-            continue
-        if not fuentes and not incluir_inactivos and not getattr(m, "ACTIVO", True):
-            continue
-        if not hasattr(m, "descargar"):
-            continue
-        if plazo.agotado(60):
-            sin_turno.append(nombre)
-            continue
-        cargador = Cargador(con, cuerpos, nombre)
-        errores, inicio, cortado, fallo, sin_tiempo = 0, time.time(), False, None, False
-        log(f"== {nombre}: " + ", ".join(c.codigo for c in m.CUERPOS)
-            + "".join(f" (desde {ctx.desde(c.codigo)})" for c in m.CUERPOS[:1] if ctx.desde(c.codigo)))
-        with plazo.tramo(f"conector {nombre}", minutos=None if completo else minutos_max):
-            try:
-                for i, obj in enumerate(m.descargar(ctx), 1):
-                    try:
-                        cargador.guardar(obj)
-                    except Exception as e:  # dato raro de la fuente: se salta y se sigue
-                        errores += 1
-                        if errores <= 5:
-                            log(f"  ! {nombre}: {type(e).__name__}: {e}")
-                    if i % 500 == 0:
-                        con.commit()
-                        log(f"  {nombre}: {i} registros")
-                    if plazo.agotado():
-                        raise plazo.TiempoAgotado("tope de tiempo del conector")
-                if plazo.agotado():  # el conector se tragó el corte de alguna descarga y terminó antes de tiempo
-                    raise plazo.TiempoAgotado("tope de tiempo del conector")
-            except plazo.TiempoAgotado:  # no es un fallo de la web: lo ya cargado se queda y se sigue otro día
-                cortado = sin_tiempo = True
-                log(f"  ! {nombre}: se ha acabado su tiempo ({round(time.time() - inicio)} s); "
-                    "se sigue en la próxima ejecución")
-            except Exception as e:  # la web ha fallado: lo ya cargado se queda
-                errores += 1
-                cortado = True
-                fallo = e
-                log(f"  ! {nombre}: la recogida se ha interrumpido: {type(e).__name__}: {e}")
-        if not cortado:
-            cargador.limpiar_sesiones()
-        for c in m.CUERPOS:  # para avisar en la web de las instituciones que se quedan sin actualizar
-            motivo, detalle = (estado_fuente.motivo(fallo), str(fallo)) if fallo else ctx.avisos.get(c.codigo, (None, None))
-            if sin_tiempo and isinstance(motivo, str) and "tiempo" in (detalle or ""):
-                motivo = detalle = None  # el aviso venía del corte por tiempo, no de la web
-            estado_fuente.anotar(con, nombre, [c.codigo], motivo, detalle)
-        con.commit()
-        resumen[nombre] = {**cargador.n, "errores": errores, "segundos": round(time.time() - inicio), "cortado": cortado}
-        log(f"  {nombre}: {dict(cargador.n) or 'nada nuevo'}; {errores} errores; {resumen[nombre]['segundos']} s")
+    # Cada conector espera a una web distinta: van a la vez, cada uno en su hilo y con su tope de tiempo, y dejan
+    # lo que traen en una cola. La base solo se toca desde este hilo (SQLite no admite escribir desde varios).
+    cola = queue.Queue()
+    with ThreadPoolExecutor(CONECTORES_A_LA_VEZ) as hilos:
+        for nombre, m in elegidos:
+            ctx = Contexto(desde=desde, completo=completo, log=log)
+            hilos.submit(_descargar, nombre, m, ctx, cola, None if completo else minutos_max, log)
+        en_marcha = {}  # nombre -> [módulo, contexto, cargador, errores, inicio, registros]
+        terminados = 0
+        while terminados < len(elegidos):
+            nombre, que, dato = cola.get()
+            if que == "sin_turno":
+                sin_turno.append(nombre)
+                terminados += 1
+            elif que == "inicio":
+                m, ctx = dato
+                en_marcha[nombre] = [m, ctx, Cargador(con, cuerpos, nombre), 0, time.time(), 0]
+            elif que == "obj":
+                e = en_marcha[nombre]
+                e[5] += 1
+                try:
+                    e[2].guardar(dato)
+                except Exception as ex:  # dato raro de la fuente: se salta y se sigue
+                    e[3] += 1
+                    if e[3] <= 5:
+                        log(f"  ! {nombre}: {type(ex).__name__}: {ex}")
+                if e[5] % 500 == 0:
+                    con.commit()
+                    log(f"  {nombre}: {e[5]} registros")
+            else:  # «fin», «tiempo» o «fallo»: el conector ha terminado
+                m, ctx, cargador, errores, inicio, _n = en_marcha.pop(nombre)
+                resumen[nombre] = _cerrar(con, nombre, m, ctx, cargador, errores, inicio, que, dato, log)
+                terminados += 1
     if sin_turno:
         log(f"  Sin tiempo para {len(sin_turno)} conectores (van los primeros en la próxima ejecución): "
             + ", ".join(sin_turno))

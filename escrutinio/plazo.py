@@ -12,11 +12,13 @@ Sin `iniciar` (uso desde la línea de órdenes para una sola cosa) no hay límit
 
 import math
 import os
+import threading
 import time
 from contextlib import contextmanager
 
 _fin = None    # fin de toda la actualización (time.monotonic)
 _tramo = None  # fin del tramo en curso, si es antes
+_hilo = threading.local()  # .fin: límite propio de un hilo (limite_hilo)
 _duraciones = []  # (nombre, segundos, cortado) de cada tramo, para el resumen final
 
 
@@ -33,8 +35,22 @@ def iniciar(minutos):
 
 def quedan():
     """Segundos que le quedan al tramo en curso (infinito si no hay límite)."""
-    fines = [f for f in (_fin, _tramo) if f is not None]
+    fines = [f for f in (_fin, _tramo, getattr(_hilo, "fin", None)) if f is not None]
     return min(fines) - time.monotonic() if fines else math.inf
+
+
+@contextmanager
+def limite_hilo(minutos):
+    """Límite propio del hilo en curso, además del tramo (que es de toda la actualización): para los trabajos que
+    van a la vez, como los conectores, cada uno con su tope."""
+    anterior = getattr(_hilo, "fin", None)
+    if minutos:
+        fin = time.monotonic() + minutos * 60
+        _hilo.fin = min(fin, anterior) if anterior is not None else fin
+    try:
+        yield
+    finally:
+        _hilo.fin = anterior
 
 
 def agotado(margen=0):

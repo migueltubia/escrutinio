@@ -34,10 +34,14 @@ class ErrorDescarga(RuntimeError):
 
 
 # Webs que en esta ejecución no han respondido nunca y dos veces seguidas no han dejado ni conectar (se agota el
-# tiempo, cortan o rechazan la conexión): suelen ser las que no aceptan conexiones desde fuera de España. Las
-# peticiones siguientes a esas webs fallan en el acto, también las de otros Contexto (el listado de documentos).
+# tiempo, cortan o rechazan la conexión): suelen ser las que no aceptan conexiones desde fuera de España. También
+# las que siguen dando «429 Too Many Requests» tras los reintentos y las que fallan MAX_SEGUIDAS descargas seguidas
+# (503, 504...). Las peticiones siguientes a esas webs fallan en el acto, también las de otros Contexto (el listado
+# de documentos).
 _CAIDAS = {}    # host -> error
 _VIVAS = set()  # hosts que han contestado algo en esta ejecución
+_SEGUIDAS = {}  # host -> descargas seguidas que han fallado tras los reintentos
+MAX_SEGUIDAS = 3
 
 
 def _sin_conexion(e):
@@ -93,6 +97,7 @@ class Contexto:
         self.log = log
         self.pausa = pausa              # segundos entre peticiones que no salen de la caché
         self.avisos = {}                # cuerpo -> (motivo, detalle): la fuente respondió a medias
+        self.fallos = 0                 # descargas fallidas (sin contar 404): el conector pudo dejarse algo
         self._abridores = {}
 
     def aviso(self, cuerpo, motivo, detalle):
@@ -164,7 +169,8 @@ class Contexto:
         cab.update(headers or {})
         host = urllib.parse.urlsplit(url).hostname
         if host in _CAIDAS:
-            raise ErrorDescarga(f"No se pudo descargar {url}: {host} no ha respondido en esta ejecución "
+            self.fallos += 1
+            raise ErrorDescarga(f"No se pudo descargar {url}: {host} no atiende en esta ejecución "
                                 f"({_CAIDAS[host]})") from _CAIDAS[host]
         ultimo, raw, sin_conexion = None, None, 0
         for intento in range(reintentos):
@@ -180,6 +186,8 @@ class Contexto:
             except urllib.error.HTTPError as e:
                 _VIVAS.add(host)
                 if e.code in (401, 403, 410) or (e.code == 404 and (not reintentar_404 or intento == reintentos - 1)):
+                    if e.code != 404:
+                        self.fallos += 1
                     raise
                 ultimo = e
             except Exception as e:  # red, timeouts, gzip truncado
@@ -194,7 +202,14 @@ class Contexto:
             if intento < reintentos - 1:
                 time.sleep(min(1.5 * (intento + 1), max(0, plazo.quedan())))
         if raw is None:
+            self.fallos += 1
+            _SEGUIDAS[host] = _SEGUIDAS.get(host, 0) + 1
+            if isinstance(ultimo, urllib.error.HTTPError) and ultimo.code == 429:
+                _CAIDAS[host] = ultimo  # pide que se le deje en paz: insistir solo alarga el bloqueo
+            elif _SEGUIDAS[host] >= MAX_SEGUIDAS:  # 503, 504, cortes...: cada descarga son minutos de reintentos
+                _CAIDAS[host] = ultimo
             raise ErrorDescarga(f"No se pudo descargar {url}: {ultimo}") from ultimo
+        _SEGUIDAS.pop(host, None)
         if ruta is not None:
             ruta.parent.mkdir(parents=True, exist_ok=True)
             ruta.write_bytes(gzip.compress(raw))

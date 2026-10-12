@@ -19,6 +19,14 @@ run-name: >-
 # La misma actualización puede lanzarla cualquier persona desde su equipo, con la clave en un fichero
 # .env: README, «Actualizar los datos: en la nube o en local». Los dos caminos parten del mismo
 # repositorio y dejan en él el resultado.
+#
+# Tiempo: la actualización se da MINUTOS_MAX y reparte ese tiempo entre sus fases (escrutinio/plazo.py);
+# lo que no da tiempo a hacer queda para la ejecución siguiente. Así termina sola, guarda y publica antes
+# de que GitHub corte el trabajo, que perdería todo lo hecho. Al final deja en la ejecución un aviso con
+# lo que ha tardado cada fase.
+# Entre ejecuciones se conserva la base de trabajo en la caché de Actions: cada día sigue donde lo dejó
+# el anterior, en vez de rehacer desde data/bd todo lo de la semana. Cuando cambia data/bd (el domingo,
+# o si alguien sube una actualización hecha en su equipo), la caché no vale y se reconstruye desde ahí.
 
 on:
   schedule:
@@ -53,7 +61,7 @@ concurrency:
 
 jobs:
   actualizar:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 120
     env:
       # Semanal (domingo) o manual: se guarda en el repositorio la base y los datos de la web.
@@ -68,10 +76,23 @@ jobs:
       - name: Herramientas PDF (actas autonómicas)
         run: sudo apt-get update && sudo apt-get install -y poppler-utils
 
+      # La clave depende de data/bd tal como está en el repositorio: si cambia, la base guardada ya no vale.
+      - name: Recuperar la base de trabajo de la ejecución anterior
+        id: base
+        uses: actions/cache/restore@v5
+        with:
+          path: data/escrutinio.sqlite*
+          key: base-${{ hashFiles('data/bd/**') }}-${{ github.run_id }}-${{ github.run_attempt }}
+          restore-keys: base-${{ hashFiles('data/bd/**') }}-
+
       - name: Actualizar
+        id: actualizar
+        # Red de seguridad por si algo se atasca fuera del control del plazo: quedan minutos para guardar.
+        timeout-minutes: 105
         env:
           DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
           DEEPSEEK_MODEL: ${{ vars.DEEPSEEK_MODEL }}
+          MINUTOS_MAX: "95"
           PYTHONUNBUFFERED: "1"
         run: |
           python -m escrutinio actualizar \
@@ -85,8 +106,14 @@ jobs:
         with:
           path: web
 
+      # También si la actualización ha fallado o se ha cortado: lo que ya se ha pagado a DeepSeek (data/llm) no se
+      # pierde. En ese caso solo se guarda data/llm, que se escribe a medida que llega.
       - name: Guardar cambios en el repositorio
+        if: always() && steps.actualizar.outcome != 'skipped'
+        env:
+          RESULTADO: ${{ steps.actualizar.outcome }}
         run: |
+          if [ "$RESULTADO" != "success" ]; then COMPLETA=false; fi
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add data/llm
@@ -102,9 +129,18 @@ jobs:
             git push
           fi
 
+      # Los días que no se guarda data/bd: la base de hoy, para que mañana siga desde aquí. Los días que sí se
+      # guarda, la próxima ejecución la reconstruye desde data/bd, que es lo mismo.
+      - name: Guardar la base de trabajo para la próxima ejecución
+        if: always() && steps.actualizar.outcome != 'skipped' && env.COMPLETA != 'true'
+        uses: actions/cache/save@v5
+        with:
+          path: data/escrutinio.sqlite*
+          key: ${{ steps.base.outputs.cache-primary-key }}
+
   publicar:
     needs: actualizar
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     permissions:
       pages: write
       id-token: write

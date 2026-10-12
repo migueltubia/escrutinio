@@ -182,7 +182,9 @@ permissions* hay que elegir «Read and write permissions».
 
 Qué hace cada día:
 
-1. Reconstruye la base de trabajo desde `data/bd/` (el runner empieza de cero).
+1. Recupera la base de trabajo que dejó la ejecución anterior (se guarda en la caché de Actions). Si
+   `data/bd/` ha cambiado desde entonces (la copia del domingo, o una actualización subida desde un
+   equipo), la reconstruye desde ahí.
 2. Descarga las votaciones nuevas (y revisa las de los últimos 14 días, por si se publicaron
    incompletas) y el catálogo, plazos y fases de las iniciativas de la legislatura actual.
 3. Carga las fichas versionadas y procesa todo con reglas fijas.
@@ -193,8 +195,18 @@ Qué hace cada día:
    guardada (con unos días de margen) y, con DeepSeek, se leen hasta 40 diarios de sesiones o actas
    pendientes, repartidos entre instituciones. Un conector que falla (web caída, cambio de formato)
    se anota, no para a los demás ni al Congreso y la web lo avisa (ver el apartado siguiente).
-6. Recalcula agregados, regenera la web y vuelve a trocear la base.
-7. Hace commit de lo que toque (ver la tabla) y publica la web.
+   Cada conector tiene como mucho 10 minutos y todos juntos 35; si no da tiempo a todos, los que se
+   quedan sin turno van los primeros al día siguiente.
+6. Programas electorales: con DeepSeek, lee los pendientes y relaciona sus compromisos con las
+   iniciativas nuevas.
+7. Recalcula agregados, regenera la web y vuelve a trocear la base.
+8. Hace commit de lo que toque (ver la tabla) y publica la web.
+
+Cada ejecución tiene 95 minutos (`MINUTOS_MAX`) repartidos entre los pasos, con tiempo reservado
+siempre para el 7 y el 8. Lo que no da tiempo a hacer queda para la ejecución siguiente: así GitHub
+no corta el trabajo a las dos horas, que perdería todo lo hecho. Al terminar deja en la ejecución un
+aviso con lo que ha tardado cada paso. Si aun así algo falla, se guardan las fichas y actas ya
+leídas (`data/llm`).
 
 Qué se actualiza y cada cuánto, contado para quien usa la web, está también en la página de ayuda
 (`#/ayuda`), que además explica cada pestaña con el botón «Cómo se lee».
@@ -217,7 +229,8 @@ git push                              # 5. enseguida, antes de que actualice otr
 
 Los mismos comandos valen en PowerShell. Opciones de `actualizar`: `--limite-fichas N` (400 por
 defecto), `--limite-actas N` (40), `--informe` (redacta el informe de la portada), `--sin-ia` (no
-llamar a DeepSeek aunque haya clave) y `--sin-territorial` (solo el Congreso). Antes de subir se puede
+llamar a DeepSeek aunque haya clave), `--sin-territorial` (solo el Congreso) y `--minutos N` (tiempo
+máximo, como en Actions; sin él, no hay límite). Antes de subir se puede
 ver el resultado abriendo `web/index.html`. La web publicada se actualiza con el siguiente «Actualizar
 datos» o lanzando «Publicar web» a mano en la pestaña *Actions*.
 
@@ -227,8 +240,8 @@ Dos reglas para no chocar con Actions ni con otra persona:
   puede fusionarlos, solo elegir una versión. Dos actualizaciones seguidas, cada una a partir de la
   anterior, no dan problema; dos cruzadas, sí: la segunda no puede subir.
 - **Evitar las franjas de Actions y no dejar datos sin subir.** El runner corre a las 04:20 UTC (06:20
-  en verano y 05:20 en invierno, hora peninsular) y a las 22:40 UTC, y cada pasada suele durar menos
-  de dos horas, más si hay cola. Los domingos sube su copia de la base, así que unos datos locales de
+  en verano y 05:20 en invierno, hora peninsular) y a las 22:40 UTC, aunque GitHub suele empezarlas
+  con horas de retraso. Cada pasada dura como mucho unos 100 minutos, más si hay cola. Los domingos sube su copia de la base, así que unos datos locales de
   varios días chocan seguro.
 
 Si el push falla porque `main` ha avanzado mientras tanto, no hay que fusionar los binarios sino

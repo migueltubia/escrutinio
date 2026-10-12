@@ -21,6 +21,7 @@ from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime, timezone
 
 from ..analisis import debates_generales
+from .. import plazo
 from ..llm import deepseek
 from ..texto import tokens
 from . import registro
@@ -136,6 +137,9 @@ def emparejar(con, ids=None, limite=None, modelo=None, log=print):
     EMPAREJAMIENTOS_DIR.mkdir(parents=True, exist_ok=True)
     indices, total = {}, 0
     for e in entradas:
+        if plazo.agotado(deepseek.MINIMO_PARA_LLAMAR):
+            log("  Se ha acabado el tiempo: el resto de programas queda para la próxima ejecución")
+            break
         leg = _legislatura(con, e)
         if leg is None:
             log(f"  {e['id']}: aún no hay legislatura tras la elección de {e['fecha_eleccion']}")
@@ -180,7 +184,8 @@ def emparejar(con, ids=None, limite=None, modelo=None, log=print):
                         except deepseek.ErrorIA as err1:
                             log(f"    ! {uno[0][0]['id']}: {err1}")
                 except deepseek.ErrorIA as err:
-                    log(f"    ! lote {j + 1}: {err}")
+                    if not isinstance(err, deepseek.SinTiempo):
+                        log(f"    ! lote {j + 1}: {err}")
                     continue
                 for parte, datos, modelo_real, uso in respuestas:
                     _guardar(parte, datos, modelo_real, salida, hechos)

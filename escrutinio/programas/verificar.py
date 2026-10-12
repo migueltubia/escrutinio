@@ -17,6 +17,7 @@ import re
 from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime, timezone
 
+from .. import plazo
 from ..llm import deepseek
 from . import registro
 from .emparejar import HILOS, RELACIONES, _sin_autor, leer_emparejamientos
@@ -121,6 +122,9 @@ def verificar(con, ids=None, limite=None, modelo=None, rehacer=False, solo=None,
     for e in registro.vigentes(registro.leer_registro()):
         if e["estado"] != "leido" or (ids and e["id"] not in ids and e["base"] not in ids):
             continue
+        if plazo.agotado(deepseek.MINIMO_PARA_LLAMAR):
+            log("  Se ha acabado el tiempo: el resto de programas queda para la próxima ejecución")
+            break
         compromisos = {c["id"]: c for c in leer_compromisos(e["id"])}
         cola = []
         for (cid, ini), p in sorted(pares.items()):
@@ -152,7 +156,8 @@ def verificar(con, ids=None, limite=None, modelo=None, rehacer=False, solo=None,
                 try:
                     datos, modelo_real, uso = futuro.result()
                 except deepseek.ErrorIA as err:  # se volverá a preguntar en la próxima pasada
-                    log(f"    ! lote {j + 1}: {err}")
+                    if not isinstance(err, deepseek.SinTiempo):
+                        log(f"    ! lote {j + 1}: {err}")
                     continue
                 t_in += uso.get("prompt_tokens", 0)
                 t_out += uso.get("completion_tokens", 0)

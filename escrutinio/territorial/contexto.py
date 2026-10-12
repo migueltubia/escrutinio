@@ -20,6 +20,7 @@ import urllib.request
 from datetime import date, timedelta
 from pathlib import Path
 
+from .. import plazo
 from ..config import RAW_DIR
 
 CACHE_DIR = RAW_DIR / "territorial"
@@ -142,6 +143,7 @@ class Contexto:
         - `reintentar_404`: para servidores que dan 404 al azar; si no, un 404 lanza HTTPError en el acto.
         El resto de errores se reintenta, salvo en una web que no ha contestado nada en esta ejecución y dos
         veces seguidas no deja conectar: se da por caída (ver _CAIDAS).
+        Si se acaba el tiempo de la fase (ver plazo.py), lanza plazo.TiempoAgotado en vez de seguir esperando.
         """
         ruta = None
         if cache is not None:
@@ -166,9 +168,10 @@ class Contexto:
                                 f"({_CAIDAS[host]})") from _CAIDAS[host]
         ultimo, raw, sin_conexion = None, None, 0
         for intento in range(reintentos):
+            plazo.comprobar(host)
             try:
                 req = urllib.request.Request(url, data=cuerpo, headers=cab)
-                with self._abridor(inseguro).open(req, timeout=timeout) as r:
+                with self._abridor(inseguro).open(req, timeout=max(1, min(timeout, plazo.quedan()))) as r:
                     _VIVAS.add(host)
                     raw = r.read()
                     if r.headers.get("Content-Encoding") == "gzip":
@@ -181,12 +184,15 @@ class Contexto:
                 ultimo = e
             except Exception as e:  # red, timeouts, gzip truncado
                 raw, ultimo = None, e
+                if plazo.agotado():  # la espera se ha recortado por el plazo: no dice nada de la web
+                    raise plazo.TiempoAgotado(f"se ha acabado el tiempo esperando a {host}") from e
                 if host not in _VIVAS and _sin_conexion(e):
                     sin_conexion += 1
                     if sin_conexion >= 2:  # no se insiste: cada intento puede ser un minuto de espera
                         _CAIDAS[host] = e
                         break
-            time.sleep(1.5 * (intento + 1))
+            if intento < reintentos - 1:
+                time.sleep(min(1.5 * (intento + 1), max(0, plazo.quedan())))
         if raw is None:
             raise ErrorDescarga(f"No se pudo descargar {url}: {ultimo}") from ultimo
         if ruta is not None:

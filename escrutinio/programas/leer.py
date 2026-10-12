@@ -26,6 +26,7 @@ from concurrent.futures import ThreadPoolExecutor
 from datetime import date
 
 from ..catalogos import CODIGOS_TEMA, TEMAS
+from .. import plazo
 from ..llm import deepseek
 from . import registro
 
@@ -311,9 +312,14 @@ def leer(ids=None, reintentar=False, limite=None, modelo=None, releer=False, log
     cerrojo = threading.Lock()  # el registro se reescribe entero: una actualización cada vez
 
     def uno(e):
+        if plazo.agotado(deepseek.MINIMO_PARA_LLAMAR):
+            return
         log(f"  {e['id']}: leyendo con {modelo} ({VERSION_PROMPT})")
         try:
             compromisos, t_in, t_out, descartados = _leer_programa(e, modelo, lambda m: log(f"  {e['id']}{m}"))
+        except deepseek.SinTiempo:  # no es un error del programa: lo leído está en la caché y se sigue otro día
+            log(f"  {e['id']}: se ha acabado el tiempo; se sigue leyendo en la próxima ejecución")
+            return
         except deepseek.ErrorIA as err:
             e.update(estado="error", motivo=f"{type(err).__name__}: {err}")
             with cerrojo:

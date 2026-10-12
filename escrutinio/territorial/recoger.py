@@ -7,7 +7,7 @@ formato) no para a los demás: se anota y se sigue. Al final se procesa todo con
 
 import time
 
-from .. import territorio
+from .. import plazo, territorio
 from . import estado as estado_fuente  # con alias: la función estado() de abajo taparía el módulo
 from .cargar import Cargador, borrar_cuerpo, ultimas_fechas
 from .contexto import Contexto
@@ -15,10 +15,22 @@ from .fuentes import ERRORES, MODULOS
 from .procesar import procesar
 
 
-def recoger(con, fuentes=None, completo=False, incluir_inactivos=False, minutos_max=25, borrar=False, log=print):
+def _por_turno(con, modulos):
+    """Primero los conectores que llevan más días sin ejecutarse: si se acaba el tiempo, los que se quedan
+    sin turno hoy van los primeros en la próxima ejecución."""
+    try:
+        ultima = dict(con.execute("SELECT conector, MIN(fecha) FROM estado_fuente GROUP BY conector"))
+    except Exception:  # aún no existe la tabla
+        ultima = {}
+    return sorted(modulos.items(), key=lambda kv: ultima.get(kv[0]) or "")
+
+
+def recoger(con, fuentes=None, completo=False, incluir_inactivos=False, minutos_max=10, borrar=False, log=print):
     """Ejecuta los conectores con `descargar` y carga lo nuevo. Devuelve {conector: resumen}.
 
     `borrar` (solo con `fuentes`) vacía antes esas instituciones y las recarga enteras.
+    Cada conector tiene como mucho `minutos_max` (salvo con `completo`), y todos juntos, el tramo de tiempo en
+    curso (ver plazo.py). Lo cargado se queda y el conector sigue desde ahí en la próxima ejecución.
     """
     cuerpos = {c.codigo: c for c in territorio.cuerpos()}
     if borrar:
@@ -31,46 +43,59 @@ def recoger(con, fuentes=None, completo=False, incluir_inactivos=False, minutos_
     ctx = Contexto(desde=ultimas_fechas(con), completo=completo, log=log)
     for nombre, error in ERRORES.items():
         log(f"  ! {nombre}: no se pudo cargar el conector ({error})")
-    resumen = {}
-    for nombre, m in MODULOS.items():
+    resumen, sin_turno = {}, []
+    for nombre, m in _por_turno(con, MODULOS):
         if fuentes and nombre not in fuentes:
             continue
         if not fuentes and not incluir_inactivos and not getattr(m, "ACTIVO", True):
             continue
         if not hasattr(m, "descargar"):
             continue
+        if plazo.agotado(60):
+            sin_turno.append(nombre)
+            continue
         cargador = Cargador(con, cuerpos, nombre)
-        errores, inicio, cortado, fallo = 0, time.time(), False, None
+        errores, inicio, cortado, fallo, sin_tiempo = 0, time.time(), False, None, False
         log(f"== {nombre}: " + ", ".join(c.codigo for c in m.CUERPOS)
             + "".join(f" (desde {ctx.desde(c.codigo)})" for c in m.CUERPOS[:1] if ctx.desde(c.codigo)))
-        try:
-            for i, obj in enumerate(m.descargar(ctx), 1):
-                try:
-                    cargador.guardar(obj)
-                except Exception as e:  # dato raro de la fuente: se salta y se sigue
-                    errores += 1
-                    if errores <= 5:
-                        log(f"  ! {nombre}: {type(e).__name__}: {e}")
-                if i % 500 == 0:
-                    con.commit()
-                    log(f"  {nombre}: {i} registros")
-                if not completo and minutos_max and time.time() - inicio > minutos_max * 60:
-                    cortado = True
-                    log(f"  ! {nombre}: más de {minutos_max} min; se sigue en la próxima ejecución")
-                    break
-        except Exception as e:  # la web ha fallado: lo ya cargado se queda
-            errores += 1
-            cortado = True
-            fallo = e
-            log(f"  ! {nombre}: la recogida se ha interrumpido: {type(e).__name__}: {e}")
+        with plazo.tramo(f"conector {nombre}", minutos=None if completo else minutos_max):
+            try:
+                for i, obj in enumerate(m.descargar(ctx), 1):
+                    try:
+                        cargador.guardar(obj)
+                    except Exception as e:  # dato raro de la fuente: se salta y se sigue
+                        errores += 1
+                        if errores <= 5:
+                            log(f"  ! {nombre}: {type(e).__name__}: {e}")
+                    if i % 500 == 0:
+                        con.commit()
+                        log(f"  {nombre}: {i} registros")
+                    if plazo.agotado():
+                        raise plazo.TiempoAgotado("tope de tiempo del conector")
+                if plazo.agotado():  # el conector se tragó el corte de alguna descarga y terminó antes de tiempo
+                    raise plazo.TiempoAgotado("tope de tiempo del conector")
+            except plazo.TiempoAgotado:  # no es un fallo de la web: lo ya cargado se queda y se sigue otro día
+                cortado = sin_tiempo = True
+                log(f"  ! {nombre}: se ha acabado su tiempo ({round(time.time() - inicio)} s); "
+                    "se sigue en la próxima ejecución")
+            except Exception as e:  # la web ha fallado: lo ya cargado se queda
+                errores += 1
+                cortado = True
+                fallo = e
+                log(f"  ! {nombre}: la recogida se ha interrumpido: {type(e).__name__}: {e}")
         if not cortado:
             cargador.limpiar_sesiones()
         for c in m.CUERPOS:  # para avisar en la web de las instituciones que se quedan sin actualizar
             motivo, detalle = (estado_fuente.motivo(fallo), str(fallo)) if fallo else ctx.avisos.get(c.codigo, (None, None))
+            if sin_tiempo and isinstance(motivo, str) and "tiempo" in (detalle or ""):
+                motivo = detalle = None  # el aviso venía del corte por tiempo, no de la web
             estado_fuente.anotar(con, nombre, [c.codigo], motivo, detalle)
         con.commit()
         resumen[nombre] = {**cargador.n, "errores": errores, "segundos": round(time.time() - inicio), "cortado": cortado}
         log(f"  {nombre}: {dict(cargador.n) or 'nada nuevo'}; {errores} errores; {resumen[nombre]['segundos']} s")
+    if sin_turno:
+        log(f"  Sin tiempo para {len(sin_turno)} conectores (van los primeros en la próxima ejecución): "
+            + ", ".join(sin_turno))
     return resumen
 
 

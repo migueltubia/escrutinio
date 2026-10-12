@@ -31,6 +31,7 @@ import urllib.error
 import urllib.request
 import xml.etree.ElementTree as ET
 
+from ... import plazo
 from ...territorio import Cuerpo, num_parlamento, romano
 from ..contexto import CACHE_DIR, Contexto, ErrorDescarga
 from ..modelo import Documento, Votacion
@@ -116,9 +117,10 @@ def _bajar(ctx, url, cache=None, caduca_dias=None, metodo="GET"):
         return gzip.decompress(ruta.read_bytes())
     ultimo = None
     for intento in range(4):
+        plazo.comprobar("galicia")
         try:
             req = urllib.request.Request(url, headers=CABECERAS, method=metodo)
-            with _abridor().open(req, timeout=90) as r:
+            with _abridor().open(req, timeout=max(1, min(90, plazo.quedan()))) as r:
                 raw = r.read()
                 if r.headers.get("Content-Encoding") == "gzip":
                     raw = gzip.decompress(raw)

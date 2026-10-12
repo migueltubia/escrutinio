@@ -18,14 +18,17 @@ import os
 import time
 import urllib.error
 import urllib.request
+from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime, timezone
 
+from .. import plazo
 from ..catalogos import TIPOS_VOTACION
 from ..config import LLM_DIR
 from .fichas_io import guardar_fichas, items_en_tramite, items_pendientes
 from .prompt import FICHA_SCHEMA, SYSTEM, validar
 
 POR_LLAMADA = 15
+HILOS_FICHAS = 4  # lotes de fichas que se piden a la vez
 
 
 class ErrorIA(RuntimeError):
@@ -34,6 +37,16 @@ class ErrorIA(RuntimeError):
 
 class RespuestaTruncada(ErrorIA):
     """La respuesta no cabe en max_tokens: hay que pedir menos de una vez (partir el lote o el texto)."""
+
+
+class SinTiempo(ErrorIA):
+    """Se ha acabado el tiempo de esta ejecución (ver plazo.py): lo pendiente queda para la próxima."""
+
+
+# Una llamada no se empieza si no quedan al menos estos segundos: una respuesta con razonamiento tarda
+# minutos, y cortarla a medias es pagarla sin aprovecharla.
+MINIMO_PARA_LLAMAR = 180
+ESPERA_MAXIMA = 600  # segundos que se espera una respuesta
 
 
 def disponible():
@@ -78,8 +91,10 @@ def chat_json(sistema, usuario, modelo=None, max_tokens=32_000, reintentos=5):
     )
     ultimo = None
     for intento in range(reintentos):
+        if plazo.agotado(MINIMO_PARA_LLAMAR):
+            raise SinTiempo("se ha acabado el tiempo de esta ejecución; queda para la próxima")
         try:
-            with urllib.request.urlopen(peticion, timeout=600) as r:
+            with urllib.request.urlopen(peticion, timeout=min(ESPERA_MAXIMA, plazo.quedan())) as r:
                 d = json.loads(r.read().decode("utf-8"))
             eleccion = d["choices"][0]
             contenido = (eleccion.get("message") or {}).get("content") or ""
@@ -99,7 +114,8 @@ def chat_json(sistema, usuario, modelo=None, max_tokens=32_000, reintentos=5):
             ultimo = ErrorIA(f"JSON inválido en la respuesta: {e}")
         except (urllib.error.URLError, TimeoutError, ConnectionError, http.client.HTTPException) as e:
             ultimo = ErrorIA(f"red: {e}")  # también respuestas cortadas (IncompleteRead, RemoteDisconnected)
-        time.sleep(min(60, 5 * 2 ** intento))
+        if intento < reintentos - 1:
+            time.sleep(min(60, 5 * 2 ** intento))
     raise ultimo or ErrorIA("sin respuesta")
 
 
@@ -116,8 +132,60 @@ SISTEMA_FICHAS = (
 )
 
 
+def _pedir_fichas(items, modelo, log, lote):
+    """Fichas de un lote de iniciativas. Solo red (se ejecuta en un hilo): no toca la base.
+
+    Devuelve ([(etiqueta del modelo, fichas válidas)], ids sin ficha tras dos intentos, ids aplazados por falta de
+    tiempo, tokens). La segunda ronda va solo con las que faltaron o salieron mal; si la respuesta no cabe en
+    max_tokens, el grupo se parte en dos y se piden por separado.
+    """
+    cola = [(items, 0)]
+    respuestas, fallidas, aplazadas, tokens = [], [], [], 0
+    while cola:
+        pendientes, ronda = cola.pop(0)
+        ids = {it["id"] for it in pendientes}
+        try:
+            datos, modelo_real, uso = chat_json(SISTEMA_FICHAS, "Genera las fichas en json para estas iniciativas:\n"
+                                                + "\n".join(json.dumps(it, ensure_ascii=False) for it in pendientes), modelo)
+        except RespuestaTruncada as e:
+            if len(pendientes) > 1:
+                mitad = len(pendientes) // 2
+                log(f"  · lote {lote}: {e}; se parte en {mitad} + {len(pendientes) - mitad}")
+                cola[:0] = [(pendientes[:mitad], ronda), (pendientes[mitad:], ronda)]
+            else:
+                log(f"  ! lote {lote}: la ficha de {pendientes[0]['id']} no cabe: {e}")
+                fallidas += [it["id"] for it in pendientes]
+            continue
+        except SinTiempo:
+            aplazadas += [it["id"] for it in pendientes]
+            continue
+        except ErrorIA as e:
+            log(f"  ! lote {lote}: {e}")
+            fallidas += [it["id"] for it in pendientes]
+            continue
+        tokens += uso.get("total_tokens", 0)
+        buenas = []
+        for f in datos.get("fichas") or []:
+            if not isinstance(f, dict) or f.get("id") not in ids:
+                continue
+            ficha, errores = validar(dict(f))
+            if ficha and ficha.get("resumen", "").strip():
+                buenas.append(ficha)
+        respuestas.append((f"deepseek:{modelo_real}", buenas))
+        hechos = {b["id"] for b in buenas}
+        faltan = [it for it in pendientes if it["id"] not in hechos]
+        if faltan and ronda == 0:
+            cola.append((faltan, 1))
+        else:
+            fallidas += [it["id"] for it in faltan]
+    return respuestas, fallidas, aplazadas, tokens
+
+
 def generar_fichas(con, limite=400, modelo=None, log=print):
-    """Genera fichas para iniciativas votadas o en trámite que aún no la tienen."""
+    """Genera fichas para iniciativas votadas o en trámite que aún no la tienen.
+
+    Los lotes se piden a la vez (HILOS_FICHAS) y se guardan en orden, en la base y en data/llm.
+    """
     vistos, items = set(), []
     for it in items_pendientes(con) + items_en_tramite(con):
         if it["id"] not in vistos:
@@ -131,53 +199,25 @@ def generar_fichas(con, limite=400, modelo=None, log=print):
     carpeta = LLM_DIR / "resultados" / "deepseek"
     carpeta.mkdir(parents=True, exist_ok=True)
     salida = carpeta / f"{datetime.now(timezone.utc):%Y-%m-%d}.jsonl"
-    hechas, fallidas, tokens = 0, [], 0
-    for i in range(0, len(items), POR_LLAMADA):
-        lote = i // POR_LLAMADA + 1
-        # (iniciativas, ronda): la segunda ronda, solo con las que faltaron o salieron mal. Si la respuesta no
-        # cabe en max_tokens, el grupo se parte en dos y se piden por separado.
-        cola = [(items[i : i + POR_LLAMADA], 0)]
-        while cola:
-            pendientes, ronda = cola.pop(0)
-            ids = {it["id"] for it in pendientes}
-            try:
-                datos, modelo_real, uso = chat_json(SISTEMA_FICHAS, "Genera las fichas en json para estas iniciativas:\n"
-                                                    + "\n".join(json.dumps(it, ensure_ascii=False) for it in pendientes), modelo)
-            except RespuestaTruncada as e:
-                if len(pendientes) > 1:
-                    mitad = len(pendientes) // 2
-                    log(f"  · lote {lote}: {e}; se parte en {mitad} + {len(pendientes) - mitad}")
-                    cola[:0] = [(pendientes[:mitad], ronda), (pendientes[mitad:], ronda)]
-                else:
-                    log(f"  ! lote {lote}: la ficha de {pendientes[0]['id']} no cabe: {e}")
-                    fallidas += [it["id"] for it in pendientes]
-                continue
-            except ErrorIA as e:
-                log(f"  ! lote {lote}: {e}")
-                fallidas += [it["id"] for it in pendientes]
-                continue
-            tokens += uso.get("total_tokens", 0)
-            buenas = []
-            for f in datos.get("fichas") or []:
-                if not isinstance(f, dict) or f.get("id") not in ids:
-                    continue
-                ficha, errores = validar(dict(f))
-                if ficha and ficha.get("resumen", "").strip():
-                    buenas.append(ficha)
-            etiqueta = f"deepseek:{modelo_real}"
-            ok, _ = guardar_fichas(con, [dict(b) for b in buenas], etiqueta)
-            with open(salida, "a", encoding="utf-8") as fh:
-                for b in buenas:
-                    fh.write(json.dumps({**b, "_modelo": etiqueta}, ensure_ascii=False) + "\n")
-            hechas += ok
-            hechos = {b["id"] for b in buenas}
-            faltan = [it for it in pendientes if it["id"] not in hechos]
-            if faltan and ronda == 0:
-                cola.append((faltan, 1))
-            else:
-                fallidas += [it["id"] for it in faltan]
-        log(f"  {min(i + POR_LLAMADA, len(items))}/{len(items)}")
-    log(f"Fichas generadas: {hechas}; sin ficha tras dos intentos: {len(fallidas)}; tokens: {tokens}")
+    hechas, fallidas, aplazadas, tokens = 0, [], [], 0
+    lotes = [items[i : i + POR_LLAMADA] for i in range(0, len(items), POR_LLAMADA)]
+    with ThreadPoolExecutor(HILOS_FICHAS) as hilos:
+        futuros = [hilos.submit(_pedir_fichas, lote, modelo, log, n) for n, lote in enumerate(lotes, 1)]
+        for n, futuro in enumerate(futuros, 1):
+            respuestas, mal, sin_tiempo, t = futuro.result()
+            for etiqueta, buenas in respuestas:
+                ok, _ = guardar_fichas(con, [dict(b) for b in buenas], etiqueta)
+                with open(salida, "a", encoding="utf-8") as fh:
+                    for b in buenas:
+                        fh.write(json.dumps({**b, "_modelo": etiqueta}, ensure_ascii=False) + "\n")
+                hechas += ok
+            fallidas += mal
+            aplazadas += sin_tiempo
+            tokens += t
+            if not sin_tiempo:
+                log(f"  {min(n * POR_LLAMADA, len(items))}/{len(items)}")
+    log(f"Fichas generadas: {hechas}; sin ficha tras dos intentos: {len(fallidas)}; tokens: {tokens}"
+        + (f"; sin tiempo, para la próxima ejecución: {len(aplazadas)}" if aplazadas else ""))
     return hechas
 
 
@@ -199,6 +239,9 @@ def clasificar_tipos(con, modelo=None, log=print):
                + '\nResponde SOLO con un objeto json: {"tipos": [{"id": "...", "tipo": "clave"}]}. Si ninguno encaja, usa "otro".')
     nuevos = 0
     for i in range(0, len(filas), 30):
+        if plazo.agotado(MINIMO_PARA_LLAMAR):
+            log(f"  Se ha acabado el tiempo: {len(filas) - i} votaciones quedan para la próxima ejecución")
+            break
         lote = filas[i : i + 30]
         entrada = [{"id": f"{r['legislatura']}|{r['fecha']}|{r['sesion']}|{r['numero']}", "seccion": r["seccion"],
                     "texto": (r["texto_expediente"] or "")[:400], "subgrupo": r["titulo_subgrupo"], "detalle": (r["texto_subgrupo"] or "")[:200]}

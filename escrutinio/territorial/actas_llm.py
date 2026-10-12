@@ -422,7 +422,7 @@ def _escanos(doc):
 
 def procesar_deepseek(con, limite=40, fuentes=None, log=print):
     """Extrae con DeepSeek las votaciones de los documentos pendientes y las carga."""
-    from .. import territorio
+    from .. import plazo, territorio
     from ..llm import deepseek
     from .cargar import Cargador
 
@@ -433,7 +433,10 @@ def procesar_deepseek(con, limite=40, fuentes=None, log=print):
     log(f"Actas y diarios con DeepSeek: {len(pendientes)} documentos pendientes (límite {limite})")
     cuerpos = {c.codigo: c for c in territorio.cuerpos()}
     total = 0
-    for m, ctx, doc in pendientes:
+    for n, (m, ctx, doc) in enumerate(pendientes):
+        if plazo.agotado(deepseek.MINIMO_PARA_LLAMAR):
+            log(f"  Se ha acabado el tiempo: {len(pendientes) - n} documentos quedan para la próxima ejecución")
+            break
         try:
             texto = condensar(texto_documento(m, ctx, doc))
         except Exception as e:

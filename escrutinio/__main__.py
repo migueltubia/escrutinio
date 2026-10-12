@@ -27,6 +27,8 @@ def main(argv=None):
     s.add_argument("--informe", action="store_true", help="Regenerar el informe de análisis con DeepSeek")
     s.add_argument("--sin-territorial", action="store_true", help="Solo el Congreso: no recoger votaciones autonómicas y locales")
     s.add_argument("--limite-actas", type=int, default=40, help="Máximo de diarios y actas que leer con IA por ejecución")
+    s.add_argument("--minutos", type=int, help="Tiempo máximo: cada fase para a tiempo y lo pendiente queda para la "
+                   "próxima ejecución (por defecto, la variable MINUTOS_MAX; sin ella, sin límite)")
 
     sub.add_parser("unir", help="Reconstruye la base de trabajo desde data/bd/ (una SQLite por legislatura)")
     sub.add_parser("partir", help="Guarda la base de trabajo troceada por legislatura en data/bd/")
@@ -151,7 +153,7 @@ def main(argv=None):
         from .actualizar import actualizar
 
         actualizar(limite_fichas=a.limite_fichas, ia=not a.sin_ia, informe=a.informe, territorial=not a.sin_territorial,
-                   limite_actas=a.limite_actas, log=log)
+                   limite_actas=a.limite_actas, minutos=a.minutos, log=log)
         return
     if a.cmd == "unir":
         from .almacen import unir

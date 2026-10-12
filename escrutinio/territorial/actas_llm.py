@@ -407,8 +407,8 @@ def documentos_pendientes(con, fuentes=None, limite=None, log=print):
     cambiados = False
     modulos = [(n, m) for n, m in MODULOS.items()
                if hasattr(m, "documentos") and (n in fuentes if fuentes else getattr(m, "ACTIVO", True))]
-    # Cupo por conector: así el atraso de uno (cientos de diarios antiguos) no deja sin turno a los demás.
-    cupo = max(2, -(-limite // len(modulos))) if limite and modulos else None
+    # Cada conector lista hasta el límite (o hasta su tope de tiempo, sin límite); el reparto se hace al final.
+    cupo = limite or None
     # Días que ya tienen votaciones de datos estructurados o leídas con reglas: su diario no se manda al LLM
     # (saldrían repetidas), salvo que el conector diga que sus actas completan esos datos. Se leen aquí: la base
     # solo se usa desde este hilo.
@@ -453,10 +453,11 @@ def documentos_pendientes(con, fuentes=None, limite=None, log=print):
     # Cada conector espera a una web distinta: se listan a la vez y la fase dura lo que el más lento.
     with ThreadPoolExecutor(max_workers=8) as pool:
         resultados = [(n, m, pool.submit(listar, n, m)) for n, m in modulos]
-    out = []
+    por_conector = []
     for nombre, m, futuro in resultados:
         docs, error, terminado = futuro.result()
-        out.extend(docs)
+        if docs:
+            por_conector.append(sorted(docs, key=lambda t: t[2].fecha, reverse=True))
         # Las fuentes que solo tienen diarios (sin `descargar`) se anotan aquí para el aviso de la web.
         solo_diarios = [c.codigo for c in m.CUERPOS] if not hasattr(m, "descargar") else []
         if error:
@@ -469,8 +470,9 @@ def documentos_pendientes(con, fuentes=None, limite=None, log=print):
     if cambiados:
         LISTADOS.parent.mkdir(parents=True, exist_ok=True)
         LISTADOS.write_text(json.dumps(listados, indent=1, sort_keys=True) + "\n", encoding="utf-8")
-    # Lo más reciente primero, sea de donde sea.
-    out.sort(key=lambda t: t[2].fecha, reverse=True)
+    # Por turnos entre conectores, lo más reciente de cada uno primero: el atraso de uno (cientos de diarios
+    # antiguos) no deja sin turno a los demás, y el cupo que uno no usa lo aprovechan los otros.
+    out = [docs[k] for k in range(max(map(len, por_conector), default=0)) for docs in por_conector if k < len(docs)]
     return out[:limite] if limite else out
 
 
@@ -481,8 +483,10 @@ def _escanos(doc):
     return c.escanos_de(doc.legislatura or c.legislatura_de(doc.fecha) or 0)
 
 
-def procesar_deepseek(con, limite=40, fuentes=None, log=print):
-    """Extrae con DeepSeek las votaciones de los documentos pendientes y las carga."""
+def procesar_deepseek(con, limite=None, fuentes=None, log=print):
+    """Extrae con DeepSeek las votaciones de los documentos pendientes y las carga.
+
+    Sin `limite`, todos los pendientes que se listen, hasta que se acabe el tiempo de la fase (plazo.py)."""
     from .. import territorio
     from ..llm import deepseek
     from .cargar import Cargador
@@ -491,7 +495,8 @@ def procesar_deepseek(con, limite=40, fuentes=None, log=print):
         log("Actas y diarios: sin DEEPSEEK_API_KEY; se omite la extracción con IA")
         return 0
     pendientes = documentos_pendientes(con, fuentes=fuentes, limite=limite, log=log)
-    log(f"Actas y diarios con DeepSeek: {len(pendientes)} documentos pendientes (límite {limite})")
+    log(f"Actas y diarios con DeepSeek: {len(pendientes)} documentos pendientes "
+        f"({f'límite {limite}' if limite else 'sin límite: hasta que se acabe el tiempo'})")
     cuerpos = {c.codigo: c for c in territorio.cuerpos()}
 
     def leer(m, ctx, doc):

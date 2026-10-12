@@ -228,7 +228,8 @@ git push                              # 5. enseguida, antes de que actualice otr
 ```
 
 Los mismos comandos valen en PowerShell. Opciones de `actualizar`: `--limite-fichas N` (400 por
-defecto), `--limite-actas N` (40), `--informe` (redacta el informe de la portada), `--sin-ia` (no
+defecto), `--limite-actas N` (sin límite por defecto: lee actas hasta que se acaba el tiempo; sin
+`--minutos`, todas las pendientes que se listen; 0 para no leer ninguna), `--informe` (redacta el informe de la portada), `--sin-ia` (no
 llamar a DeepSeek aunque haya clave), `--sin-territorial` (solo el Congreso) y `--minutos N` (tiempo
 máximo, como en Actions; sin él, no hay límite). Antes de subir se puede
 ver el resultado abriendo `web/index.html`. La web publicada se actualiza con el siguiente «Actualizar

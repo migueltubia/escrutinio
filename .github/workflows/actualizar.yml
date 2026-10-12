@@ -49,8 +49,8 @@ on:
         type: boolean
         default: false
       limite_actas:
-        description: "Máximo de diarios de sesiones y actas autonómicas y locales que leer con DeepSeek"
-        default: "40"
+        description: "Máximo de diarios de sesiones y actas autonómicas y locales que leer con DeepSeek (vacío: sin límite, hasta que se acabe el tiempo)"
+        default: ""
 
 permissions:
   contents: write
@@ -97,7 +97,7 @@ jobs:
         run: |
           python -m escrutinio actualizar \
             --limite-fichas "${{ inputs.limite_fichas || '400' }}" \
-            --limite-actas "${{ inputs.limite_actas || '40' }}" \
+            ${{ inputs.limite_actas && format('--limite-actas {0}', inputs.limite_actas) || '' }} \
             ${{ (inputs.informe || github.event.schedule == '20 4 * * 0') && '--informe' || '' }}
 
       # La web se publica con los datos recién calculados, también los días que no se guardan en git.

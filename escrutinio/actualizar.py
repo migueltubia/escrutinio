@@ -38,7 +38,7 @@ MINUTOS_CONECTORES = 35    # todos los conectores autonómicos y locales juntos
 MINUTOS_POR_CONECTOR = 10
 
 
-def actualizar(limite_fichas=400, ia=True, informe=False, territorial=True, limite_actas=40, minutos=None, log=print):
+def actualizar(limite_fichas=400, ia=True, informe=False, territorial=True, limite_actas=None, minutos=None, log=print):
     minutos = minutos or int(os.environ.get("MINUTOS_MAX") or 0) or None
     plazo.iniciar(minutos)
     if minutos:
@@ -125,7 +125,9 @@ def _actualizar(limite_fichas, ia, informe, territorial, limite_actas, log):
         anunciar_pendientes(log)   # grupos sin partido reconocido: posibles partidos nuevos para dar de alta
 
 
-def actualizar_territorial(con, ia=True, limite_actas=40, log=print):
+def actualizar_territorial(con, ia=True, limite_actas=None, log=print):
+    """`limite_actas`: máximo de diarios y actas que leer con IA; None, sin límite (hasta que se acabe el tiempo de
+    la fase); 0, ninguno."""
     from .territorial import actas_llm
     from .territorial.procesar import procesar as procesar_territorial
     from .territorial.recoger import recoger
@@ -135,7 +137,7 @@ def actualizar_territorial(con, ia=True, limite_actas=40, log=print):
         recoger(con, minutos_max=MINUTOS_POR_CONECTOR, log=log)
     # Después de los conectores: lo leído de actas puede completar votaciones que acaban de volver a guardarse.
     actas_llm.cargar_guardadas(con, log)
-    if ia and limite_actas:
+    if ia and limite_actas != 0:
         with plazo.tramo("Autonómicas y locales: actas con IA", reserva=RESERVA_CIERRE + RESERVA_PROGRAMAS, log=log):
             try:
                 actas_llm.procesar_deepseek(con, limite=limite_actas, log=log)

@@ -26,7 +26,8 @@ def main(argv=None):
     s.add_argument("--sin-ia", action="store_true", help="No llamar a la IA aunque haya clave")
     s.add_argument("--informe", action="store_true", help="Regenerar el informe de análisis con DeepSeek")
     s.add_argument("--sin-territorial", action="store_true", help="Solo el Congreso: no recoger votaciones autonómicas y locales")
-    s.add_argument("--limite-actas", type=int, default=40, help="Máximo de diarios y actas que leer con IA por ejecución")
+    s.add_argument("--limite-actas", type=int, help="Máximo de diarios y actas que leer con IA por ejecución (por "
+                   "defecto, sin límite: hasta que se acabe el tiempo de la fase; 0 = no leer ninguno)")
     s.add_argument("--minutos", type=int, help="Tiempo máximo: cada fase para a tiempo y lo pendiente queda para la "
                    "próxima ejecución (por defecto, la variable MINUTOS_MAX; sin ella, sin límite)")
 

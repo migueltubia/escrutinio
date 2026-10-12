@@ -268,7 +268,7 @@ VISTAS.programas = async (ruta) => {
       el("p", { class: "small muted" }, `Se votó algo relacionado con ${fmt(conVoto)} promesas. En ${fmt(nContra)} el partido votó en contra de lo que prometía`,
         nMixto ? ` y en ${fmt(nMixto)} votó unas veces a favor y otras en contra.` : ".",
         " De cada una se ve la frase del programa y solo las votaciones que no encajan con ella. Conviene mirar quién presentó la iniciativa y si el partido gobernaba: a veces se vota en contra por el resto del texto o por un pacto con los socios."),
-      d.contradichos.length ? [listaContra, mas] : el("p", { class: "muted" }, "Con estos filtros no hay ninguna. En lo que se votó, cada partido votó como prometía.")));
+      d.contradichos.length ? [listaContra, mas] : el("p", { class: "muted" }, "Con estos filtros no hay ninguna.")));
   }
 
   // 3. Efecto gobierno: la misma cifra cuando el partido gobernaba y cuando estaba en la oposición.

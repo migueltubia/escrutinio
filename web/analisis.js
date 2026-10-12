@@ -185,7 +185,7 @@ VISTAS.coaliciones = async (q) => {
     el("td", {}, el("div", { class: "chips", style: "margin:0" }, c.grupos.length ? c.grupos.map((s) => el("span", { class: "chip" }, el("span", { class: "sw", style: `background:${colorSiglas(s)}` }), s)) : el("span", { class: "muted small" }, "ningún grupo entero"))),
     el("td", { class: "num" }, fmt(c.n)), el("td", { class: "num muted" }, `${pct(c.n, total[sale])}%`)))));
   cont.append(el("div", { class: "grid g2", style: "margin-top:16px" },
-    el("div", { class: "card" }, el("h3", {}, "Combinaciones que aprueban"), el("p", { class: "small muted" }, "Clic en una fila para ver qué se aprobó con esa mayoría."), tablaCoal(true)),
+    el("div", { class: "card" }, el("h3", {}, "Combinaciones que aprueban"), el("p", { class: "small muted" }, "Pulsa una fila para ver qué se aprobó con esa mayoría."), tablaCoal(true)),
     el("div", { class: "card" }, el("h3", {}, "Combinaciones que tumban"), el("p", { class: "small muted" }, "Grupos que votaron en contra de lo que se rechazó."), tablaCoal(false))));
 
   if (q.coal && coal.get(q.coal)) {
@@ -281,7 +281,7 @@ function interpretarEjes(puntos, par, perfil) {
     candidatos.push({
       valor: (s) => (af(s, "PP") ?? NaN) - (af(s, "PSOE") ?? NaN),
       alto: "Vota como el PP", bajo: "Vota como el PSOE",
-      texto: "cuánto se parece el voto de cada grupo al del PP frente al del PSOE",
+      texto: "si el voto de cada grupo se parece más al del PP o al del PSOE",
     });
     candidatos.push({
       valor: (s) => { const r = perf.get(s); return r && r.nAcuerdo >= 10 ? r.conAcuerdo / r.nAcuerdo : NaN; },
@@ -394,7 +394,7 @@ VISTAS.mapa = async (q) => {
   const d = await api("mapa", { leg: legs.join(","), tema: temas.join(",") });
   const cont = el("div", {}, subnav(NAV_ANALISIS, "mapa", q),
     el("h2", {}, "Mapa ideológico y polarización"),
-    el("p", { class: "sub" }, "Cada grupo se sitúa según con quién vota: cuanto más cerca están dos puntos, más a menudo votan igual. Se calcula con escalado multidimensional sobre la afinidad en votaciones de fondo. Cada eje lleva en sus extremos el indicador de voto que mejor explica la posición de los grupos en él. El mapa se orienta con el PP a la derecha del PSOE y el PNV arriba para poder comparar legislaturas. Con varias legislaturas o temas, cada partido suma todas sus votaciones."),
+    el("p", { class: "sub" }, "Cada grupo se sitúa según con quién vota: cuanto más cerca están dos puntos, más a menudo votan igual. Los nombres de los extremos de cada eje describen lo que más se parece a esa posición en los votos, pero son una aproximación. El mapa se orienta con el PP a la derecha del PSOE y el PNV arriba para poder comparar legislaturas. Con varias legislaturas o temas, cada partido suma todas sus votaciones."),
     formFiltros([
       multiSelect("leg", optLegs(), legs.join(","), "Legislatura", "legislaturas"),
       multiSelect("tema", optTemas(), temas.join(","), "Todos los temas", "temas"),
@@ -430,8 +430,8 @@ VISTAS.mapa = async (q) => {
         const cual = i ? "Eje vertical" : "Eje horizontal";
         const pct = `${Math.round(100 * mapa.varianza[i])}% de las diferencias de voto`;
         return e.texto
-          ? `${cual} (${pct}): ${e.texto} (correlación ${e.r.toLocaleString("es-ES", { maximumFractionDigits: 2 })}). `
-          : `${cual} (${pct}): ningún indicador lo explica bien con estos filtros; se rotula con los grupos de los extremos. `;
+          ? `${cual} (${pct}): ${e.texto} (se ajusta ${e.r.toLocaleString("es-ES", { maximumFractionDigits: 2 })} sobre 1). `
+          : `${cual} (${pct}): con estos filtros no hay una explicación clara; lleva el nombre de los grupos de los extremos. `;
       }).join(""), "El tamaño del punto es el número de diputados.",
         fuera.length ? ` Sin datos suficientes para situar: ${fuera.join(", ")}.` : "")] :
       el("div", { class: "vacio" }, "No hay votaciones suficientes para dibujar el mapa con estos filtros.")));
@@ -470,7 +470,7 @@ VISTAS.mapa = async (q) => {
   }).filter((d, i, xs) => i < xs.length - 1 || d.y !== null);
   cont.append(el("div", { class: "card", style: "margin-top:16px" },
     el("h3", {}, "Polarización por trimestre"),
-    el("p", { class: "small muted" }, "Desacuerdo medio entre grupos en las votaciones decisivas de fondo, ponderado por el número de diputados de cada par: 0% si todos votan igual, 100% si cada par vota distinto. Las líneas verticales marcan el inicio de cada legislatura."),
+    el("p", { class: "small muted" }, "Cuánto votan distinto los grupos en las votaciones decisivas de fondo, contando más los grupos con más diputados: 0% si todos votan igual, 100% si cada uno vota distinto de los demás. Las líneas verticales marcan el inicio de cada legislatura."),
     lineaTiempo(serie((o) => (100 * o.polar) / o.n), { etiqueta: "Índice de polarización por trimestre" })));
   cont.append(el("div", { class: "grid g2", style: "margin-top:16px" },
     el("div", { class: "card" }, el("h3", {}, "Votaciones con amplio acuerdo"),
@@ -597,7 +597,7 @@ VISTAS.disciplina = async (q) => {
         const o = coh.get(g.siglas);
         return el("tr", { class: "clic" + (filtroGrupos.has(g.siglas) ? " activo" : ""), onclick: () => irA("disciplina", { leg, grupo: g.siglas }) },
           el("td", {}, swatch(g.color), g.siglas), el("td", { class: "num" }, g.diputados),
-          el("td", { class: "num" }, `${((100 * o.partidas) / o.n).toFixed(1)}%${o.heterogeneo ? " (grupo heterogéneo)" : ""}`),
+          el("td", { class: "num" }, `${((100 * o.partidas) / o.n).toFixed(1)}%${o.heterogeneo ? " (reúne partidos distintos)" : ""}`),
           el("td", { class: "num" }, `${((100 * o.novota) / o.total).toFixed(1)}%`),
           el("td", { class: "num" }, fmt(porGrupoAus.get(g.siglas) || 0)));
       })))));
@@ -779,7 +779,7 @@ VISTAS.causas = async (q) => {
   const causas = leerCausas();
   const cont = el("div", {}, subnav(NAV_ACTIVISMO, "causas", q),
     el("h2", {}, "Mis causas"),
-    el("p", { class: "sub" }, "Una causa es un seguimiento guardado: un texto, un tema o una etiqueta. Para cada causa ves todo lo votado, las novedades desde tu última visita y un scorecard en el que tú decides qué voto era el favorable. Todo se guarda solo en este navegador."));
+    el("p", { class: "sub" }, "Una causa es un asunto que quieres seguir, buscado por texto, tema o etiqueta. En cada una ves lo que se ha votado y lo nuevo desde tu última visita, y puedes puntuar a grupos y diputados marcando tú qué voto te parecía bien. Se guarda solo en este navegador."));
   const form = el("form", { class: "card", onsubmit: (e) => {
     e.preventDefault();
     const f = leerFormulario(form);
@@ -811,7 +811,7 @@ VISTAS.causas = async (q) => {
         el("div", {}, el("div", { class: "titulo" }, c.nombre), el("div", { class: "detalle" }, criteriosTexto(c)),
           el("div", { class: "badges" }, el("span", { class: "badge" }, `${fmt(d.asuntos.length)} asuntos`), el("span", { class: "badge" }, `${fmt(d.votaciones.length)} votaciones`),
             nuevas ? el("span", { class: "badge ok" }, `${nuevas} nuevas desde tu última visita`) : null,
-            marcadas ? el("span", { class: "badge" }, `scorecard: ${marcadas} votaciones marcadas`) : null)),
+            marcadas ? el("span", { class: "badge" }, `puntuación: ${marcadas} votaciones marcadas`) : null)),
         el("div", { class: "small muted" }, `Creada el ${fecha(c.creada)}`, c.ultimaVisita ? el("div", {}, `Última visita: ${fecha(c.ultimaVisita)}`) : null));
     })));
   } else {
@@ -845,12 +845,12 @@ VISTAS.causa = async (q) => {
         if (guardarCausas(causas)) irA("causa", { c: c.id }); else alert("Este navegador no permite guardar datos locales.");
       } }, "Guardar causa"),
       guardada ? el("button", { class: "boton", onclick: () => {
-        if (!confirm(`¿Borrar la causa «${causa.nombre}» y su scorecard?`)) return;
+        if (!confirm(`¿Borrar la causa «${causa.nombre}» y sus marcas?`)) return;
         guardarCausas(causas.filter((c) => c.id !== causa.id));
         irA("causas", {});
       } }, "Borrar causa") : null,
       el("button", { class: "boton", onclick: () => exportarCausaCSV(causa, d) }, "⬇ Votaciones en CSV"),
-      el("button", { class: "boton", onclick: () => exportarScorecardCSV(causa, d) }, "⬇ Scorecard en CSV")));
+      el("button", { class: "boton", onclick: () => exportarScorecardCSV(causa, d) }, "⬇ Puntuación en CSV")));
 
   if (!d.asuntos.length) { cont.append(el("div", { class: "vacio" }, "Ningún asunto votado coincide con estos criterios.")); return cont; }
   const sale = d.asuntos.filter((x) => SALE_RES.has(x.resultado_final)).length;
@@ -859,7 +859,7 @@ VISTAS.causa = async (q) => {
     stat("Asuntos votados", fmt(d.asuntos.length), `${pct(sale, d.asuntos.length)}% salen adelante`),
     stat("Votaciones decisivas", fmt(d.votaciones.length), d.votaciones.length === 400 ? "se muestran las 400 más recientes" : "nominales"),
     stat("Novedades", anterior ? fmt(nuevas.length) : "—", anterior ? `desde tu última visita (${fecha(anterior)})` : "primera visita"),
-    stat("Scorecard", fmt(Object.keys(marcas).length), "votaciones marcadas por ti")));
+    stat("Puntuación", fmt(Object.keys(marcas).length), "votaciones marcadas por ti")));
 
   // Scorecard por grupo.
   const marcadas = d.votaciones.filter((v) => marcas[v.id]).map((v) => ({ id: v.id, favorable: marcas[v.id] }));
@@ -870,7 +870,7 @@ VISTAS.causa = async (q) => {
     pGrupo.set(s, o);
   }
   const score = (o) => (o.bien + o.mal + (o.otro || 0) + (o.abst || 0) ? Math.round((100 * o.bien) / (o.bien + o.mal + (o.otro || 0) + (o.abst || 0))) : 0);
-  const cardScore = el("div", { class: "card", style: "margin-top:16px" }, el("h3", {}, "Scorecard"),
+  const cardScore = el("div", { class: "card", style: "margin-top:16px" }, el("h3", {}, "Puntuación"),
     el("p", { class: "small muted" }, "Marca en la tabla de abajo, votación a votación, cuál era el voto favorable para tu causa. La puntuación es el porcentaje de esas votaciones en que el grupo o diputado votó como tú marcaste (abstenerse o dividirse cuenta como no coincidir). Refleja tu criterio, no una valoración de esta web."),
     marcadas.length ? null : el("p", { class: "muted" }, "Todavía no has marcado ninguna votación."));
   if (marcadas.length) {
@@ -903,7 +903,7 @@ VISTAS.causa = async (q) => {
       el("h3", {}, "Votación a votación"),
       el("div", { class: "small" },
         el("button", { class: "boton", onclick: () => { for (const v of vista.votaciones) marcas[v.id] = "si"; guardarMarcas(); estadoRuta.clave = ""; render(); } }, "Marcar las de esta página «a favor»"), " ",
-        el("button", { class: "boton", onclick: () => { if (confirm("¿Quitar todas las marcas del scorecard?")) { causa.marcas = {}; guardarMarcas(); estadoRuta.clave = ""; render(); } } }, "Quitar marcas"))),
+        el("button", { class: "boton", onclick: () => { if (confirm("¿Quitar todas las marcas?")) { causa.marcas = {}; guardarMarcas(); estadoRuta.clave = ""; render(); } } }, "Quitar marcas"))),
     nuevas.length ? el("p", { class: "small" }, el("span", { class: "badge ok" }, `${nuevas.length} nuevas`), " desde tu última visita: ", nuevas.slice(0, 5).map((v) => `${fecha(v.fecha)} ${tituloCorto(v.titulo || v.texto_expediente, 70)}`).join(" · ")) : null,
     el("p", { class: "small muted" }, "✓ a favor de la iniciativa, ✗ en contra, ~ abstención, ± grupo dividido. En «Voto favorable» indica qué habría querido tu causa."),
     matrizVotos(vista, columnas, { marcas, alMarcar: (id, valor) => { if (valor) marcas[id] = valor; else delete marcas[id]; guardarMarcas(); estadoRuta.clave = ""; render(); } }),
@@ -925,7 +925,7 @@ function exportarScorecardCSV(causa, d) {
   const marcadas = d.votaciones.filter((v) => (causa.marcas || {})[v.id]).map((v) => ({ id: v.id, favorable: causa.marcas[v.id] }));
   if (!marcadas.length) { alert("Marca primero alguna votación con su voto favorable."); return; }
   const dips = [...puntuacionDiputados(marcadas).values()];
-  descargarCSV(`scorecard-${(causa.nombre || "causa").replace(/[^\p{L}\p{N}]+/gu, "-")}-${hoyISO()}.csv`,
+  descargarCSV(`puntuacion-${(causa.nombre || "causa").replace(/[^\p{L}\p{N}]+/gu, "-")}-${hoyISO()}.csv`,
     ["diputado", "grupo", "legislatura", "como_la_causa", "en_contra", "abstenciones", "sin_votar", "puntuacion"],
     dips.map((o) => [o.nombre, o.grupo ? siglas(o.leg, o.grupo) : "", romano(o.leg), o.bien, o.mal, o.abst, o.ausente,
       o.bien + o.mal + o.abst ? Math.round((100 * o.bien) / (o.bien + o.mal + o.abst)) : ""]));
@@ -963,7 +963,7 @@ VISTAS.viene = async (q) => {
   const legActual = META.legislaturas.filter((l) => l.cuerpo === "congreso").at(-1).id;
   const cont = el("div", {}, subnav(NAV_ACTIVISMO, "viene", q),
     el("h2", {}, "Qué viene"),
-    el("p", { class: "sub" }, `Proyectos y proposiciones de ley que siguen abiertos en la Leg. ${romano(legActual)}, con su fase y sus plazos según los datos abiertos del Congreso (datos del ${fecha(META.totales.generado.slice(0, 10))}; se actualizan con python -m escrutinio iniciativas y web). Los plazos de enmiendas son las ventanas para hacer llegar propuestas a los grupos.`),
+    el("p", { class: "sub" }, `Proyectos y proposiciones de ley que siguen abiertos en la Leg. ${romano(legActual)}, con su fase y sus plazos según los datos abiertos del Congreso (datos del ${fecha(META.totales.generado.slice(0, 10))}). Mientras el plazo de enmiendas está abierto, se pueden hacer llegar propuestas a los grupos.`),
     formFiltros([
       el("input", { type: "search", name: "q", value: q.q || "", placeholder: "Buscar en títulos, resúmenes y etiquetas" }),
       multiSelect("tema", optTemas(), q.tema, "Cualquier tema", "temas"),

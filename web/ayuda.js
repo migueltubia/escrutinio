@@ -9,13 +9,13 @@ const AYUDA = {
   resumen: {
     titulo: "Resumen",
     texto: `
-Panorama general: cuánto se vota en el Pleno, qué sale adelante, de qué temas y cómo cambia la actividad con el tiempo.
+Cuánto se vota en el Pleno, qué sale adelante, de qué temas y cómo cambia la actividad con el tiempo.
 
 ### Cómo se lee
 - **Cifras de arriba**: votaciones nominales, votos individuales de diputados, diputados distintos y fichas de asuntos.
 - **Lo que se vota y lo que se aprueba**: asuntos que llegaron a votarse, por tipo, y cómo acabaron. En leyes y decretos-leyes cuenta el resultado oficial de su tramitación (una ley se vota muchas veces); en PNL y mociones, el de su votación.
 - **Asuntos votados por tema**: cada asunto tiene un tema principal de una lista cerrada de 23.
-- **Votaciones por mes**: pasa el ratón (o toca) una columna para ver el total y cuántas fueron ajustadas. Los picos de otoño son los Presupuestos, con cientos de votaciones de enmiendas.
+- **Votaciones por mes**: pasa el ratón (o toca) una columna para ver el total y cuántas fueron ajustadas. Los picos de otoño suelen ser los Presupuestos, que llevan cientos de votaciones de enmiendas.
 - **Análisis**: comentario de las estadísticas que calcula la web.
 
 ### Filtros
@@ -75,7 +75,7 @@ Compara los 23 temas: cuánto se vota de cada uno y cuánto sale adelante.
 
 ### Cómo se lee
 - **Éxito por tema**: asuntos votados y porcentaje aprobado, separando lo que tiene fuerza de ley (leyes y decretos) de lo declarativo (PNL y mociones). Toca un tema para analizarlo a fondo, con quién propone y quién lo consigue.
-- **Etiquetas más frecuentes**: palabras clave que captan la actualidad (toca una para buscarla).
+- **Etiquetas más frecuentes**: palabras que se repiten en los asuntos y ayudan a encontrar cosas concretas (toca una para buscarla).
 - **Leyes que más se intenta modificar**: normas citadas en los títulos de lo votado.
 
 ### Filtros
@@ -172,7 +172,7 @@ Qué prometió cada partido en su programa para las elecciones generales y qué 
   comparar: {
     titulo: "Comparar grupos",
     texto: `
-Pone a dos o más grupos frente a frente en los mismos asuntos, tema a tema y legislatura a legislatura, para comprobar con los votos lo que dice cada uno.
+Compara cómo votan dos o más grupos en los mismos asuntos, por temas y por legislaturas.
 
 ### Cómo se lee
 - **La frase de arriba**: en cuántos asuntos votaron lo mismo, distinto o «en parte» (asuntos votados por puntos en los que coincidieron en unos y no en otros). Con más de dos grupos, además, la coincidencia de cada pareja.
@@ -232,8 +232,8 @@ Qué combinaciones de grupos forman las mayorías que aprueban y las que tumban.
 Sitúa a los grupos según cómo votan y mide si el Congreso está más o menos polarizado.
 
 ### Cómo se lee
-- **Mapa**: dos grupos están cerca si votan igual a menudo. El tamaño del punto es su número de diputados. Cada eje lleva en sus extremos lo que mejor lo explica en los datos: cuánto se parece el voto de un grupo al del PP frente al del PSOE, cuántas veces se suma cuando PSOE y PP votan igual o cuántas veces vota con el lado ganador. Debajo se indica qué parte de las diferencias explica cada eje y cuánto encaja el indicador (correlación: 1 es un encaje perfecto).
-- **Polarización por trimestre**: 0% si todos los grupos votan igual, 100% si cada par vota distinto (ponderado por diputados). Las líneas verticales marcan el inicio de cada legislatura.
+- **Mapa**: dos grupos están cerca si votan igual a menudo. El tamaño del punto es su número de diputados. Los nombres en los extremos de cada eje son una pista de lo que separa a los grupos: si su voto se parece más al del PP o al del PSOE, si se suman cuando PSOE y PP votan igual o si suelen votar con el lado que gana. Debajo pone cuánto de las diferencias recoge cada eje y cuánto se ajusta esa pista (de 0 a 1; cuanto más cerca de 1, mejor).
+- **Polarización por trimestre**: 0% si todos los grupos votan igual, 100% si cada uno vota distinto de los demás (cuentan más los grupos con más diputados). Las líneas verticales marcan el inicio de cada legislatura.
 - **Amplio acuerdo**: votaciones en que el 80% o más de los votos fue en el mismo sentido. **Ajustadas**: resueltas por 10 votos o menos.
 
 ### Filtros
@@ -289,7 +289,7 @@ Sigue los asuntos que te importan y puntúa a grupos y diputados con tu propio c
 
 ### Cómo se usa
 - Crea una **causa** con un nombre y lo que quieres seguir: un texto (p. ej. «alquiler»), uno o varios temas o etiquetas, y las legislaturas.
-- Cada causa muestra todo lo votado que encaja, las **novedades desde tu última visita** y un **scorecard**.
+- Cada causa muestra todo lo votado que encaja, las **novedades desde tu última visita** y una **puntuación** de grupos y diputados.
 - **Ideas para empezar**: abre una de las etiquetas más frecuentes como causa sin guardarla.
 
 ### Ten en cuenta
@@ -297,15 +297,15 @@ Sigue los asuntos que te importan y puntúa a grupos y diputados con tu propio c
 `,
   },
   causa: {
-    titulo: "Una causa y su scorecard",
+    titulo: "Una causa y su puntuación",
     texto: `
 Todas las votaciones de tu causa y una puntuación de grupos y diputados según tu criterio.
 
 ### Cómo se usa
 - En **Votación a votación**, marca en cada votación qué voto era el favorable para tu causa («A favor» o «En contra»). Puedes marcar toda la página de una vez.
-- El **scorecard** calcula, para cada grupo y diputado, el porcentaje de las votaciones marcadas en que votó como marcaste. Abstenerse o dividirse cuenta como no coincidir.
+- La **puntuación** calcula, para cada grupo y diputado, el porcentaje de las votaciones marcadas en que votó como marcaste. Abstenerse o dividirse cuenta como no coincidir.
 - **¿Qué prometieron sobre esto?**: al pulsar, las promesas concretas de los programas electorales que tienen que ver con la causa (mismo tema, etiqueta o texto), por partido, con lo que votó después cada uno y el enlace a la página del programa.
-- **Guardar causa** la conserva en este navegador; los botones de CSV descargan las votaciones y el scorecard.
+- **Guardar causa** la conserva en este navegador; los botones de CSV descargan las votaciones y la puntuación.
 
 ### Ten en cuenta
 - La puntuación refleja **tu** criterio, no una valoración de esta web.
@@ -359,7 +359,7 @@ const SECCIONES_WEB = [
   ["iniciativas", "Iniciativas", "Una ficha por asunto votado: qué es, quién lo propone, de qué trata y cómo acabó."],
   ["temas", "Temas", "Éxito por tema y quién consigue sacar adelante qué. Cada tema tiene su análisis a fondo."],
   ["grupos", "Grupos", "Afinidad entre grupos, quién decide las votaciones y el perfil de cada partido o bloque."],
-  ["comparar", "Comparar grupos", "Dos o más partidos frente a frente, tema a tema: dónde votan igual, dónde no y cuánto apoya cada uno lo que presentan los demás."],
+  ["comparar", "Comparar grupos", "Cómo votan dos o más partidos en los mismos asuntos y cuánto apoya cada uno lo que presentan los demás."],
   ["comparar-programas", "Comparar programas", "Los programas comparados entre sí: qué quiere quitar y qué añadir cada partido y cuánto pesa cada tema."],
   ["coaliciones", "Coaliciones ganadoras", "Qué combinaciones de grupos aprueban y tumban cada cosa."],
   ["mapa", "Mapa ideológico", "Dónde se sitúa cada grupo según sus votos y cómo evoluciona la polarización."],
@@ -458,7 +458,7 @@ Los votos, los totales y los resultados son siempre los oficiales. Lo que calcul
 - **Filtros**: todos admiten varias opciones a la vez. Los selectores se aplican al cerrarlos (tocando fuera o con «Aplicar»).
 - **Enlaces para compartir**: la dirección de la página guarda los filtros; cópiala para compartir exactamente lo que ves.
 - **Detalle**: toca cualquier votación, iniciativa o diputado para ver su ficha completa, con el título oficial entero.
-- **Tooltips**: pasa el ratón (o toca en el móvil) por barras, celdas y etiquetas para ver las cifras.
+- **Cifras al pasar el ratón**: pasa el ratón (o toca en el móvil) por barras, celdas y etiquetas para ver las cifras.
 - **CSV**: en Votaciones, Qué viene y Mis causas puedes descargar los datos para una hoja de cálculo.
 - **Móvil**: las secciones están en la barra de abajo; Comparar, Análisis, Activismo y esta ayuda, en «Más».
 - **Tema claro u oscuro**: botón ◐ arriba a la derecha.`)),

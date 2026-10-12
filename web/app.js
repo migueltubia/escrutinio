@@ -1131,14 +1131,14 @@ VISTAS.resumen = async (q) => {
       el("h2", {}, "Qué se ha votado en el Congreso desde 2012"),
       el("p", { class: "sub" }, `Votaciones nominales del Pleno de la ${META.legislaturas.map((l) => l.romano).join(", ")} legislaturas, `,
         `del ${fecha(desde)} al ${fecha(hasta)}. `,
-        "La IX legislatura y anteriores no tienen votaciones nominales en los datos abiertos del Congreso, así que no hay 20 años completos: hay los que existen. ",
-        "Los datos (votos, totales, resultados) son oficiales. ",
+        "De antes de 2012 el Congreso no publica en abierto el voto de cada diputado, así que los datos empiezan ahí. ",
+        "Los votos, los totales y los resultados son los oficiales. ",
         "Con el selector de ámbito de arriba puedes añadir parlamentos autonómicos y otras instituciones."));
   } else {
     cont.append(
       el("h2", {}, `Qué se ha votado · ${nombreAmbito()}`),
       el("p", { class: "sub" }, `Votaciones de los plenos de ${META.cuerpos.length === 1 ? "esta institución" : `${META.cuerpos.length} instituciones`}, del ${fecha(desde)} al ${fecha(hasta)}. `,
-        "Cada fuente publica un nivel de detalle distinto (voto de cada diputado, voto de cada grupo o solo el recuento o el resultado) y el análisis usa lo que hay: la tabla de abajo lo resume. ",
+        "No todas las instituciones publican lo mismo. Unas dan el voto de cada diputado, otras el de cada grupo y otras solo el recuento o el resultado. En la tabla de abajo se ve qué hay de cada una. ",
         "Votos, totales y resultados son los que publica cada fuente, que se enlaza desde cada votación."),
       avisoFuentes(AMBITO.cuerpos) || "",
       tablaCobertura());
@@ -1188,7 +1188,7 @@ VISTAS.resumen = async (q) => {
   const temas = {};
   for (const r of res.por_tema) if (r.tema && enLegs(r.legislatura)) temas[r.tema] = (temas[r.tema] || 0) + r.n;
   const itemsTema = Object.entries(temas).sort((a, b) => b[1] - a[1]).map(([t, n]) => ({
-    label: temaNombre(t), v: n, onclick: () => irA("tema", { leg, tema: t }), tip: () => "Clic para ver cómo vota cada grupo en este tema",
+    label: temaNombre(t), v: n, onclick: () => irA("tema", { leg, tema: t }), tip: () => "Pulsa para ver cómo vota cada grupo en este tema",
   }));
 
   cont.append(el("div", { class: "grid g2" },
@@ -1222,7 +1222,7 @@ VISTAS.resumen = async (q) => {
     tick: (m.mes.endsWith("-01") && (meses.length < 80 || +m.mes.slice(0, 4) % 2 === 0)) || (i === 0 && !m.mes.endsWith("-12")) ? m.mes.slice(0, 4) : null,
   }));
   cont.append(el("div", { class: "card", style: "margin-top:16px" }, el("h3", {}, "Votaciones por mes"),
-    el("p", { class: "small muted" }, "Los picos de otoño son los Presupuestos, con cientos de votaciones de enmiendas."),
+    el("p", { class: "small muted" }, "Los picos de otoño suelen ser los Presupuestos, que llevan cientos de votaciones de enmiendas."),
     columnas(datos, { etiqueta: "Votaciones por mes" })));
 
   // Informe (es sobre el Congreso: solo si está en el ámbito).
@@ -1389,11 +1389,11 @@ VISTAS.temas = async (q) => {
       el("td", { class: "num" }, fmt(t.leyV)), el("td", { class: "num" }, t.leyV ? `${pct(t.leyA, t.leyV)}%` : "—"),
       el("td", { class: "num" }, fmt(t.declV)), el("td", { class: "num" }, t.declV ? `${pct(t.declA, t.declV)}%` : "—")))));
   cont.append(el("div", { class: "card" }, el("h3", {}, "Éxito por tema"),
-    el("p", { class: "small muted" }, "Clic en un tema para ver cómo vota cada grupo, quién lo propone y lo consigue, y la votación a votación."), tabla));
+    el("p", { class: "small muted" }, "Pulsa un tema para ver cómo vota cada grupo y quién saca adelante sus propuestas."), tabla));
 
   cont.append(el("div", { class: "grid g2", style: "margin-top:16px" },
     el("div", { class: "card" }, el("h3", {}, "Etiquetas más frecuentes"),
-      el("p", { class: "small muted" }, "Etiquetas más usadas: captan la actualidad que la lista de temas no recoge."),
+      el("p", { class: "small muted" }, "Las etiquetas que más se repiten. Sirven para encontrar asuntos concretos que la lista de temas no distingue."),
       el("div", { class: "chips" }, et.etiquetas.map((e) => el("a", { class: "chip", href: `#/iniciativas?${new URLSearchParams({ ...(leg ? { leg } : {}), etiqueta: e.etiqueta })}` }, `#${e.etiqueta}`, el("span", { class: "muted" }, ` ${e.n}`))))),
     el("div", { class: "card" }, el("h3", {}, "Leyes que más se intenta modificar"),
       el("p", { class: "small muted" }, "Normas citadas como afectadas en los títulos de lo votado, todas las legislaturas."),
@@ -1407,7 +1407,7 @@ VISTAS.grupos = async (q) => {
   const leg = legs.join(",");
   const [af, dec] = await Promise.all([api("afinidad", { leg, tema: temas.join(",") }), api("decisivos", { leg })]);
   const cont = el("div", {}, el("h2", {}, "Grupos"),
-    el("p", { class: "sub" }, "Afinidad: en qué porcentaje de votaciones de fondo (PNL, mociones, tomas en consideración, totalidades, conjuntos, convalidaciones…) dos grupos votan lo mismo. Se excluyen las enmiendas parciales y lo votado por asentimiento. Con varias legislaturas, cada partido suma las de todas. Para poner dos o más partidos frente a frente tema a tema, usa ",
+    el("p", { class: "sub" }, "Afinidad: en qué porcentaje de votaciones de fondo (PNL, mociones, tomas en consideración, totalidades, conjuntos, convalidaciones…) dos grupos votan lo mismo. Se excluyen las enmiendas parciales y lo votado por asentimiento. Con varias legislaturas, cada partido suma las de todas. Para comparar dos o más partidos tema a tema, usa ",
       el("a", { href: `#/comparar${leg ? "?leg=" + leg : ""}` }, "Comparar"), "."),
     formFiltros([
       multiSelect("leg", optLegs(), leg, "Legislatura", "legislaturas"),
@@ -1431,7 +1431,7 @@ VISTAS.grupos = async (q) => {
           `${Math.round(100 * r)}% de coincidencia`, `${a.siglas} y ${b.siglas}`, `${fmt(p.coinciden)} de ${fmt(p.total)} votaciones`);
       }))))));
   cont.append(el("div", { class: "card" }, el("h3", {}, `Afinidad entre grupos · ${textoLegs(legs)}${temas.length ? " · " + textoTemas(temas) : ""}`), heat,
-    el("p", { class: "small muted" }, "Más oscuro = votan igual más a menudo. El Grupo Mixto reúne partidos distintos y su «voto» es el mayoritario entre sus miembros.")));
+    el("p", { class: "small muted" }, "Cuanto más oscuro, más a menudo votan igual. El Grupo Mixto reúne partidos distintos y su «voto» es el mayoritario entre sus miembros.")));
 
   // Grupo decisivo.
   const cuenta = new Map();
@@ -1563,7 +1563,7 @@ VISTAS.tema = async (q) => {
   const nombresFamilia = q.familia ? optFamiliasAnalisis().find(([k]) => k === q.familia)?.[1].toLowerCase() : "asuntos";
   cont.append(el("div", { class: "grid g2", style: "margin-top:16px" },
     el("div", { class: "card" }, el("h3", {}, "Cómo vota cada grupo"),
-      el("p", { class: "small muted" }, `Voto de cada grupo en la votación decisiva de cada asunto (${nombresFamilia}), sin contar lo que presenta el propio grupo ni, mientras gobierna, lo que presenta el Gobierno: eso casi siempre lo apoya. Cada asunto cuenta una vez: si se votó por puntos, sus puntos se reparten el peso. El número es el porcentaje a favor y, entre paréntesis, la diferencia con su media en todos los temas con los mismos filtros. En las enmiendas a la totalidad el voto se invierte: votar sí a la devolución es votar en contra del proyecto. Clic en un grupo para ver su perfil.`),
+      el("p", { class: "small muted" }, `Voto de cada grupo en la votación decisiva de cada asunto (${nombresFamilia}), sin contar lo que presenta el propio grupo ni, mientras gobierna, lo que presenta el Gobierno: eso casi siempre lo apoya. Cada asunto cuenta una vez: si se votó por puntos, sus puntos se reparten el peso. El número es el porcentaje a favor y, entre paréntesis, la diferencia con su media en todos los temas con los mismos filtros. En las enmiendas a la totalidad el voto se invierte: votar sí a la devolución es votar en contra del proyecto. Pulsa un grupo para ver su perfil.`),
       leyendaApoyo(), itemsApoyo.length ? barrasH(itemsApoyo, { segs: true, normalizar: true, formato: fmtAs })
         : el("p", { class: "muted" }, "Ningún grupo votó al menos 3 asuntos presentados por otros con estos filtros.")),
     tarjetaProponentes(d.asuntos)));
@@ -1582,7 +1582,7 @@ VISTAS.tema = async (q) => {
   const topEt = [...et.entries()].sort((a, b) => b[1] - a[1]).slice(0, 40);
   if (topEt.length) {
     cont.append(el("div", { class: "card", style: "margin-top:16px" }, el("h3", {}, "Subtemas (etiquetas)"),
-      el("p", { class: "small muted" }, "Clic en una etiqueta para limitar todo el análisis a esos asuntos."),
+      el("p", { class: "small muted" }, "Pulsa una etiqueta para quedarte solo con esos asuntos."),
       el("div", { class: "chips" }, topEt.map(([e, n]) => el("a", {
         class: "chip" + (e === q.etiqueta ? " decisivo" : ""), href: "#/tema?" + new URLSearchParams({ ...Object.fromEntries(Object.entries(base).filter(([, v]) => v)), etiqueta: e }),
       }, `#${e}`, el("span", { class: "muted" }, ` ${n}`))))));
@@ -1596,7 +1596,7 @@ VISTAS.tema = async (q) => {
         type: "checkbox", checked: q.ajustadas === "1",
         onchange: (e) => irA("tema", { ...q, tema, ajustadas: e.target.checked ? "1" : "", pagina: "" }),
       }), "Solo ajustadas (±10 votos)")),
-    el("p", { class: "small muted" }, "Posición de cada grupo respecto a la iniciativa en su votación decisiva: ✓ a favor, ✗ en contra, ~ abstención, ± grupo dividido. Clic en una fila para ver el voto nominal."),
+    el("p", { class: "small muted" }, "Posición de cada grupo respecto a la iniciativa en su votación decisiva: ✓ a favor, ✗ en contra, ~ abstención, ± grupo dividido. Pulsa una fila para ver qué votó cada diputado."),
     matrizVotos(d, [...todo.values()].filter((o) => o.n >= 3).sort((a, b) => b.n - a.n).map((o) => o.siglas).slice(0, 14)),
     paginacion(d.totalMatriz, d.pagina, d.tam, (p) => irA("tema", { ...q, tema, pagina: p }))));
   return cont;
@@ -1719,7 +1719,7 @@ VISTAS.grupo = async (q) => {
   }));
   cont.append(el("div", { class: "grid g2", style: "margin-top:16px" },
     el("div", { class: "card" }, el("h3", {}, "Cómo vota en cada tema"),
-      el("p", { class: "small muted" }, `Porcentaje de asuntos en que votó a favor en la votación decisiva y, entre paréntesis, diferencia con su media (${media}%). Cada asunto cuenta una vez aunque se votara por puntos. No cuenta lo que presenta el propio grupo ni, mientras gobierna, lo que presenta el Gobierno, que casi siempre apoya. Clic en un tema para analizarlo.`),
+      el("p", { class: "small muted" }, `Porcentaje de asuntos en que votó a favor en la votación decisiva y, entre paréntesis, diferencia con su media (${media}%). Cada asunto cuenta una vez aunque se votara por puntos. No cuenta lo que presenta el propio grupo ni, mientras gobierna, lo que presenta el Gobierno, que casi siempre apoya. Pulsa un tema para verlo en detalle.`),
       leyendaApoyo(), itemsTema.length ? barrasH(itemsTema, { segs: true, normalizar: true, formato: fmtAs }) : el("p", { class: "muted" }, "Sin votaciones."),
       el("p", { class: "small" }, el("a", { href: "#/comparar?" + new URLSearchParams(Object.entries({ g: gs.join(","), leg: q.leg, familia: q.familia }).filter(([, v]) => v)) }, "Compáralo con otros grupos, tema a tema →"))),
     el("div", { class: "card" }, el("h3", {}, "Sus iniciativas, por tema"),
@@ -1796,7 +1796,7 @@ function bloqueFicha(f) {
     return el("div", { class: "ficha" },
       el("div", { class: "badges" }, el("span", { class: "badge ia" }, temaNombre(f.tema_principal)),
         (f.temas_secundarios || []).map((t) => el("span", { class: "badge ia" }, temaNombre(t)))),
-      el("p", { class: "procedencia" }, `Tema provisional según la ${f.fuente_texto.replace("comisión competente: ", "")}. Coincide en torno al 90% con el tema definitivo; el resumen y las etiquetas llegarán con la ficha completa.`));
+      el("p", { class: "procedencia" }, `Tema provisional según la ${f.fuente_texto.replace("comisión competente: ", "")}. Suele acertar, pero puede cambiar. El resumen y las etiquetas llegarán en unos días.`));
   }
   return el("div", { class: "ficha" },
     el("p", {}, f.resumen),
@@ -1865,7 +1865,7 @@ async function panelVotacion(id) {
   if (v.asentimiento) explica = "Aprobada por asentimiento o unanimidad, sin recuento.";
   else if (v.a_favor === null) explica = `${res}. La fuente no publica el recuento de votos.`;
   else if (v.mayoria === "absoluta") explica = `${res}: necesitaba mayoría absoluta (${mayoriaAbs(leg)} síes) y obtuvo ${v.a_favor}.`;
-  else explica = `${res}: ${v.a_favor} a favor frente a ${v.en_contra ?? 0} en contra (mayoría simple)${v.a_favor === (v.en_contra ?? 0) ? (v.resultado === "aprobada" ? "; el empate lo deshace el voto de calidad" : "; el empate se entiende rechazado") : ""}.`;
+  else explica = `${res}: ${v.a_favor} a favor y ${v.en_contra ?? 0} en contra (mayoría simple)${v.a_favor === (v.en_contra ?? 0) ? (v.resultado === "aprobada" ? "; el empate lo deshace el voto de calidad" : "; el empate se entiende rechazado") : ""}.`;
   const info = infoLeg(leg);
   const territorial = info.cuerpo && info.cuerpo !== "congreso";
   const leidaDeActa = /llm/.test(v.fuente || "");

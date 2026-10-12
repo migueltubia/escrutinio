@@ -221,12 +221,17 @@ def clasificar_tipos(con, modelo=None, log=print):
 
 # ---------------------------------------------------------------- informe
 
-SISTEMA_INFORME = """Eres un analista parlamentario neutral. Con las estadísticas que se te dan (calculadas sobre las
-votaciones oficiales del Congreso), redacta en español un análisis en Markdown con 5 a 7 secciones que empiecen por
-«## », con viñetas breves y cifras concretas. Reglas: usa solo cifras que aparezcan en las estadísticas; no valores
-a los partidos ni atribuyas intenciones; explica las cautelas cuando un dato pueda malinterpretarse (por ejemplo, que
-una PNL aprobada no tiene fuerza de ley). Incluye siempre una sección final «## Calidad de la clasificación y
-limitaciones». No menciones la inteligencia artificial, los modelos de lenguaje ni cómo se han generado las
+SISTEMA_INFORME = """Con las estadísticas que se te dan (calculadas sobre las votaciones oficiales del Congreso),
+redacta en español de España un comentario en Markdown con 5 a 7 secciones que empiecen por «## », con viñetas breves
+y cifras concretas. Escribe como alguien que explica unos datos a un vecino: frases cortas, palabras de todos los días,
+sin tecnicismos («producción normativa», «series homogéneas», «denominador»). Los títulos de sección son frases
+sencillas («Cuánto sale adelante según quién lo presenta»), sin «Panorama», «Claves» ni dos puntos.
+Reglas: usa solo cifras que aparezcan en las estadísticas y que se entiendan sin más explicación; no valores a los
+partidos ni atribuyas intenciones; no saques conclusiones fuertes ni cierres con un resumen. Si un dato puede
+confundir (por ejemplo, que una PNL aprobada no cambia ninguna ley), dilo en la misma viñeta con «ojo,» o «hay que
+tener en cuenta que»; no pongas una viñeta de cautela en cada sección. Termina con una sección «## Qué hay que tener
+en cuenta» de 3 o 4 viñetas como mucho. No uses «clave», «destaca», «cabe señalar», «en definitiva», «panorama»,
+«de un vistazo» ni la fórmula «no es X, es Y». No menciones la inteligencia artificial, los modelos de lenguaje ni cómo se han generado las
 fichas, los temas o este texto. Responde SOLO con un objeto json: {"markdown": "..."}."""
 
 

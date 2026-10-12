@@ -49,8 +49,10 @@ relación:
   «planes de choque» pueden proponer cosas distintas u opuestas).
 - ninguna: no tratan la misma medida.
 Los trámites sin contenido propio (prórrogas de plazo, creación de subcomisiones o ponencias, peticiones de informe o
-de comparecencia) no avanzan ni retroceden por sí mismos: son relacionada. Ante una duda razonable entre misma o contraria y relacionada, elige relacionada. Justifica en una o dos frases
-neutras qué propone cada uno y por qué eliges esa relación. Responde SOLO con un objeto json:
+de comparecencia) no avanzan ni retroceden por sí mismos: son relacionada. Ante una duda razonable entre misma o contraria y relacionada, elige relacionada. Justifica en una frase
+corta (30 palabras como mucho) y con palabras corrientes qué haría la iniciativa si saliera adelante y por qué eliges
+esa relación. No atribuyas intenciones («busca», «pretende») ni uses «precisamente», «directamente», «plenamente»,
+«claramente», «en línea con», «lo que» o «por lo que». No repitas el compromiso: el lector ya lo ve al lado. Responde SOLO con un objeto json:
 {"pares": [{"id": "p1", "relacion": "relacionada", "justificacion": "…"}]}"""
 
 # Los programas se nombran a sí mismos («desde el PSOE…»): se quita antes de enseñárselo al modelo.

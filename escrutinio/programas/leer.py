@@ -57,7 +57,9 @@ elecciones generales. Extrae, en el orden en que aparecen, los compromisos que e
 
 Para cada compromiso devuelve:
 - texto: el compromiso en una sola frase, en infinitivo y sin sujeto ni nombre de partido («Derogar la Ley X»,
-  «Bajar el IVA de los alimentos básicos al 0 %», «Crear una agencia estatal de salud pública»). Sin valoraciones.
+  «Bajar el IVA de los alimentos básicos al 0 %», «Crear una agencia estatal de salud pública»). Sin valoraciones,
+  con palabras corrientes y sin el lenguaje del partido («blindar», «invasión competencial», «apostar por»); quita el
+  porqué («ya que…», «para…») si no forma parte de la medida. La cita ya guarda la redacción original.
 - cita: el fragmento del programa que contiene el compromiso, COPIADO LITERALMENTE carácter a carácter (una o dos
   frases, como mucho 300 caracteres). No corrijas erratas, no resumas, no cambies el orden ni las mayúsculas. Si el
   programa está en catalán, euskera, gallego u otra lengua, la cita va en esa lengua, SIN TRADUCIR; el texto, las

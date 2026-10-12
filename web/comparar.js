@@ -133,7 +133,7 @@ function pesas(filas, gs, valor, { extra = null, cabeceraExtra = "", alClicar = 
       pista.append(conTip(el("span", { class: "pesas-punto" + (pocos ? " pocos" : ""), tabindex: 0,
         style: `left:${p}%;${pocos ? `border-color:${colorSiglas(g)}` : `background:${colorSiglas(g)}`}` }),
         `${Math.round(p)}% a favor`, `${g} · ${f.label}`,
-        `${fmtAs(x.si)} de ${fmtAs(x.n)} asuntos${pocos ? " · pocos casos: tómalo con cautela" : ""}`));
+        `${fmtAs(x.si)} de ${fmtAs(x.n)} asuntos${pocos ? " · son pocos casos" : ""}`));
     }
     cont.append(el("div", { class: "pesas-fila" + (alClicar ? " clic" : ""), onclick: alClicar ? () => alClicar(f) : null },
       el("div", { class: "small pesas-label", title: [f.label, f.sub].filter(Boolean).join(" · ") }, f.label,
@@ -256,10 +256,10 @@ VISTAS.comparar = async (q) => {
     const dTodo = pctDe(tot[A]) - pctDe(tot[B]), dAjeno = pctDe(ajeno[A]) - pctDe(ajeno[B]);
     const [mas, menos] = dTodo >= 0 ? [A, B] : [B, A];
     if (Math.abs(dTodo) >= 10 && Math.abs(dAjeno) <= Math.abs(dTodo) / 2) {
-      lectura = `${mas} vota a favor ${Math.abs(dTodo)} puntos más que ${menos} en todo lo votado, pero ante lo que presentan otros grupos la diferencia se queda en ${Math.abs(dAjeno)}: sale sobre todo de quién presenta los asuntos (${A} presentó ${fmt(propios[A])} y ${B}, ${fmt(propios[B])}).`;
+      lectura = `${mas} vota a favor ${Math.abs(dTodo)} puntos más que ${menos} en todo lo votado, pero ante lo que presentan otros grupos la diferencia se queda en ${Math.abs(dAjeno)}. Buena parte de la diferencia viene de cuántos asuntos presentó cada uno (${A} presentó ${fmt(propios[A])} y ${B}, ${fmt(propios[B])}).`;
     } else {
       lectura = `Ante lo que presentan otros grupos, ${A} vota a favor en el ${pctDe(ajeno[A])}% de los asuntos y ${B}, en el ${pctDe(ajeno[B])}%`
-        + (Math.abs(dAjeno) <= 3 ? ": prácticamente lo mismo." : `: ${Math.abs(dAjeno)} puntos de diferencia.`);
+        + (Math.abs(dAjeno) <= 3 ? ": casi lo mismo." : `: ${Math.abs(dAjeno)} puntos de diferencia.`);
     }
   }
   cont.append(el("div", { class: "card", style: "margin-top:16px" }, el("h3", {}, "Cuánto apoya cada uno: todo o solo lo de otros"),
@@ -317,7 +317,7 @@ VISTAS.comparar = async (q) => {
       const filas = [...porTema.entries()].filter(([, xs]) => xs.length >= 3).sort((a, b) => b[1].length - a[1].length)
         .map(([t, xs]) => ({ clave: t, label: temaNombre(t), xs }));
       nodos.push(el("h3", { style: "margin-top:12px" }, "Tema a tema"),
-        el("p", { class: "small muted" }, `Un punto por grupo: porcentaje de asuntos del tema en que votó a favor (${medida === "todo" ? "todo lo votado" : "solo lo que presentan otros grupos"}). Cuanto más separados, más distinto votan.${gs.length === 2 ? " A la derecha, en qué parte de lo votado coincidieron." : ""} Clic en un tema para compararlo a fondo.`),
+        el("p", { class: "small muted" }, `Un punto por grupo: porcentaje de asuntos del tema en que votó a favor (${medida === "todo" ? "todo lo votado" : "solo lo que presentan otros grupos"}). Cuanto más separados, más distinto votan.${gs.length === 2 ? " A la derecha, en qué parte de lo votado coincidieron." : ""} Pulsa un tema para compararlo en detalle.`),
         pesas(filas, gs, valorDe((f) => f.xs), { extra: gs.length === 2 ? (f) => igualEn(f.xs) : null, cabeceraExtra: gs.length === 2 ? "igual" : "",
           alClicar: (f) => irA("comparar", { ...base, tema: f.clave, sec: "", medida: medida === "todo" ? "todo" : "" }) }));
     }
@@ -361,7 +361,7 @@ VISTAS.comparar = async (q) => {
   };
   pintarLista();
   cont.append(el("div", { class: "card", style: "margin-top:16px" }, el("h3", {}, "Asunto a asunto"),
-    el("p", { class: "small muted" }, "Lo votado, del más reciente al más antiguo, con la posición de cada grupo respecto al asunto (✓ a favor, ✗ en contra, ~ abstención, ± grupo dividido). Si se votó por puntos, cuántas votaciones de cada. Clic en un asunto para ver el resumen, el voto nominal y la fuente oficial."),
+    el("p", { class: "small muted" }, "Lo votado, del más reciente al más antiguo, con la posición de cada grupo respecto al asunto (✓ a favor, ✗ en contra, ~ abstención, ± grupo dividido). Si se votó por puntos, cuántas votaciones de cada. Pulsa un asunto para ver el resumen, qué votó cada diputado y la fuente oficial."),
     topEt.length ? el("div", { class: "chips", style: "margin-bottom:10px" }, el("span", { class: "small muted" }, "Subtemas:"),
       topEt.map(([e, n]) => el("a", { class: "chip" + (e === q.etiqueta ? " decisivo" : ""), href: "#/comparar?" + new URLSearchParams({ ...base, etiqueta: e }) }, `#${e}`, el("span", { class: "muted" }, ` ${n}`)))) : null,
     cajaLista));

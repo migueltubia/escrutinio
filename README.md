@@ -340,7 +340,9 @@ Faltan el de Ciudadanos de 2015, que solo existe escaneado, y el de EH Bildu de 
 se ha encontrado. La XI y la XIII duraron pocos meses, así que sus programas tienen pocas iniciativas con las
 que compararse. Los de CiU, Democràcia i Llibertat, ERC y Junts están en catalán: la cita se guarda en la
 lengua del programa y el compromiso, en castellano. Los programas se añaden en
-`escrutinio/programas/registro.py` (`PROGRAMAS`). Los partidos que votan dentro del Grupo
+`escrutinio/programas/registro.py` (`PROGRAMAS`) o, sin tocar código, en `data/programas.json` (mismo
+formato, pensado para una elección nueva): la ruta del PDF se pone a mano cuando el partido lo publica,
+no se descubre sola. Los partidos que votan dentro del Grupo
 Mixto (BNG, CC, UPN, y Podemos desde diciembre de 2023) no tienen voto propio de grupo con el que
 comparar: harían falta sus diputados uno a uno.
 
@@ -493,7 +495,15 @@ Nada se inventa: si una fuente solo da el resultado, no hay totales; si solo da 
 voto por grupo. El resultado es el oficial cuando la fuente lo publica; si no, se calcula con los
 totales y la mayoría de esa cámara (sus escaños), y si ambos no cuadran la votación lleva un aviso.
 Los grupos se reconocen por el nombre que publica cada fuente (`territorial/partidos.py`) para que
-el mismo partido tenga las mismas siglas y el mismo color en todas partes.
+el mismo partido tenga las mismas siglas y el mismo color en todas partes. Un grupo que no encaje con
+ningún patrón no se pierde: sale con su propio nombre y un color neutro.
+
+Para un partido nuevo no hace falta tocar el código: se da de alta en `data/partidos.json` (patrón,
+siglas y color), que la actualización —en la nube o en local— lee al arrancar. Y para saber qué
+partidos están apareciendo sin reconocer, `python -m escrutinio partidos-pendientes` lista los grupos
+que no casan con ningún patrón, los que salen en más instituciones primero (candidatos más claros a
+ser un partido que merece la pena dar de alta). La actualización diaria también los resume al final, y
+en GitHub Actions avisa de los que aparecen en varias instituciones.
 
 Para añadir una institución basta un módulo nuevo en `escrutinio/territorial/fuentes/` que declare
 `CUERPOS` (con su número, legislaturas y escaños) y `descargar(ctx)` o `documentos(ctx)`; se prueba

@@ -139,6 +139,11 @@ def main(argv=None):
     sub.add_parser("web", help="Exporta la base de datos para la web local (web/index.html, sin servidor)")
     sub.add_parser("estado", help="Resumen de lo que hay en la base de datos")
 
+    s = sub.add_parser("partidos-pendientes",
+                       help="Grupos sin partido reconocido en data/bd (posibles partidos nuevos para dar de alta en data/partidos.json)")
+    s.add_argument("--limite", type=int, default=20, help="Máximo de filas que mostrar")
+    s.add_argument("--min-cuerpos", type=int, default=1, help="Solo los que aparezcan en al menos N instituciones")
+
     a = p.parse_args(argv)
 
     # Estos dos gestionan su propia base de datos.
@@ -176,6 +181,12 @@ def main(argv=None):
             registro.descargar(ids=a.id.split(",") if a.id else None, forzar=a.forzar, log=log)
         else:
             registro.estado()
+        return
+    if a.cmd == "partidos-pendientes":
+        # Escanea los grupos de data/bd: no hace falta la base de trabajo.
+        from .territorial.partidos import anunciar_pendientes
+
+        anunciar_pendientes(log=log, limite=a.limite, min_cuerpos=a.min_cuerpos)
         return
 
     con = db.connect()

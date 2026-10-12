@@ -1,0 +1,25 @@
+{
+  "_leeme": [
+    "Programas electorales dados de alta a mano, que se suman al catálogo de escrutinio/programas/registro.py.",
+    "Un programa se descarga y se lee UNA sola vez (no cambia tras las elecciones): no es un proceso diario,",
+    "es una curación puntual por elección. El flujo es el de siempre, con la clave de DeepSeek:",
+    "  python -m escrutinio programas-descargar   (baja y registra los PDF/HTML listados aquí y en el catálogo)",
+    "  python -m escrutinio programas-leer         (extrae los compromisos de los pendientes)",
+    "  python -m escrutinio programas-estado       (qué está leído, qué falta, qué falló y el gasto)",
+    "Cada entrada necesita al menos 'id' y 'url'; el resto ayuda a clasificar y citar:",
+    "  - id:             identificador único y estable, p. ej. 'generales-2026-salf'.",
+    "  - eleccion:       código de la elección, p. ej. 'generales-2026'.",
+    "  - fecha_eleccion: 'AAAA-MM-DD' (el día de la votación).",
+    "  - cuerpo:         institución de Escrutinio, p. ej. 'congreso'.",
+    "  - partido:        siglas del partido (que coincidan con las de data/partidos.json o la tabla base).",
+    "  - titulo:         título del documento tal como lo publica el partido.",
+    "  - url:            URL que se descarga (PDF o página web del programa).",
+    "  - origen:         'web-partido' | 'copia-prensa' | 'archivo-web' (de dónde sale la copia).",
+    "  - url_oficial:    la URL oficial si 'url' es una copia; si bajas la oficial directamente, null.",
+    "La ruta del PDF NO se descubre sola: la pones aquí cuando el partido publique su programa.",
+    "Ejemplo (cuando exista el PDF): { \"id\": \"generales-2026-salf\", \"eleccion\": \"generales-2026\",",
+    "  \"fecha_eleccion\": \"2026-11-29\", \"cuerpo\": \"congreso\", \"partido\": \"SALF\",",
+    "  \"titulo\": \"Programa electoral 2026\", \"url\": \"https://…/programa.pdf\", \"origen\": \"web-partido\", \"url_oficial\": null }"
+  ],
+  "programas": []
+}

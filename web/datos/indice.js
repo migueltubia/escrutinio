@@ -1,11 +1,11 @@
 // Generado por `python -m escrutinio web`. Ficheros de datos que carga la web, en orden.
 window.ESCRUTINIO_INDICE = {
- "generado": "2026-10-12T19:34:36+00:00",
+ "generado": "2026-10-12T20:20:04+00:00",
  "ficheros": [
   {
    "nombre": "comun",
-   "huella": "39aaa98c98fe122b",
-   "bytes": 123920
+   "huella": "da28f6a661b6eaa5",
+   "bytes": 124024
   },
   {
    "nombre": "programas",
@@ -303,14 +303,14 @@ window.ESCRUTINIO_INDICE = {
   {
    "nombre": "parl-VC/leg9",
    "cuerpo": "parl-VC",
-   "huella": "b80eafcadccf65b7",
-   "bytes": 124739
+   "huella": "a39e65501e7cfefb",
+   "bytes": 138127
   },
   {
    "nombre": "parl-VC/leg10",
    "cuerpo": "parl-VC",
-   "huella": "19332fd39e3a0b14",
-   "bytes": 207056
+   "huella": "defca5bd95a02a5f",
+   "bytes": 230852
   },
   {
    "nombre": "parl-VC/leg11",
@@ -561,14 +561,14 @@ window.ESCRUTINIO_INDICE = {
   {
    "nombre": "cabildo-lanzarote/leg12",
    "cuerpo": "cabildo-lanzarote",
-   "huella": "8eccbdde86aaf4d1",
-   "bytes": 73434
+   "huella": "41dbcdd612235d22",
+   "bytes": 79982
   },
   {
    "nombre": "consell-mallorca/leg10",
    "cuerpo": "consell-mallorca",
-   "huella": "7de8977b4375e65e",
-   "bytes": 122281
+   "huella": "555d9965e9c136ac",
+   "bytes": 123281
   },
   {
    "nombre": "ayto-alicante/leg6",
@@ -579,14 +579,14 @@ window.ESCRUTINIO_INDICE = {
   {
    "nombre": "ayto-alicante/leg7",
    "cuerpo": "ayto-alicante",
-   "huella": "ceb1a288cb43fb64",
-   "bytes": 170417
+   "huella": "38e08379abcb1403",
+   "bytes": 171741
   },
   {
    "nombre": "ayto-alicante/leg8",
    "cuerpo": "ayto-alicante",
-   "huella": "daba0565b42dce1e",
-   "bytes": 221109
+   "huella": "e4d7727eea6f1865",
+   "bytes": 221229
   },
   {
    "nombre": "ayto-alicante/leg9",
@@ -617,6 +617,12 @@ window.ESCRUTINIO_INDICE = {
    "cuerpo": "ayto-l-hospitalet-de-llobregat",
    "huella": "99fbb564ce6a7d66",
    "bytes": 10339
+  },
+  {
+   "nombre": "ayto-martorell/leg12",
+   "cuerpo": "ayto-martorell",
+   "huella": "337071d1e7838268",
+   "bytes": 3531
   },
   {
    "nombre": "ayto-el-prat-de-llobregat/leg12",
@@ -681,8 +687,8 @@ window.ESCRUTINIO_INDICE = {
   {
    "nombre": "ayto-gijon/leg10",
    "cuerpo": "ayto-gijon",
-   "huella": "ccbc8a116af6f6cb",
-   "bytes": 207247
+   "huella": "b2c7d2e42f9ebd58",
+   "bytes": 212931
   },
   {
    "nombre": "ayto-gijon/leg11",
@@ -717,8 +723,8 @@ window.ESCRUTINIO_INDICE = {
   {
    "nombre": "ayto-valencia/leg12",
    "cuerpo": "ayto-valencia",
-   "huella": "ebad5aeca86b2490",
-   "bytes": 159858
+   "huella": "3a2bde793b6979b8",
+   "bytes": 167834
   },
   {
    "nombre": "ayto-valladolid/leg10",

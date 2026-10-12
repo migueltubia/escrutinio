@@ -477,3 +477,19 @@ button.amb-abrir:hover { background: var(--surface-2); }
 .relacionadas { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
 .relacionadas li { background: var(--surface-2); border-radius: 6px; padding: 8px 10px; font-size: 13px; }
 .relacionadas .sentido-rel { font-weight: 600; }
+
+/* Programas electorales: barra de lo que pasó con las promesas de cada programa y enlaces destacados. */
+.barra-promesas { display: flex; gap: 2px; height: 14px; border-radius: 4px; overflow: hidden; }
+.barra-promesas .mark { height: 100%; cursor: default; }
+.enlace-programas { display: flex; flex-direction: column; gap: 2px; margin: 0 0 16px; text-decoration: none; color: inherit; }
+.enlace-programas:hover { border-color: var(--accent); }
+.enlace-programas strong { color: var(--accent); }
+.promesas-programa { display: flex; align-items: center; gap: 10px; margin-top: 6px; }
+.promesas-programa .barra-promesas { flex: 1 1 auto; max-width: 420px; min-width: 80px; }
+.promesas-programa .small { white-space: nowrap; }
+.solo-movil { display: none; }
+.movil .solo-movil { display: inline; }
+.movil .tabla-programas th:last-child, .movil .tabla-programas td:last-child { display: none; }
+.movil .promesas-programa { flex-wrap: wrap; gap: 4px; }
+.movil .promesas-programa .barra-promesas { flex-basis: 100%; max-width: none; }
+.movil .promesas-programa .small { white-space: normal; }

@@ -665,7 +665,7 @@ API.grupoPerfil = (p) => {
     WHERE ${enG("gr.siglas")} AND v.decisiva=1 AND d.modo='absteniendose' AND v.tipo_votacion IN (${FONDO_SQL}) ${wl}
     GROUP BY v.id ORDER BY v.fecha DESC LIMIT 20`, [...gs, ...al]);
   const legislaturas = q(`SELECT DISTINCT legislatura FROM grupo WHERE ${enG("siglas")} ORDER BY 1`, gs).map((r) => r.legislatura);
-  const programas = q(`SELECT DISTINCT partido FROM programa WHERE ${enG("partido")}`, gs).map((r) => r.partido);
+  const programas = q(`SELECT partido, eleccion, verificables FROM programa WHERE estado='leido' AND ${enG("partido")} ORDER BY fecha_eleccion`, gs);
   return { porTema, todo, propuestas, afinidad, decisivo, totalesDecisivas, cohesion, clave, legislaturas, programas };
 };
 
@@ -1149,6 +1149,14 @@ VISTAS.resumen = async (q) => {
       : stat("Votos individuales", "—", "estas fuentes no publican el voto de cada uno"),
     stat("Asuntos votados", fmt(T.iniciativas), "iniciativas y trámites"),
     stat("Fichas de iniciativas", fmt(T.fichas), "con resumen y tema" + (T.provisionales ? ` · ${fmt(T.provisionales)} con tema provisional por comisión` : ""))));
+
+  const progs = META.cuerpos.includes("congreso") ? q1(`SELECT COUNT(*) AS n, COUNT(DISTINCT partido) AS partidos, SUM(compromisos) AS promesas,
+      MIN(substr(eleccion, 11, 4)) AS desde, MAX(substr(eleccion, 11, 4)) AS hasta FROM programa WHERE estado='leido'`) : null;
+  if (progs && progs.n) {
+    cont.append(el("a", { class: "card enlace-programas", href: "#/programas" },
+      el("strong", {}, "Programas electorales"),
+      el("span", { class: "small muted" }, `${fmt(progs.n)} programas de ${fmt(progs.partidos)} partidos en las generales de ${progs.desde} a ${progs.hasta}, con ${fmt(progs.promesas)} promesas. Qué prometió cada uno y qué votó después en el Congreso →`)));
+  }
 
   // Filtro que gobierna todo lo de abajo.
   cont.append(formFiltros([multiSelect("leg", optLegs(), leg, "Todas las legislaturas", "legislaturas")], q, (d) => irA("resumen", d)));
@@ -1666,8 +1674,12 @@ VISTAS.grupo = async (q) => {
       multiSelect("familia", optFamiliasAnalisis(), q.familia, "Todo tipo de asunto", "categorías"),
     ], q, (f) => irA("grupo", f)));
   if (d.programas.length) {
-    cont.append(el("p", { class: "small" }, el("a", { href: "#/programas?" + new URLSearchParams({ g: d.programas.join(",") }) },
-      `${d.programas.length > 1 ? "Sus programas electorales" : "Su programa electoral"}: lo que prometió frente a lo que votó →`)));
+    const partidos = [...new Set(d.programas.map((p) => p.partido))];
+    const anios = [...new Set(d.programas.map((p) => (p.eleccion.match(/\d{4}/) || [""])[0]))];
+    const promesas = d.programas.reduce((a, p) => a + (p.verificables || 0), 0);
+    cont.append(el("a", { class: "card enlace-programas", href: "#/programas?" + new URLSearchParams({ g: partidos.join(",") }) },
+      el("strong", {}, d.programas.length > 1 ? "Sus programas electorales" : "Su programa electoral"),
+      el("span", { class: "small muted" }, `${d.programas.length > 1 ? `${d.programas.length} programas` : "Programa"} de ${textoPartidos(anios)}, con ${fmt(promesas)} promesas concretas. Qué prometió y qué votó después →`)));
   }
 
   const sumaApoyo = (xs) => xs.reduce((o, r) => { for (const c of ["si", "no", "abst", "div", "n", "nv"]) o[c] += r[c]; return o; }, { si: 0, no: 0, abst: 0, div: 0, n: 0, nv: 0 });
@@ -1944,9 +1956,9 @@ async function panelIniciativa(leg, exp) {
     el("h2", {}, i.titulo),
     el("section", {}, bloqueFicha(d.ficha)),
     el("section", {}, bloqueIniciativa(i)),
-    programas,
     el("section", {}, el("h3", {}, `Votaciones (${d.votaciones.length})`), el("p", { class: "small muted" }, "★ votación decisiva"),
-      el("div", { class: "lista" }, d.votaciones.map(filaVotacion))));
+      el("div", { class: "lista" }, d.votaciones.map(filaVotacion))),
+    programas);
 }
 
 async function panelDiputado(id) {

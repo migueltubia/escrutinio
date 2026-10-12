@@ -142,28 +142,30 @@ El perfil de un partido (o de un bloque de varios): cómo vota, qué propone, co
 
 ### Ten en cuenta
 - Las siglas agrupan los grupos de un mismo partido en distintas legislaturas.
-- Lo que prometió en su programa frente a lo que votó está en [Activismo · Programas electorales](#/programas).
+- Qué prometió en su programa y qué votó después está en [Activismo · Programas electorales](#/programas).
 `,
   },
   programas: {
     titulo: "Programas electorales",
     texto: `
-Lo que prometió cada partido en su programa electoral y lo que votó después en el Pleno.
+Qué prometió cada partido en su programa para las elecciones generales y qué votó después en el Congreso.
 
 ### Cómo se lee
-- **Dónde votaron en contra de lo que prometieron**: los compromisos en los que el partido votó al menos una vez lo contrario de lo que prometía (*contradicho*, o *mixto* si también votó a favor en otras iniciativas relacionadas), con la cita del programa y solo esas votaciones: quién presentó la iniciativa, qué votó el partido y si gobernaba.
-- **Los programas**: cuántos compromisos tiene cada uno, cuántos son verificables y, de los que tuvieron votación en un sentido claro, cuántos **coinciden** con lo que votó el partido. La mayoría de lo prometido no llega a votarse en el Pleno.
-- **En el Gobierno y en la oposición**: la misma cifra según el partido estuviera en el Gobierno o en la oposición cuando se votó lo relacionado con cada compromiso (sale si hay programas de un partido en los dos lados).
-- Para comparar los programas entre sí (cuánto pesa cada tema y qué quiere quitar y qué añadir cada partido), [Comparar · Programas electorales](#/comparar-programas).
-- **Compromisos**: cada uno con la cita literal del programa y su página (el enlace abre el PDF en esa página), las iniciativas del Pleno que tratan lo mismo (**en su dirección**, **en la contraria** o sin dirección clara) y lo que votó el partido, en el Gobierno o en la oposición. Su estado: *impulsado* (presentó algo en su dirección, o lo presentó el Gobierno mientras gobernaba), *apoyado* (votó a favor de algo en su dirección o en contra de algo en la contraria), *contradicho* (lo inverso), *mixto* (votos en los dos sentidos), *abstención*, *sin votación* y *no verificable en el Parlamento* (depende del Gobierno o de otra Administración). Un programa leído que aún no se ha comparado con lo votado sale como *pendiente de comparar* y no cuenta en las cifras.
+- **Los programas**: cuántas promesas concretas tiene cada uno y una barra con lo que ha pasado con ellas: votó lo prometido, votó en contra alguna vez, se abstuvo, no se ha votado o no pasa por el Congreso. A la derecha, de las promesas que tuvieron una votación clara, en cuántas votó lo prometido. Pulsa un programa para ver solo sus promesas.
+- **Cuándo votaron en contra de su programa**: las promesas en las que el partido votó al menos una vez lo contrario de lo que prometía. Salen unas pocas; el botón de debajo enseña el resto. De cada una se ve la frase del programa, quién presentó la iniciativa, qué votó el partido y si gobernaba.
+- **En el Gobierno y en la oposición**: el mismo porcentaje, separado según el partido estuviera en el Gobierno o en la oposición cuando se votó. Solo sale si hay votaciones de un partido en los dos lados.
+- **Todas las promesas**: primero las que llegaron a votarse. Cada una lleva la frase del programa y su página (el enlace abre el PDF en esa página), las iniciativas del Pleno sobre el mismo asunto y lo que votó el partido. Una iniciativa puede ir **en la línea de la promesa**, **en contra** o solo **tratar el mismo asunto**. Se pueden descargar en CSV.
+- Lo que puede pasar con una promesa: *lo propuso* (el partido presentó una iniciativa, o la presentó el Gobierno mientras gobernaba), *lo apoyó*, *votó en contra*, *unas veces sí y otras no*, *se abstuvo*, *no se ha votado* y *no pasa por el Congreso* (depende del Gobierno o de otra administración). Las *promesas genéricas* se enseñan pero no cuentan.
+- Para comparar los programas entre sí, por tema y por tipo de medida, ve a [Comparar · Programas electorales](#/comparar-programas).
 
 ### Filtros
-- **Partido**, **elección** (y la legislatura que cubre), **tema** (los mismos que en las votaciones), **tipo de acción** (legislar, derogar, bajar un impuesto…) y **estado** del compromiso. El estado solo filtra la lista de compromisos.
+- Un **buscador** que mira en el texto de la promesa, en la frase del programa y en sus etiquetas.
+- **Partido**, **elección**, **tema** (los mismos que en las votaciones), **tipo de medida** (legislar, derogar, bajar un impuesto…) y **qué pasó** con la promesa. Este último solo filtra la lista de promesas.
 
 ### Ten en cuenta
-- **Sin votación no es incumplimiento**: muchas promesas se cumplen o no por real decreto, por presupuestos o por gestión, sin pasar por el Pleno.
-- Un programa más concreto tiene más compromisos verificables; conviene mirar cuántos tiene cada partido antes de comparar porcentajes.
-- Qué iniciativas tratan lo mismo que un compromiso se decide sin tener en cuenta qué partido lo prometió ni quién presentó la iniciativa. Las que van en su dirección o en la contraria se comprueban en una segunda revisión más estricta: no basta con que se llamen parecido.
+- **Que algo no se haya votado no quiere decir que se haya incumplido.** Muchas promesas se cumplen o no con un real decreto, con los presupuestos o con la gestión diaria, sin pasar por el Pleno.
+- Un programa más concreto tiene más promesas que se pueden comprobar. Antes de comparar porcentajes, mira cuántas tiene cada partido.
+- Para decidir qué iniciativas tratan lo mismo que una promesa no se mira qué partido la hizo ni quién presentó la iniciativa. Las que van en su línea o en contra se repasan una segunda vez con un criterio más estricto. Las que todavía no se han repasado llevan la marca «pendiente de repasar».
 - Los partidos que votan dentro del Grupo Mixto no tienen un voto de grupo propio con el que comparar.
 `,
   },
@@ -192,19 +194,19 @@ Pone a dos o más grupos frente a frente en los mismos asuntos, tema a tema y le
   "comparar-programas": {
     titulo: "Comparar programas electorales",
     texto: `
-Lo que promete cada partido frente a lo que prometen los demás, con los compromisos verificables de sus programas. Sin votos: lo que votaron después está en [Activismo · Programas electorales](#/programas).
+Los programas de los partidos comparados entre sí, contando solo las promesas concretas. Aquí no entran los votos: lo que votaron después está en [Activismo · Programas electorales](#/programas).
 
 ### Cómo se lee
-- **Qué quiere quitar y qué añadir cada partido**: sus compromisos por tipo de medida. Quitan: derogar una norma o bajar un impuesto. Añaden: subir o crear un impuesto, dar dinero (ayudas, prestaciones, inversión) o crear un organismo o un plan. Legislar y el resto no tienen signo: una ley puede ampliar derechos o recortarlos. **Por tema**, cuántos quitan (−) y cuántos añaden (+) en cada uno.
-- **Cuánto pesa cada tema** en el programa de cada partido frente a lo que presentó después en el Congreso.
-- Pulsa una cifra o un tema para ver esos compromisos, con su cita, en Programas electorales.
+- **Qué quiere quitar y qué añadir cada partido**: sus promesas según el tipo de medida, con la cifra y la parte que supone de todas sus promesas concretas. Quitan las que derogan una norma o bajan un impuesto. Añaden las que suben o crean un impuesto, dan dinero (ayudas, prestaciones, inversión) o crean un organismo o un plan. Legislar no cuenta en ningún lado, porque una ley puede ampliar derechos o recortarlos. **Por tema**, cuántas quitan (−) y cuántas añaden (+) en cada uno.
+- **Cuánto pesa cada tema**: qué parte del programa dedica cada partido a cada tema y, al lado, qué parte de lo que presentó después en el Congreso era de ese tema. En negrita, donde se separan 10 puntos o más. Si un grupo presentó menos de 20 iniciativas, solo sale lo del programa.
+- Pulsa una cifra o un tema para leer esas promesas, con la frase del programa.
 
 ### Filtros
-- **Partido**, **elección** (sin elegir, la última: sumar programas de años distintos mezcla épocas) y **tema**, todos con varias opciones. Con varias elecciones, se suman los programas de cada partido.
+- **Partido**, **elección** (si no eliges, la última, para no mezclar programas de épocas distintas) y **tema**. Con varias elecciones se suman los programas de cada partido.
 
 ### Ten en cuenta
-- Quitar no es siempre el mismo lado: depende de qué se deroga o qué impuesto se baja. Mira los compromisos antes de sacar conclusiones.
-- Un programa más concreto tiene más compromisos verificables; compara proporciones, no solo cifras.
+- Quitar no es siempre de un mismo lado: depende de qué se deroga o qué impuesto se baja. Lee las promesas antes de sacar conclusiones.
+- Los programas tienen tamaños muy distintos. Compara los porcentajes, no solo las cifras.
 `,
   },
   coaliciones: {
@@ -302,7 +304,7 @@ Todas las votaciones de tu causa y una puntuación de grupos y diputados según 
 ### Cómo se usa
 - En **Votación a votación**, marca en cada votación qué voto era el favorable para tu causa («A favor» o «En contra»). Puedes marcar toda la página de una vez.
 - El **scorecard** calcula, para cada grupo y diputado, el porcentaje de las votaciones marcadas en que votó como marcaste. Abstenerse o dividirse cuenta como no coincidir.
-- **¿Qué prometieron sobre esto?**: al pulsar, los compromisos concretos de los programas electorales que encajan con la causa (mismo tema, etiqueta o texto), por partido, con su estado según lo que votó después y el enlace a la página del programa.
+- **¿Qué prometieron sobre esto?**: al pulsar, las promesas concretas de los programas electorales que tienen que ver con la causa (mismo tema, etiqueta o texto), por partido, con lo que votó después cada uno y el enlace a la página del programa.
 - **Guardar causa** la conserva en este navegador; los botones de CSV descargan las votaciones y el scorecard.
 
 ### Ten en cuenta
@@ -319,7 +321,7 @@ Lo que aún está por decidir: proyectos y proposiciones de ley abiertos en la l
 - **Esperan el debate de toma en consideración**: proposiciones que el Pleno aún no ha debatido.
 - **Paradas en comisión**: el plazo de enmiendas se ha ampliado muchas veces; suele indicar que no hay acuerdo para seguir.
 - **Por tema y por fase**, y la lista completa, descargable en CSV.
-- **En la línea del programa de…**: partidos que llevaban en su programa electoral un compromiso en la dirección de esa iniciativa. Toca la fila para ver qué prometía cada uno, con la cita y la página.
+- **En la línea del programa de…**: partidos que prometieron en su programa electoral algo en la línea de esa iniciativa. Toca la fila para ver qué prometía cada uno, con la frase del programa y la página.
 
 ### Filtros
 - **Texto**, **temas**, **fases** y **proponentes**.
@@ -358,14 +360,14 @@ const SECCIONES_WEB = [
   ["temas", "Temas", "Éxito por tema y quién consigue sacar adelante qué. Cada tema tiene su análisis a fondo."],
   ["grupos", "Grupos", "Afinidad entre grupos, quién decide las votaciones y el perfil de cada partido o bloque."],
   ["comparar", "Comparar grupos", "Dos o más partidos frente a frente, tema a tema: dónde votan igual, dónde no y cuánto apoya cada uno lo que presentan los demás."],
-  ["comparar-programas", "Comparar programas", "Lo que promete cada partido frente a los demás: qué quiere quitar y qué añadir y cuánto pesa cada tema en su programa."],
+  ["comparar-programas", "Comparar programas", "Los programas comparados entre sí: qué quiere quitar y qué añadir cada partido y cuánto pesa cada tema."],
   ["coaliciones", "Coaliciones ganadoras", "Qué combinaciones de grupos aprueban y tumban cada cosa."],
   ["mapa", "Mapa ideológico", "Dónde se sitúa cada grupo según sus votos y cómo evoluciona la polarización."],
   ["disciplina", "Disciplina y ausencias", "Quién rompe la disciplina de voto, quién falta y qué votaciones cambiaron por las ausencias."],
   ["enmiendas", "Enmiendas", "Qué grupo consigue cambiar las leyes y quién apoya las enmiendas de quién."],
   ["causas", "Mis causas", "Sigue un asunto, recibe sus novedades y puntúa a grupos y diputados con tu criterio."],
   ["viene", "Qué viene", "Leyes abiertas: plazos de enmiendas, pendientes de debate y paradas en comisión."],
-  ["programas", "Programas electorales", "Lo que prometió cada partido en su programa frente a lo que votó después: dónde votó en contra y compromiso a compromiso, con la cita."],
+  ["programas", "Programas electorales", "Qué prometió cada partido en las elecciones y qué votó después, promesa a promesa y con la frase del programa."],
 ];
 
 const ACTUALIZACIONES = [

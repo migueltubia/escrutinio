@@ -987,7 +987,7 @@ VISTAS.viene = async (q) => {
       el("div", { class: "badges" }, e.tema_principal ? el("span", { class: "badge ia" }, temaNombre(e.tema_principal)) : null,
         el("span", { class: "badge" }, e.grupo_autor ? siglas(e.legislatura, e.grupo_autor) : e.autor || "—"),
         e.votada ? el("span", { class: "badge" }, "ya tuvo votaciones en el Pleno") : null,
-        e.prometen ? el("span", { class: "badge", title: "Llevaban en su programa electoral un compromiso en la dirección de esta iniciativa. Clic para ver cuál." },
+        e.prometen ? el("span", { class: "badge", title: "Prometieron en su programa electoral algo en la línea de esta iniciativa. Pulsa para ver qué." },
           `En la línea ${lista(e.prometen).length > 1 ? "de los programas" : "del programa"} de ${textoPartidos(e.prometen)}`) : null,
         e.bocg ? el("a", { class: "badge", href: e.bocg.split("\n")[0], target: "_blank", rel: "noopener", onclick: (ev) => ev.stopPropagation() }, "BOCG") : null)),
     el("td", { class: "small" }, e.fase || "—", el("div", { class: "muted" }, e.organo || "")),

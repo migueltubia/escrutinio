@@ -519,6 +519,8 @@ def procesar_deepseek(con, limite=None, fuentes=None, log=print):
                        + (f" (parte {leidas + 1})" if leidas else "") + ".\n\nTexto:\n" + parte)
             try:
                 datos, modelo_real, _uso = deepseek.chat_json(SISTEMA, usuario, max_tokens=MAX_TOKENS)
+            except deepseek.SinTiempo:
+                return None
             except deepseek.ErrorIA as e:
                 mitades = partir(parte) if isinstance(e, deepseek.RespuestaTruncada) else []
                 if len(mitades) == 2 and len(parte) >= MIN_PARTIR:
@@ -539,7 +541,11 @@ def procesar_deepseek(con, limite=None, fuentes=None, log=print):
     with ThreadPoolExecutor(HILOS_ACTAS) as hilos:
         futuros = [(doc, hilos.submit(leer, m, ctx, doc)) for m, ctx, doc in pendientes]
         for doc, futuro in futuros:
-            leido = futuro.result()
+            try:
+                leido = futuro.result()
+            except Exception as e:  # algo inesperado en un documento no debe parar los demás: se reintenta otro día
+                log(f"  ! {doc.cuerpo} {doc.fecha}: {type(e).__name__}: {e}")
+                continue
             if leido is None:
                 continue
             votaciones, modelo = leido

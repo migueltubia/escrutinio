@@ -96,14 +96,21 @@ def chat_json(sistema, usuario, modelo=None, max_tokens=32_000, reintentos=5):
         try:
             with urllib.request.urlopen(peticion, timeout=min(ESPERA_MAXIMA, plazo.quedan())) as r:
                 d = json.loads(r.read().decode("utf-8"))
-            eleccion = d["choices"][0]
-            contenido = (eleccion.get("message") or {}).get("content") or ""
-            if eleccion.get("finish_reason") == "length":
-                raise RespuestaTruncada(f"respuesta truncada por max_tokens ({_salida(d.get('usage'))})")
-            if not contenido.strip():
-                ultimo = ErrorIA("respuesta vacía")  # la documentación avisa de que puede pasar en modo JSON
+            # A veces llega un 200 sin «choices» (con «error» o con null): es un fallo suyo, se reintenta.
+            eleccion = (d.get("choices") or [None])[0] if isinstance(d, dict) else None
+            if not isinstance(eleccion, dict):
+                ultimo = ErrorIA(f"respuesta sin «choices»: {json.dumps(d, ensure_ascii=False)[:300]}")
             else:
-                return json.loads(contenido), d.get("model") or cuerpo["model"], d.get("usage") or {}
+                contenido = (eleccion.get("message") or {}).get("content") or ""
+                if eleccion.get("finish_reason") == "length":
+                    raise RespuestaTruncada(f"respuesta truncada por max_tokens ({_salida(d.get('usage'))})")
+                if not contenido.strip():
+                    ultimo = ErrorIA("respuesta vacía")  # la documentación avisa de que puede pasar en modo JSON
+                else:
+                    datos = json.loads(contenido)
+                    if isinstance(datos, dict):
+                        return datos, d.get("model") or cuerpo["model"], d.get("usage") or {}
+                    ultimo = ErrorIA(f"la respuesta no es un objeto json: {contenido[:200]}")
         except urllib.error.HTTPError as e:
             detalle = e.read().decode("utf-8", "replace")[:300]
             if e.code in (429, 500, 502, 503, 504):
@@ -161,6 +168,10 @@ def _pedir_fichas(items, modelo, log, lote):
             continue
         except ErrorIA as e:
             log(f"  ! lote {lote}: {e}")
+            fallidas += [it["id"] for it in pendientes]
+            continue
+        except Exception as e:  # algo inesperado en un lote no debe tirar la actualización: se reintenta otro día
+            log(f"  ! lote {lote}: {type(e).__name__}: {e}")
             fallidas += [it["id"] for it in pendientes]
             continue
         tokens += uso.get("total_tokens", 0)

@@ -1,11 +1,11 @@
 // Generado por `python -m escrutinio web`. Ficheros de datos que carga la web, en orden.
 window.ESCRUTINIO_INDICE = {
- "generado": "2026-10-13T06:37:07+00:00",
+ "generado": "2026-10-18T10:03:19+00:00",
  "ficheros": [
   {
    "nombre": "comun",
-   "huella": "11da441fdb8c001c",
-   "bytes": 125324
+   "huella": "6213f923ddcc62bb",
+   "bytes": 128720
   },
   {
    "nombre": "programas",
@@ -45,8 +45,8 @@ window.ESCRUTINIO_INDICE = {
   {
    "nombre": "congreso/leg15",
    "cuerpo": "congreso",
-   "huella": "4da888e6147e301c",
-   "bytes": 753821
+   "huella": "9bd9573d15453204",
+   "bytes": 754017
   },
   {
    "nombre": "parl-AN/leg9",
@@ -207,8 +207,8 @@ window.ESCRUTINIO_INDICE = {
   {
    "nombre": "parl-CB/leg11",
    "cuerpo": "parl-CB",
-   "huella": "ef015399eb772833",
-   "bytes": 200396
+   "huella": "f55bdc3c786639c7",
+   "bytes": 201168
   },
   {
    "nombre": "parl-CL/leg9",
@@ -261,20 +261,20 @@ window.ESCRUTINIO_INDICE = {
   {
    "nombre": "parl-CT/leg12",
    "cuerpo": "parl-CT",
-   "huella": "2c23469a0055be93",
-   "bytes": 246356
+   "huella": "6f726f560581f83e",
+   "bytes": 247284
   },
   {
    "nombre": "parl-CT/leg14",
    "cuerpo": "parl-CT",
-   "huella": "728a31263195f021",
-   "bytes": 274504
+   "huella": "5feee0ce63e1cc39",
+   "bytes": 276796
   },
   {
    "nombre": "parl-CT/leg15",
    "cuerpo": "parl-CT",
-   "huella": "2e2cb062040341f5",
-   "bytes": 215952
+   "huella": "982fa10bb2c87523",
+   "bytes": 216468
   },
   {
    "nombre": "parl-VC/leg5",
@@ -315,8 +315,8 @@ window.ESCRUTINIO_INDICE = {
   {
    "nombre": "parl-VC/leg11",
    "cuerpo": "parl-VC",
-   "huella": "010656260e617123",
-   "bytes": 106788
+   "huella": "7d74212794a1beb4",
+   "bytes": 108208
   },
   {
    "nombre": "parl-EX/leg9",
@@ -345,8 +345,8 @@ window.ESCRUTINIO_INDICE = {
   {
    "nombre": "parl-GA/leg10",
    "cuerpo": "parl-GA",
-   "huella": "d4437d9f2b21c457",
-   "bytes": 375548
+   "huella": "6191b815f6ba6222",
+   "bytes": 375844
   },
   {
    "nombre": "parl-GA/leg11",
@@ -375,8 +375,8 @@ window.ESCRUTINIO_INDICE = {
   {
    "nombre": "parl-MC/leg11",
    "cuerpo": "parl-MC",
-   "huella": "a63db038c54d621f",
-   "bytes": 199360
+   "huella": "77174fedb2b04bc6",
+   "bytes": 200220
   },
   {
    "nombre": "parl-NC/leg9",
@@ -477,8 +477,8 @@ window.ESCRUTINIO_INDICE = {
   {
    "nombre": "jjgg-alava/leg12",
    "cuerpo": "jjgg-alava",
-   "huella": "424309f3a93dfcad",
-   "bytes": 119967
+   "huella": "64cfc92de0ab9276",
+   "bytes": 121467
   },
   {
    "nombre": "jjgg-bizkaia/leg6",
@@ -525,26 +525,26 @@ window.ESCRUTINIO_INDICE = {
   {
    "nombre": "jjgg-gipuzkoa/leg7",
    "cuerpo": "jjgg-gipuzkoa",
-   "huella": "89662bea818fa382",
-   "bytes": 21337
+   "huella": "24bb7c84ca3992bb",
+   "bytes": 16997
   },
   {
    "nombre": "jjgg-gipuzkoa/leg8",
    "cuerpo": "jjgg-gipuzkoa",
-   "huella": "79884afa80c0e24b",
-   "bytes": 37365
+   "huella": "e404384b9829036e",
+   "bytes": 41425
   },
   {
    "nombre": "jjgg-gipuzkoa/leg9",
    "cuerpo": "jjgg-gipuzkoa",
-   "huella": "f8ce86fe9bdac767",
-   "bytes": 62721
+   "huella": "82bbf1c28673cd26",
+   "bytes": 79965
   },
   {
    "nombre": "jjgg-gipuzkoa/leg10",
    "cuerpo": "jjgg-gipuzkoa",
-   "huella": "41e62a9825db5723",
-   "bytes": 41398
+   "huella": "08591289eba6ff0c",
+   "bytes": 42962
   },
   {
    "nombre": "jjgg-gipuzkoa/leg11",
@@ -555,20 +555,32 @@ window.ESCRUTINIO_INDICE = {
   {
    "nombre": "jjgg-gipuzkoa/leg12",
    "cuerpo": "jjgg-gipuzkoa",
-   "huella": "53f1738d7d66c4cf",
-   "bytes": 47590
+   "huella": "2d973b740ae64641",
+   "bytes": 48778
+  },
+  {
+   "nombre": "cabildo-lanzarote/leg11",
+   "cuerpo": "cabildo-lanzarote",
+   "huella": "53e8a8e297a3430a",
+   "bytes": 46630
   },
   {
    "nombre": "cabildo-lanzarote/leg12",
    "cuerpo": "cabildo-lanzarote",
-   "huella": "ad8bab7099504116",
-   "bytes": 145230
+   "huella": "1bfde39cbfa854e6",
+   "bytes": 147522
+  },
+  {
+   "nombre": "consell-mallorca/leg9",
+   "cuerpo": "consell-mallorca",
+   "huella": "49340057d4976e25",
+   "bytes": 210860
   },
   {
    "nombre": "consell-mallorca/leg10",
    "cuerpo": "consell-mallorca",
-   "huella": "baab52e0bd8596b9",
-   "bytes": 123377
+   "huella": "15570632f3573fda",
+   "bytes": 233337
   },
   {
    "nombre": "ayto-alicante/leg6",
@@ -615,80 +627,278 @@ window.ESCRUTINIO_INDICE = {
   {
    "nombre": "ayto-badalona/leg12",
    "cuerpo": "ayto-badalona",
-   "huella": "6af3221b1f9a23ea",
-   "bytes": 8674
+   "huella": "c40a5bbd3e169968",
+   "bytes": 141950
+  },
+  {
+   "nombre": "ayto-barcelona/leg12",
+   "cuerpo": "ayto-barcelona",
+   "huella": "32018389f716162b",
+   "bytes": 41323
   },
   {
    "nombre": "ayto-calella/leg12",
    "cuerpo": "ayto-calella",
-   "huella": "a9e4d4ddee6607f2",
-   "bytes": 6845
+   "huella": "031c892beffaea02",
+   "bytes": 48233
+  },
+  {
+   "nombre": "ayto-castellar-del-valles/leg12",
+   "cuerpo": "ayto-castellar-del-valles",
+   "huella": "afc28daba16113b1",
+   "bytes": 42882
+  },
+  {
+   "nombre": "ayto-castelldefels/leg12",
+   "cuerpo": "ayto-castelldefels",
+   "huella": "ffaf39c916712edf",
+   "bytes": 9979
+  },
+  {
+   "nombre": "ayto-cornella-de-llobregat/leg12",
+   "cuerpo": "ayto-cornella-de-llobregat",
+   "huella": "a39b97a78a511e45",
+   "bytes": 38107
+  },
+  {
+   "nombre": "ayto-esparreguera/leg12",
+   "cuerpo": "ayto-esparreguera",
+   "huella": "14ff654c6ba786d9",
+   "bytes": 45426
+  },
+  {
+   "nombre": "ayto-esplugues-de-llobregat/leg12",
+   "cuerpo": "ayto-esplugues-de-llobregat",
+   "huella": "f7eb44bac74be9d2",
+   "bytes": 34380
   },
   {
    "nombre": "ayto-les-franqueses-del-valles/leg12",
    "cuerpo": "ayto-les-franqueses-del-valles",
-   "huella": "dcf061087aa8b9ca",
-   "bytes": 4895
+   "huella": "073513cfb3fc7ce9",
+   "bytes": 43947
+  },
+  {
+   "nombre": "ayto-gava/leg12",
+   "cuerpo": "ayto-gava",
+   "huella": "ae7c52d404b7a384",
+   "bytes": 50618
+  },
+  {
+   "nombre": "ayto-granollers/leg12",
+   "cuerpo": "ayto-granollers",
+   "huella": "f878ebacdfa28253",
+   "bytes": 38544
   },
   {
    "nombre": "ayto-l-hospitalet-de-llobregat/leg12",
    "cuerpo": "ayto-l-hospitalet-de-llobregat",
-   "huella": "99fbb564ce6a7d66",
-   "bytes": 10339
+   "huella": "84217b74107728bb",
+   "bytes": 111111
+  },
+  {
+   "nombre": "ayto-igualada/leg12",
+   "cuerpo": "ayto-igualada",
+   "huella": "a661740b4cc7f87e",
+   "bytes": 43234
+  },
+  {
+   "nombre": "ayto-manlleu/leg12",
+   "cuerpo": "ayto-manlleu",
+   "huella": "d896ffd1b6a0e18b",
+   "bytes": 53561
+  },
+  {
+   "nombre": "ayto-manresa/leg12",
+   "cuerpo": "ayto-manresa",
+   "huella": "9c812db0213dba73",
+   "bytes": 114029
   },
   {
    "nombre": "ayto-martorell/leg12",
    "cuerpo": "ayto-martorell",
-   "huella": "5ba3f9663807cbaa",
-   "bytes": 4151
+   "huella": "964be522510857f3",
+   "bytes": 23223
   },
   {
    "nombre": "ayto-el-masnou/leg12",
    "cuerpo": "ayto-el-masnou",
-   "huella": "33215f971da515fb",
-   "bytes": 4967
+   "huella": "0d5fd215d140a933",
+   "bytes": 51143
   },
   {
    "nombre": "ayto-mataro/leg12",
    "cuerpo": "ayto-mataro",
-   "huella": "42c01226014f11d6",
-   "bytes": 9060
+   "huella": "fff268540328c2e3",
+   "bytes": 77192
   },
   {
    "nombre": "ayto-molins-de-rei/leg12",
    "cuerpo": "ayto-molins-de-rei",
-   "huella": "c603906e2023c874",
-   "bytes": 7303
+   "huella": "c09a74facc2de8bf",
+   "bytes": 56047
+  },
+  {
+   "nombre": "ayto-mollet-del-valles/leg12",
+   "cuerpo": "ayto-mollet-del-valles",
+   "huella": "1d663cdfe39b9228",
+   "bytes": 33187
+  },
+  {
+   "nombre": "ayto-montcada-i-reixac/leg12",
+   "cuerpo": "ayto-montcada-i-reixac",
+   "huella": "863c0dd4a853b763",
+   "bytes": 76891
+  },
+  {
+   "nombre": "ayto-olesa-de-montserrat/leg12",
+   "cuerpo": "ayto-olesa-de-montserrat",
+   "huella": "ec6bba77ac73c827",
+   "bytes": 26821
+  },
+  {
+   "nombre": "ayto-pineda-de-mar/leg12",
+   "cuerpo": "ayto-pineda-de-mar",
+   "huella": "b2d0ba6ac70ed091",
+   "bytes": 26375
   },
   {
    "nombre": "ayto-el-prat-de-llobregat/leg12",
    "cuerpo": "ayto-el-prat-de-llobregat",
-   "huella": "d947bbf6abd2ea5d",
-   "bytes": 14854
+   "huella": "ceb036ab845f1e60",
+   "bytes": 116374
+  },
+  {
+   "nombre": "ayto-ripollet/leg12",
+   "cuerpo": "ayto-ripollet",
+   "huella": "25a931bf78453134",
+   "bytes": 35222
   },
   {
    "nombre": "ayto-rubi/leg12",
    "cuerpo": "ayto-rubi",
-   "huella": "7e757ff9fe92d352",
-   "bytes": 8934
+   "huella": "e9f53fa6e86fa271",
+   "bytes": 113174
+  },
+  {
+   "nombre": "ayto-sabadell/leg12",
+   "cuerpo": "ayto-sabadell",
+   "huella": "ef0e62ec2f313e65",
+   "bytes": 111686
+  },
+  {
+   "nombre": "ayto-sant-andreu-de-la-barca/leg12",
+   "cuerpo": "ayto-sant-andreu-de-la-barca",
+   "huella": "463bffdd66b1f454",
+   "bytes": 57953
+  },
+  {
+   "nombre": "ayto-sant-boi-de-llobregat/leg12",
+   "cuerpo": "ayto-sant-boi-de-llobregat",
+   "huella": "05598f1b64bdd994",
+   "bytes": 50115
+  },
+  {
+   "nombre": "ayto-sant-cugat-del-valles/leg12",
+   "cuerpo": "ayto-sant-cugat-del-valles",
+   "huella": "44ed48fb75f4dba6",
+   "bytes": 150371
   },
   {
    "nombre": "ayto-sant-feliu-de-llobregat/leg12",
    "cuerpo": "ayto-sant-feliu-de-llobregat",
-   "huella": "0bff4e5a469f0b0c",
-   "bytes": 12565
+   "huella": "2b7ae0e088d46c7a",
+   "bytes": 112041
+  },
+  {
+   "nombre": "ayto-sant-joan-despi/leg12",
+   "cuerpo": "ayto-sant-joan-despi",
+   "huella": "50c70c331fe32ad0",
+   "bytes": 42637
+  },
+  {
+   "nombre": "ayto-vilassar-de-mar/leg12",
+   "cuerpo": "ayto-vilassar-de-mar",
+   "huella": "a5427885707f0dfc",
+   "bytes": 39937
+  },
+  {
+   "nombre": "ayto-sant-just-desvern/leg12",
+   "cuerpo": "ayto-sant-just-desvern",
+   "huella": "fa8c5040e0ddb645",
+   "bytes": 37091
+  },
+  {
+   "nombre": "ayto-sant-pere-de-ribes/leg12",
+   "cuerpo": "ayto-sant-pere-de-ribes",
+   "huella": "6e6df98ccc7fa7d3",
+   "bytes": 149776
+  },
+  {
+   "nombre": "ayto-sant-quirze-del-valles/leg12",
+   "cuerpo": "ayto-sant-quirze-del-valles",
+   "huella": "2f5e4aaf45268014",
+   "bytes": 32660
+  },
+  {
+   "nombre": "ayto-santa-coloma-de-gramenet/leg12",
+   "cuerpo": "ayto-santa-coloma-de-gramenet",
+   "huella": "829bc7b3898604e7",
+   "bytes": 20134
+  },
+  {
+   "nombre": "ayto-barbera-del-valles/leg12",
+   "cuerpo": "ayto-barbera-del-valles",
+   "huella": "9a8527d72ed35ab9",
+   "bytes": 65872
+  },
+  {
+   "nombre": "ayto-santa-perpetua-de-mogoda/leg12",
+   "cuerpo": "ayto-santa-perpetua-de-mogoda",
+   "huella": "3ea299d572c6b9a5",
+   "bytes": 20254
+  },
+  {
+   "nombre": "ayto-sant-vicenc-dels-horts/leg12",
+   "cuerpo": "ayto-sant-vicenc-dels-horts",
+   "huella": "7bb454541ff11ead",
+   "bytes": 42556
+  },
+  {
+   "nombre": "ayto-cerdanyola-del-valles/leg12",
+   "cuerpo": "ayto-cerdanyola-del-valles",
+   "huella": "ab0e3a158156c51e",
+   "bytes": 117495
   },
   {
    "nombre": "ayto-sitges/leg12",
    "cuerpo": "ayto-sitges",
-   "huella": "da5382903af79f7d",
-   "bytes": 6364
+   "huella": "78ae9f63494173e4",
+   "bytes": 97724
   },
   {
    "nombre": "ayto-vic/leg12",
    "cuerpo": "ayto-vic",
-   "huella": "142ae9c753fd5128",
-   "bytes": 9809
+   "huella": "0579eeba2a6d9e29",
+   "bytes": 105597
+  },
+  {
+   "nombre": "ayto-viladecans/leg12",
+   "cuerpo": "ayto-viladecans",
+   "huella": "aed0ad394c6c71fc",
+   "bytes": 80752
+  },
+  {
+   "nombre": "ayto-vilafranca-del-penedes/leg12",
+   "cuerpo": "ayto-vilafranca-del-penedes",
+   "huella": "abbe20bf9188e4b6",
+   "bytes": 46316
+  },
+  {
+   "nombre": "ayto-vilanova-i-la-geltru/leg12",
+   "cuerpo": "ayto-vilanova-i-la-geltru",
+   "huella": "8bcac090da40c977",
+   "bytes": 143094
   },
   {
    "nombre": "ayto-cordoba/leg9",
@@ -699,14 +909,14 @@ window.ESCRUTINIO_INDICE = {
   {
    "nombre": "ayto-cordoba/leg10",
    "cuerpo": "ayto-cordoba",
-   "huella": "cc97c054cd24b30e",
-   "bytes": 343941
+   "huella": "97ec552bff0218de",
+   "bytes": 344425
   },
   {
    "nombre": "ayto-cordoba/leg11",
    "cuerpo": "ayto-cordoba",
-   "huella": "db1ea0da856a407b",
-   "bytes": 366373
+   "huella": "0db5a16097e193c4",
+   "bytes": 366525
   },
   {
    "nombre": "ayto-cordoba/leg12",
@@ -715,28 +925,64 @@ window.ESCRUTINIO_INDICE = {
    "bytes": 336317
   },
   {
+   "nombre": "ayto-banyoles/leg12",
+   "cuerpo": "ayto-banyoles",
+   "huella": "11680a58ad64968d",
+   "bytes": 53262
+  },
+  {
    "nombre": "ayto-blanes/leg12",
    "cuerpo": "ayto-blanes",
-   "huella": "d47b4cdcdb6057c8",
-   "bytes": 12240
+   "huella": "eeee6a6a700f55b2",
+   "bytes": 90212
+  },
+  {
+   "nombre": "ayto-figueres/leg12",
+   "cuerpo": "ayto-figueres",
+   "huella": "517c120f09d065f5",
+   "bytes": 61418
+  },
+  {
+   "nombre": "ayto-girona/leg12",
+   "cuerpo": "ayto-girona",
+   "huella": "cbb758dc563c6e98",
+   "bytes": 12408
+  },
+  {
+   "nombre": "ayto-lloret-de-mar/leg12",
+   "cuerpo": "ayto-lloret-de-mar",
+   "huella": "1fe21a08ca13a871",
+   "bytes": 61871
+  },
+  {
+   "nombre": "ayto-palafrugell/leg12",
+   "cuerpo": "ayto-palafrugell",
+   "huella": "a96bb578aa63b9e7",
+   "bytes": 78745
   },
   {
    "nombre": "ayto-roses/leg12",
    "cuerpo": "ayto-roses",
-   "huella": "a0bee6b28a59ea25",
-   "bytes": 6803
+   "huella": "69a563620050712c",
+   "bytes": 86139
   },
   {
    "nombre": "ayto-salt/leg12",
    "cuerpo": "ayto-salt",
-   "huella": "90c7cce0b7e32afd",
-   "bytes": 7954
+   "huella": "e1cc1d4619fa0014",
+   "bytes": 85530
+  },
+  {
+   "nombre": "ayto-sant-feliu-de-guixols/leg12",
+   "cuerpo": "ayto-sant-feliu-de-guixols",
+   "huella": "34c430ead7f9c33d",
+   "bytes": 108367
   },
   {
    "nombre": "ayto-lleida/leg12",
    "cuerpo": "ayto-lleida",
-   "huella": "4948d0a17269b72c",
-   "bytes": 14748
+   "huella": "9d131237174211a6",
+   "bytes": 215528
   },
   {
    "nombre": "ayto-malaga/leg11",
@@ -753,8 +999,8 @@ window.ESCRUTINIO_INDICE = {
   {
    "nombre": "ayto-gijon/leg10",
    "cuerpo": "ayto-gijon",
-   "huella": "6947b219e6c77388",
-   "bytes": 264827
+   "huella": "d08526ff6bc533e7",
+   "bytes": 292627
   },
   {
    "nombre": "ayto-gijon/leg11",
@@ -775,22 +1021,64 @@ window.ESCRUTINIO_INDICE = {
    "bytes": 111287
   },
   {
+   "nombre": "ayto-amposta/leg12",
+   "cuerpo": "ayto-amposta",
+   "huella": "ed2b29576d9dfe8d",
+   "bytes": 58361
+  },
+  {
+   "nombre": "ayto-calafell/leg12",
+   "cuerpo": "ayto-calafell",
+   "huella": "51df0cb655a8dec3",
+   "bytes": 73590
+  },
+  {
    "nombre": "ayto-cambrils/leg12",
    "cuerpo": "ayto-cambrils",
-   "huella": "69a3446da937d1b8",
-   "bytes": 16970
+   "huella": "7c48f514ab224fcb",
+   "bytes": 213902
+  },
+  {
+   "nombre": "ayto-reus/leg12",
+   "cuerpo": "ayto-reus",
+   "huella": "cb14ff25623d2ef7",
+   "bytes": 145798
   },
   {
    "nombre": "ayto-tarragona/leg12",
    "cuerpo": "ayto-tarragona",
-   "huella": "b6fa87d6ba9efb81",
-   "bytes": 3595
+   "huella": "33389b5d70976e84",
+   "bytes": 37211
+  },
+  {
+   "nombre": "ayto-tortosa/leg12",
+   "cuerpo": "ayto-tortosa",
+   "huella": "7d4bb4e5c2871f89",
+   "bytes": 73149
+  },
+  {
+   "nombre": "ayto-valls/leg12",
+   "cuerpo": "ayto-valls",
+   "huella": "c22dfc9e4e25456e",
+   "bytes": 57347
+  },
+  {
+   "nombre": "ayto-el-vendrell/leg12",
+   "cuerpo": "ayto-el-vendrell",
+   "huella": "5bec03d806815181",
+   "bytes": 55205
   },
   {
    "nombre": "ayto-vila-seca/leg12",
    "cuerpo": "ayto-vila-seca",
-   "huella": "43fec98e66bfc8f4",
-   "bytes": 5131
+   "huella": "0109a26c11fe16a5",
+   "bytes": 46291
+  },
+  {
+   "nombre": "ayto-salou/leg12",
+   "cuerpo": "ayto-salou",
+   "huella": "a5b89bfc293acba9",
+   "bytes": 123239
   },
   {
    "nombre": "ayto-valencia/leg10",
@@ -807,8 +1095,8 @@ window.ESCRUTINIO_INDICE = {
   {
    "nombre": "ayto-valencia/leg12",
    "cuerpo": "ayto-valencia",
-   "huella": "f38c5bd3b7a02d7f",
-   "bytes": 203846
+   "huella": "01b0ef274416d011",
+   "bytes": 217498
   },
   {
    "nombre": "ayto-valladolid/leg10",
@@ -849,43 +1137,49 @@ window.ESCRUTINIO_INDICE = {
  ],
  "avisos": {
   "jjgg-alava": {
-   "fecha": "2026-10-13",
-   "motivo": "rechaza",
-   "detalle": "HTTP Error 403: Forbidden",
-   "hasta": "2026-07-10"
+   "fecha": "2026-10-18",
+   "motivo": "sin_respuesta",
+   "detalle": "No se pudo descargar https://jjggbizkaia.eus/es/plenos?p_p_id=net_bizkaia_iybnwinc_HistoricoPlenoPortavocesPortlet_INSTANCE_nACIOUjoBXHz&p_p_lifecycle=2&p_p_state=normal&p_p_mode=view&p_p_resource_id=cambioAnyo&p_p_cacheability=cacheLevelPage&_net_bizkaia_iybnwinc_HistoricoPlenoPortavocesPortlet_INS",
+   "hasta": "2026-10-14"
   },
   "jjgg-bizkaia": {
-   "fecha": "2026-10-13",
-   "motivo": "rechaza",
-   "detalle": "HTTP Error 403: Forbidden",
+   "fecha": "2026-10-18",
+   "motivo": "sin_respuesta",
+   "detalle": "No se pudo descargar https://jjggbizkaia.eus/es/plenos?p_p_id=net_bizkaia_iybnwinc_HistoricoPlenoPortavocesPortlet_INSTANCE_nACIOUjoBXHz&p_p_lifecycle=2&p_p_state=normal&p_p_mode=view&p_p_resource_id=cambioAnyo&p_p_cacheability=cacheLevelPage&_net_bizkaia_iybnwinc_HistoricoPlenoPortavocesPortlet_INS",
    "hasta": "2026-06-17"
   },
   "jjgg-gipuzkoa": {
-   "fecha": "2026-10-13",
-   "motivo": "rechaza",
-   "detalle": "HTTP Error 403: Forbidden",
-   "hasta": "2026-09-16"
+   "fecha": "2026-10-18",
+   "motivo": "sin_respuesta",
+   "detalle": "No se pudo descargar https://jjggbizkaia.eus/es/plenos?p_p_id=net_bizkaia_iybnwinc_HistoricoPlenoPortavocesPortlet_INSTANCE_nACIOUjoBXHz&p_p_lifecycle=2&p_p_state=normal&p_p_mode=view&p_p_resource_id=cambioAnyo&p_p_cacheability=cacheLevelPage&_net_bizkaia_iybnwinc_HistoricoPlenoPortavocesPortlet_INS",
+   "hasta": "2026-10-14"
   },
   "parl-AR": {
-   "fecha": "2026-10-13",
+   "fecha": "2026-10-18",
    "motivo": "sin_respuesta",
    "detalle": "No se pudo descargar https://www.cortesaragon.es/Transcripciones-provisionales.2245.0.html?&no_cache=1: Remote end closed connection without response",
    "hasta": "2026-05-28"
   },
+  "parl-CN": {
+   "fecha": "2026-10-18",
+   "motivo": "error",
+   "detalle": "No se pudo descargar https://www.parcan.es/api/pub/11/ds/texto/?format=json: IncompleteRead(1113357 bytes read)",
+   "hasta": "2026-05-13"
+  },
   "parl-IB": {
-   "fecha": "2026-10-13",
+   "fecha": "2026-10-18",
    "motivo": "copia",
    "detalle": "https://www.parlamentib.es no responde (URLError)",
    "hasta": "2026-09-22"
   },
   "parl-NC": {
-   "fecha": "2026-10-13",
+   "fecha": "2026-10-18",
    "motivo": "rechaza",
    "detalle": "HTTP Error 403: Forbidden",
    "hasta": "2026-06-25"
   },
   "parl-PV": {
-   "fecha": "2026-10-13",
+   "fecha": "2026-10-18",
    "motivo": "sin_respuesta",
    "detalle": "No se pudo descargar https://www.legebiltzarra.eus/portal/es/transparencia/open-data?opcion=pleno: <urlopen error timed out>",
    "hasta": "2026-06-25"

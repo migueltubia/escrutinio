@@ -15,6 +15,7 @@ run-name: >-
 # Configuración en Settings > Secrets and variables > Actions:
 #   Secret   DEEPSEEK_API_KEY   clave de la API de DeepSeek (sin ella se actualiza todo menos las fichas nuevas)
 #   Variable DEEPSEEK_MODEL     modelo (opcional; por defecto deepseek-flash)
+#   Variable LIMITE_ACTAS       actas que lee con DeepSeek cada ejecución programada (opcional; por defecto 150)
 #
 # La misma actualización puede lanzarla cualquier persona desde su equipo, con la clave en un fichero
 # .env: README, «Actualizar los datos: en la nube o en local». Los dos caminos parten del mismo
@@ -94,10 +95,12 @@ jobs:
           DEEPSEEK_MODEL: ${{ vars.DEEPSEEK_MODEL }}
           MINUTOS_MAX: "95"
           PYTHONUNBUFFERED: "1"
+        # Las programadas leen como mucho LIMITE_ACTAS actas cada una: el atraso se reparte en más días en vez de
+        # gastarse de golpe. Lanzada a mano, lo que diga el formulario (vacío: sin límite).
         run: |
           python -m escrutinio actualizar \
             --limite-fichas "${{ inputs.limite_fichas || '400' }}" \
-            ${{ inputs.limite_actas && format('--limite-actas {0}', inputs.limite_actas) || '' }} \
+            ${{ github.event_name == 'schedule' && format('--limite-actas {0}', vars.LIMITE_ACTAS || '150') || inputs.limite_actas && format('--limite-actas {0}', inputs.limite_actas) || '' }} \
             ${{ (inputs.informe || github.event.schedule == '20 4 * * 0') && '--informe' || '' }}
 
       # La web se publica con los datos recién calculados, también los días que no se guardan en git.

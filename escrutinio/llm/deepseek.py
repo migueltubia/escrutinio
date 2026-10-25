@@ -69,11 +69,13 @@ def _salida(uso):
     return f"{uso.get('completion_tokens', '?')} tokens de salida" + (f", {razonamiento} de razonamiento" if razonamiento else "")
 
 
-def chat_json(sistema, usuario, modelo=None, max_tokens=32_000, reintentos=5):
+def chat_json(sistema, usuario, modelo=None, max_tokens=32_000, reintentos=5, razonar=True):
     """Una llamada en modo JSON. Devuelve (objeto, modelo_real, uso).
 
     max_tokens cuenta también el razonamiento previo del modelo (modo thinking): con 8.000 se agotaba
     pensando y no escribía nada, de ahí el defecto de 32.000 (la API admite hasta 384K).
+    razonar=False desactiva ese razonamiento: para extraer o clasificar no hace falta, y es la mayor parte de
+    los tokens de salida, que son los caros.
     """
     base = (os.environ.get("DEEPSEEK_BASE_URL") or "https://api.deepseek.com").rstrip("/")
     cuerpo = {
@@ -83,6 +85,7 @@ def chat_json(sistema, usuario, modelo=None, max_tokens=32_000, reintentos=5):
         "max_tokens": max_tokens,
         "temperature": 0.2,
         "stream": False,
+        **({} if razonar else {"thinking": {"type": "disabled"}}),
     }
     peticion = urllib.request.Request(
         base + "/chat/completions",

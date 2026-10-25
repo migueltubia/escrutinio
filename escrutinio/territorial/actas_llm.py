@@ -12,14 +12,20 @@ cuentan en el diario de sesiones o en el acta («queda aprobada por 25 votos a f
 3. Lo extraído se guarda en data/llm/actas/<cuerpo>.jsonl, una línea por documento: es la fuente de
    verdad de esta parte (como las fichas IA), así que reconstruir la base no vuelve a llamar al LLM y
    un documento ya procesado no se repite.
+   Un documento largo va en varias llamadas (trozos). Cada trozo leído se apunta en
+   data/llm/actas/a_medias/<cuerpo>.jsonl en cuanto llega: si se acaba el tiempo o falla una llamada,
+   la próxima ejecución sigue desde ahí y no vuelve a pagar lo ya leído.
 
 Sin clave de DeepSeek, `actas-exportar` deja los textos condensados y unas instrucciones para que
 otro LLM o agente los procese, y `actas-importar` carga sus respuestas.
 """
 
+import hashlib
 import html
 import json
 import re
+import statistics
+import threading
 import time
 import zlib
 from concurrent.futures import ThreadPoolExecutor
@@ -36,12 +42,18 @@ from .modelo import SENTIDOS_GRUPO, TIPOS_INICIATIVA, Votacion, VotoGrupo
 VERSION = "actas-v1"
 ACTAS_DIR = LLM_DIR / "actas"
 PENDIENTES_DIR = ACTAS_DIR / "pendientes"
+A_MEDIAS_DIR = ACTAS_DIR / "a_medias"
 MAX_TROZO = 45_000  # caracteres de texto condensado por llamada
 MIN_PARTIR = 2_000  # un trozo cuya respuesta no cabe se parte en dos mientras tenga al menos esto
-# El modelo razona antes de responder y ese razonamiento cuenta dentro de max_tokens: con 8.000 se lo comía
-# entero y no llegaba a escribir nada. La API admite hasta 384K; sin fijarlo, el defecto en modo thinking es 64K.
+# Sin razonamiento previo: para copiar votaciones de un texto no hace falta. En una prueba con 9 actas ya leídas
+# (117 votaciones) coincidían en totales y resultado 110 sin razonar y 111 razonando poco, con un tercio de los
+# tokens de salida y respuestas varias veces más rápidas. Las fichas sí lo necesitan (llm/deepseek.py).
+RAZONAR = False
+# Si se vuelve a razonar: el razonamiento cuenta dentro de max_tokens y con 8.000 se lo comía entero.
 MAX_TOKENS = 32_000
 HILOS_ACTAS = 5  # documentos que se leen a la vez con DeepSeek
+# Lo que se calcula que tarda una llamada mientras no se haya medido ninguna en esta ejecución.
+SEGUNDOS_POR_LLAMADA = 60
 MINUTOS_LISTADO = 5  # tope de cada conector para listar sus documentos pendientes
 
 SISTEMA = """Eres un analista parlamentario. Recibes el texto (condensado) de un diario de sesiones o de un acta de
@@ -91,6 +103,35 @@ _VOTO = re.compile(
     # Recuentos leídos sin «votos a favor»: «Finaliza la votación. Emitidos, sesenta y seis; sí, treinta y cuatro; no…»
     r"finaliza(da)? la votaci|\bemitidos\b|\bs[ií], (un|dos|tres|cuatro|cinco|seis|siete|ocho|nueve|diez|once|doce|trece|"
     r"catorce|quince|dieci|veint|treint|cuarent|cincuent|sesent|setent|ochent|novent|cien|\d)|ningun[ao] abstenci")
+# Fórmulas con las que se anuncia el resultado de una votación, más estrictas que _VOTO (que también salta con lo
+# que dicen los oradores: «ho han votat en contra»). En los parlamentos, a la IA solo le llegan los días que no
+# cubren sus datos o sus reglas, que casi siempre son días sin votaciones (la primera jornada de un pleno de varios
+# días): sin ninguna de estas fórmulas, el diario no se manda. En una muestra de 169 diarios con votaciones, todos
+# tenían alguna; en los ayuntamientos no vale (las actas de Barcelona cuentan los votos de otra manera).
+_NUM = (r"(\d+|un|una|dos|tres|cuatro|cinco|seis|siete|ocho|nueve|diez|once|doce|trece|catorce|quince|dieci\w+|"
+        r"veint\w*|treint\w*|cuarent\w*|cincuent\w*|sesent\w*|setent\w*|ochent\w*|novent\w*|cien\w*|quatre|cinc|sis|"
+        r"set|vuit|nou|deu|onze|dotze|tretze|catorze|quinze|setze|disset|divuit|dinou|vint\w*|trenta\w*|quaranta\w*|"
+        r"cinquanta\w*|seixanta\w*|setanta\w*|vuitanta\w*|noranta\w*)")
+_RESULTADO = re.compile(
+    rf"(?i)\b{_NUM}\s+(votos?|vots?|abstenci\w+|boto)\b|"
+    rf"(votos?|vots?) (a favor|en contra|afirmatius|negatius|afirmativos|negativos)\s*[:,.]?\s*{_NUM}\b|"
+    rf"\b(s[ií]|no|abstencions?|abstenciones|emitidos|emesos)\s*[:,]\s*{_NUM}\b|"
+    r"(queda(n)?|ha(n)? quedat|ha(n)? estat|ha(n)? (sido|quedado|resultado)|resulta(n)?) "
+    r"(aprobad|rechazad|aprovad|rebutjad|desestimad|investid|elegid)|"
+    r"(se|es) (aprueba|rechaza|desestima|aprova|rebutja)n?\b|s'aproven?|"
+    r"\b(por|per|en|con) (unanimidad|unanimitat|unanimidade|asentimiento|assentiment)|aho batez|"
+    r"(comença|comienza|finaliza|acaba|inicia) (la )?votaci|resultado de la votaci|resultat de la votaci|"
+    r"aprobad[oa]s? (por|con) \d|aldeko\s*botoak?|kontrako\s*botoak?|onartu (da|dira|egin)|"
+    r"votaci[oó]n (p[uú]blica )?por llamamiento|votaci[oó] nominal")
+SIN_VOTACIONES = "reglas:sin-votaciones"  # «modelo» de los documentos que no se mandan a la IA
+
+
+def sin_votaciones(texto, cuerpo):
+    """True si el texto no puede tener votaciones: ni una marca de voto (o, en un parlamento, ni una fórmula de
+    resultado). Así no se paga una llamada que va a devolver una lista vacía."""
+    return not (_RESULTADO if cuerpo.startswith("parl-") else _VOTO).search(texto)
+
+
 _ASUNTO = re.compile(
     r"(?i)(proposici[oó]n no de ley|proposici[oó] no de llei|proposici[oó]n de ley|proposici[oó] de llei|"
     r"proyecto de ley|projecte de llei|moci[oó]n|moci[oó]|decreto[- ]ley|decret llei|dictamen|propuesta de|"
@@ -344,6 +385,52 @@ def guardar_registro(doc, votaciones, modelo):
     return registro
 
 
+def huella(trozo):
+    return hashlib.sha1(trozo.encode("utf-8")).hexdigest()[:16]
+
+
+class AMedias:
+    """Trozos ya leídos de documentos que no se terminaron de leer (data/llm/actas/a_medias/<cuerpo>.jsonl).
+
+    Una línea por trozo, con su huella (el texto condensado de un mismo documento sale igual cada vez): o sus
+    votaciones, o «partir» si su respuesta no cupo en max_tokens y hay que pedirlo en dos mitades. Cuando el
+    documento se termina, sus líneas se borran: lo leído pasa entero a <cuerpo>.jsonl.
+    """
+
+    def __init__(self):
+        self._cerrojo = threading.Lock()
+        self._trozos = {}  # url -> {huella: línea}
+        for ruta in sorted(A_MEDIAS_DIR.glob("*.jsonl")) if A_MEDIAS_DIR.exists() else []:
+            for l in ruta.read_text(encoding="utf-8").splitlines():
+                if l.strip():
+                    r = json.loads(l)
+                    self._trozos.setdefault(r["url"], {})[r["huella"]] = r
+
+    def de(self, url):
+        with self._cerrojo:
+            return dict(self._trozos.get(url, {}))
+
+    def anotar(self, doc, huella_trozo, **datos):
+        linea = {"url": doc.url, "fecha": doc.fecha, "huella": huella_trozo, **datos}
+        with self._cerrojo:
+            self._trozos.setdefault(doc.url, {})[huella_trozo] = linea
+            A_MEDIAS_DIR.mkdir(parents=True, exist_ok=True)
+            with open(A_MEDIAS_DIR / f"{doc.cuerpo}.jsonl", "a", encoding="utf-8") as fh:
+                fh.write(json.dumps(linea, ensure_ascii=False) + "\n")
+
+    def terminar(self, doc):
+        with self._cerrojo:
+            if self._trozos.pop(doc.url, None) is None:
+                return
+            ruta = A_MEDIAS_DIR / f"{doc.cuerpo}.jsonl"
+            quedan = [l for l in ruta.read_text(encoding="utf-8").splitlines()
+                      if l.strip() and json.loads(l)["url"] != doc.url]
+            if quedan:
+                ruta.write_text("\n".join(quedan) + "\n", encoding="utf-8")
+            else:
+                ruta.unlink()
+
+
 def cargar_guardadas(con, log=print):
     """Carga en la base todas las votaciones extraídas y guardadas en el repositorio."""
     from .. import territorio
@@ -498,27 +585,54 @@ def procesar_deepseek(con, limite=None, fuentes=None, log=print):
     log(f"Actas y diarios con DeepSeek: {len(pendientes)} documentos pendientes "
         f"({f'límite {limite}' if limite else 'sin límite: hasta que se acabe el tiempo'})")
     cuerpos = {c.codigo: c for c in territorio.cuerpos()}
+    a_medias = AMedias()
+    duraciones = []  # segundos de cada llamada de esta ejecución que ha ido bien
+
+    def segundos_por_llamada():
+        return statistics.median(duraciones[-20:]) if duraciones else SEGUNDOS_POR_LLAMADA
 
     def leer(m, ctx, doc):
-        """(votaciones, modelo) de un documento; None si falla o no queda tiempo (se reintenta otro día).
-        Va en un hilo: no toca la base."""
+        """(votaciones, modelo) de un documento; None si falla o no queda tiempo (se reintenta otro día, desde el
+        último trozo leído). Va en un hilo: no toca la base."""
         if plazo.agotado(deepseek.MINIMO_PARA_LLAMAR):
             return None
         try:
-            texto = condensar(texto_documento(m, ctx, doc))
+            texto = texto_documento(m, ctx, doc)
         except Exception as e:
             log(f"  ! {doc.cuerpo} {doc.fecha}: no se pudo leer {doc.url}: {e}")
             return None
+        if texto.strip() and sin_votaciones(texto, doc.cuerpo):
+            return [], SIN_VOTACIONES
+        texto = condensar(texto)
         votaciones, modelo = [], None
         cola, leidas = trozos(texto), 0
+        hechos = a_medias.de(doc.url)
+        # Un documento nuevo no se empieza si no da tiempo a leerlo entero (lo que se lleve leído no se tiraría,
+        # pero quedaría a medias hasta otro día); uno ya empezado sigue con lo que haya.
+        faltan = sum(huella(p) not in hechos for p in cola)
+        if not hechos and plazo.agotado((faltan - 1) * segundos_por_llamada()
+                                        + max(segundos_por_llamada(), deepseek.MINIMO_PARA_LLAMAR)):
+            return None
         while cola:
-            if plazo.agotado(deepseek.MINIMO_PARA_LLAMAR):
-                return None  # a medias no se guarda: se lee entero en la próxima ejecución
             parte = cola.pop(0)
+            h = huella(parte)
+            previo = hechos.get(h)
+            if previo and previo.get("partir"):
+                cola[:0] = partir(parte)
+                continue
+            if previo:
+                leidas += 1
+                modelo = previo["modelo"]
+                votaciones += previo["votaciones"]
+                continue
+            if plazo.agotado(deepseek.MINIMO_PARA_LLAMAR):
+                return None
             usuario = (f"Institución: {cuerpos[doc.cuerpo].nombre}. Sesión plenaria del {doc.fecha}"
                        + (f" (parte {leidas + 1})" if leidas else "") + ".\n\nTexto:\n" + parte)
+            inicio = time.monotonic()
             try:
-                datos, modelo_real, _uso = deepseek.chat_json(SISTEMA, usuario, max_tokens=MAX_TOKENS)
+                datos, modelo_real, _uso = deepseek.chat_json(SISTEMA, usuario, max_tokens=MAX_TOKENS,
+                                                                 razonar=RAZONAR)
             except deepseek.SinTiempo:
                 return None
             except deepseek.ErrorIA as e:
@@ -526,17 +640,22 @@ def procesar_deepseek(con, limite=None, fuentes=None, log=print):
                 if len(mitades) == 2 and len(parte) >= MIN_PARTIR:
                     # Si no, el mismo texto se truncaría igual en cada ejecución y ocuparía el cupo del conector.
                     log(f"  · {doc.cuerpo} {doc.fecha}: {e}; se parte el texto en dos")
+                    a_medias.anotar(doc, h, partir=True)
                     cola[:0] = mitades
                     continue
                 log(f"  ! {doc.cuerpo} {doc.fecha}: {e}")
                 return None
+            duraciones.append(time.monotonic() - inicio)
             leidas += 1
             modelo = f"deepseek:{modelo_real}"
-            votaciones += limpiar_votaciones(datos.get("votaciones"), _escanos(doc))
+            nuevas = limpiar_votaciones(datos.get("votaciones"), _escanos(doc))
+            if cola or hechos:  # un documento de un solo trozo no queda nunca a medias
+                a_medias.anotar(doc, h, modelo=modelo, votaciones=nuevas)
+            votaciones += nuevas
         return votaciones, modelo
 
     total, hechos = 0, 0
-    # Cada respuesta tarda minutos (el modelo razona antes de contestar): se piden HILOS_ACTAS a la vez y se
+    # Cada respuesta tarda (hasta minutos con razonamiento): se piden HILOS_ACTAS a la vez y se
     # guardan en orden desde este hilo.
     with ThreadPoolExecutor(HILOS_ACTAS) as hilos:
         futuros = [(doc, hilos.submit(leer, m, ctx, doc)) for m, ctx, doc in pendientes]
@@ -550,14 +669,19 @@ def procesar_deepseek(con, limite=None, fuentes=None, log=print):
                 continue
             votaciones, modelo = leido
             registro = guardar_registro(doc, votaciones, modelo)
+            a_medias.terminar(doc)
             fusion = Fusion(con, Cargador(con, cuerpos, "actas-llm"))
             fusion.guardar_todas(a_votaciones(registro))
             con.commit()
             total += len(votaciones)
             hechos += 1
-            log(f"  {doc.cuerpo} {doc.fecha}: {len(votaciones)} votaciones")
+            log(f"  {doc.cuerpo} {doc.fecha}: "
+                + ("sin votaciones según las reglas; no se manda a la IA" if modelo == SIN_VOTACIONES
+                   else f"{len(votaciones)} votaciones"))
     if hechos < len(pendientes):
-        log(f"  {len(pendientes) - hechos} documentos sin leer (fallo o sin tiempo): quedan para la próxima ejecución")
+        empezados = sum(bool(a_medias.de(doc.url)) for _m, _ctx, doc in pendientes)
+        log(f"  {len(pendientes) - hechos} documentos sin leer (fallo o sin tiempo): quedan para la próxima ejecución"
+            + (f"; {empezados} de ellos a medias, se seguirá desde el último trozo leído" if empezados else ""))
     log(f"Actas y diarios: {total} votaciones extraídas de {hechos} documentos")
     return total
 

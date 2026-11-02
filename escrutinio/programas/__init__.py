@@ -13,6 +13,7 @@ reconstruye desde ahí:
 - traducir.py: traducción al castellano de las citas en catalán, euskera o gallego (DeepSeek, una vez).
 - verificar.py: segunda revisión, más exigente (modelo Pro y la cita literal), de las relaciones con
   dirección, que son las que cuentan en las cifras.
+- antecedentes.py: promesas de elecciones por celebrar frente a lo votado antes (herencia y parecidas, sin LLM).
 - cargar.py: tablas de la base desde los JSONL y estado de cada compromiso según lo que votó el partido
   (con reglas, sin LLM). Todo es automático: no hay revisión a mano.
 """

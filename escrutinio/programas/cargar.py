@@ -19,6 +19,7 @@ from ..analisis import TIPOS_FONDO
 from ..gobiernos import GOBIERNOS
 from . import registro
 from .emparejar import _legislatura, leer_emparejamientos
+from . import antecedentes
 from .traducir import vigentes as traducciones
 from .leer import leer_compromisos
 from .verificar import leer_verificaciones
@@ -113,6 +114,7 @@ def cargar(con, log=print):
                 n_pares += 1
         calcular(con, e, leg, compromisos, comparado)
     con.commit()
+    antecedentes.calcular(con, log)  # los programas de elecciones por celebrar, con lo votado antes (sin IA)
     if entradas:
         log(f"Programas: {len(entradas)} ({sum(e['estado'] == 'leido' for e in entradas)} leídos), "
             f"{n_comp} compromisos y {n_pares} iniciativas relacionadas")

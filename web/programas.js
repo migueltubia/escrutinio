@@ -154,9 +154,9 @@ API.programas = (p) => {
     FROM compromiso_iniciativa ci
     LEFT JOIN iniciativa i ON i.legislatura=ci.legislatura AND i.expediente=ci.expediente
     LEFT JOIN en_tramite t ON t.legislatura=ci.legislatura AND t.expediente=ci.expediente
-    WHERE ci.compromiso IN (${marcas}) ORDER BY ci.sentido='relacionada', ci.legislatura, ci.expediente`, ids) : [];
+    WHERE ci.compromiso IN (${marcas}) ORDER BY ci.estado='antecedente', ci.sentido='relacionada', ci.legislatura DESC, ci.expediente`, ids) : [];
   // Lo que votó el partido del programa en cada votación decisiva de fondo de cada iniciativa relacionada.
-  const votos = ids.length ? q(`SELECT ci.compromiso, v.legislatura, v.expediente, v.id, v.fecha, v.tipo_votacion, v.resultado,
+  const votos = ids.length ? q(`SELECT ci.compromiso, v.legislatura, v.expediente, v.id, v.fecha, v.tipo_votacion, v.resultado, gr.codigo AS grupo_partido,
       CASE WHEN v.asentimiento=1 THEN 'si' ELSE ${SQL_APOYO} END AS apoyo
     FROM compromiso_iniciativa ci
     JOIN compromiso c ON c.id=ci.compromiso JOIN programa p ON p.id=c.programa
@@ -198,7 +198,7 @@ API.programasComparar = (p) => {
 // Compromisos relacionados con una iniciativa (para su ficha en el panel de detalle).
 API.programasIniciativa = (p) => q(`SELECT c.id, c.texto, c.pagina, ci.sentido, p.partido, p.eleccion, p.url, p.formato
   FROM compromiso_iniciativa ci JOIN compromiso c ON c.id=ci.compromiso JOIN programa p ON p.id=c.programa
-  WHERE ci.legislatura=? AND ci.expediente=? ORDER BY ci.sentido='relacionada', p.partido, c.orden`, [+p.leg, p.exp]);
+  WHERE ci.legislatura=? AND ci.expediente=? AND ci.estado<>'antecedente' ORDER BY ci.sentido='relacionada', p.partido, c.orden`, [+p.leg, p.exp]);
 
 VISTAS.programas = async (ruta) => {
   // Es una pestaña de Activismo: lo que prometieron frente a lo que votaron.
@@ -330,6 +330,7 @@ VISTAS.programas = async (ruta) => {
 - Se mira lo que votó el partido en la **votación que decidió** cada iniciativa. En una enmienda a la totalidad, votar sí es votar contra el proyecto. Apoyar algo en la línea de la promesa, o rechazar algo que va en contra, cuenta como **votó lo prometido**. Lo contrario cuenta como **votó en contra**.
 - **Que algo no se haya votado no quiere decir que se haya incumplido.** Muchas promesas se cumplen o no con un real decreto, con los presupuestos o con la gestión diaria. De lo que depende del Gobierno solo cuentan los decretos-leyes, porque el Pleno tiene que convalidarlos.
 - En cada votación se indica si el partido estaba en el Gobierno o en la oposición. Si votó contra una promesa suya por un pacto de coalición, aquí se ve.
+- **Elecciones por celebrar.** Sus promesas aún no tienen legislatura siguiente, así que se comparan con lo que se votó antes, en dos apartados aparte: las iniciativas que ya se relacionaron con una promesa casi igual de un programa anterior (con su dirección) y las iniciativas votadas más parecidas por sus palabras. **Son relaciones automáticas, sin analizar una a una**: sirven de pista, no de veredicto, y no cuentan en las cifras. Cuando empiece la legislatura, se sustituyen por el cruce normal.
 - Un programa que todavía no se ha revisado sale como **aún sin revisar** y no cuenta en las cifras.`)));
   return cont;
 };
@@ -435,7 +436,9 @@ function filaCompromiso(c, d, soloContra = false) {
   const [nombre, , explicacion] = ESTADO_COMPROMISO[c.estado || "generico"];
   const votosDe = (r) => d.votos.filter((v) => v.compromiso === c.id && v.legislatura === r.legislatura && v.expediente === r.expediente
     && (!soloContra || coincideVoto(v, r.sentido) === false));
-  const rels = d.relacionadas.filter((r) => r.compromiso === c.id && (!soloContra || votosDe(r).length));
+  const rels = d.relacionadas.filter((r) => r.compromiso === c.id && r.estado !== "antecedente" && (!soloContra || votosDe(r).length));
+  // Promesas de elecciones por celebrar: lo que se votó antes sobre algo parecido (antecedentes.py, sin IA).
+  const antes = soloContra ? [] : d.relacionadas.filter((r) => r.compromiso === c.id && r.estado === "antecedente");
   const anio = (String(c.eleccion).match(/\d{4}/) || [""])[0];
   return el("article", { class: "compromiso" },
     el("div", { class: "small muted cabecera" },
@@ -448,20 +451,29 @@ function filaCompromiso(c, d, soloContra = false) {
     el("blockquote", {}, `«${c.cita}»`,
       c.cita_es ? el("div", { class: "small muted traduccion" }, `En castellano: «${c.cita_es}»`) : null),
     rels.length ? el("ul", { class: "relacionadas" }, rels.map((r) => filaRelacionada(r, c, votosDe(r))))
-      : c.verificable && c.estado !== "por_comparar" ? el("p", { class: "small muted", style: "margin:0" }, "No hay ninguna iniciativa del Pleno sobre esto.") : null);
+      : c.verificable && c.estado !== "por_comparar" ? el("p", { class: "small muted", style: "margin:0" }, "No hay ninguna iniciativa del Pleno sobre esto.") : null,
+    antes.length ? el("div", { class: "antecedentes" },
+      el("div", { class: "small muted", title: AVISO_ANTECEDENTES }, "Votado antes sobre algo parecido · relaciones automáticas, sin analizar una a una"),
+      el("ul", { class: "relacionadas" }, antes.map((r) => filaRelacionada(r, c, votosDe(r))))) : null);
 }
+
+const AVISO_ANTECEDENTES = "Estas elecciones aún no se han celebrado: la promesa se compara con lo que se votó en legislaturas anteriores. "
+  + "Las iniciativas se han elegido solas, por parecido de palabras con la promesa (o porque se relacionaron con una promesa casi igual de un programa anterior), "
+  + "y nadie ha comprobado una a una que traten exactamente lo mismo.";
 
 function filaRelacionada(r, c, votos) {
   const autor = r.grupo_autor ? grupo(r.legislatura, r.grupo_autor) : null;
   return el("li", {},
-    el("div", {}, el("span", { class: "sentido-rel" }, SENTIDO_COMPROMISO[r.sentido] || r.sentido), " · ",
+    el("div", {}, el("span", { class: "sentido-rel" }, r.origen === "parecido" ? "Iniciativa parecida" : SENTIDO_COMPROMISO[r.sentido] || r.sentido), " · ",
       r.votada ? el("a", { href: "#", onclick: (e) => { e.preventDefault(); abrir(`i:${r.legislatura}:${r.expediente}`); } }, textoCorto(r.titulo, 120))
         : r.titulo ? textoCorto(r.titulo, 120) : el("span", { class: "muted" }, r.expediente),
       autor ? el("span", { class: "muted" }, ` · presentada por ${autor.siglas}`) : null, " ", badgeResultado(r.resultado_final),
       // Las que aún no ha visto la segunda revisión cuentan, pero se avisa.
       r.estado === "propuesto" && r.sentido !== "relacionada"
         ? el("span", { class: "small muted", title: "La relación entre la promesa y la iniciativa todavía no se ha repasado con el criterio más estricto." }, " · pendiente de repasar") : null),
-    votos.map((v) => lineaVoto(v, r.sentido, c.partido)),
+    r.estado === "antecedente" && votos.length && votos.every((v) => !v.grupo_partido)
+      ? el("div", { class: "small muted" }, `${c.partido} no estaba en el Congreso cuando se votó.`)
+      : votos.map((v) => lineaVoto(v, r.sentido, c.partido, r.estado === "antecedente")),
     r.justificacion ? el("div", { class: "small muted" }, r.justificacion) : null);
 }
 
@@ -470,7 +482,7 @@ const coincideVoto = (v, sentido) => (sentido !== "relacionada" && (v.apoyo === 
 
 // Lo que votó el partido en una votación decisiva y si coincide con su programa (según el sentido de la iniciativa
 // respecto al compromiso), con si estaba en el Gobierno o en la oposición.
-function lineaVoto(v, sentido, partido) {
+function lineaVoto(v, sentido, partido, antes = false) {
   const g = gobiernoEn(infoLeg(v.legislatura).cuerpo || "congreso", v.fecha);
   const enGobierno = g && (g.partido === partido || lista(g.socios).includes(partido));
   const coincide = coincideVoto(v, sentido);
@@ -480,7 +492,9 @@ function lineaVoto(v, sentido, partido) {
     : v.tipo_votacion === "totalidad" && v.apoyo === "si" ? "votó no a devolver la ley" : VOTO_PROGRAMA[v.apoyo] || "no consta";
   return el("div", { class: "small" }, `${partido} ${comoVoto}`,
     el("span", { class: "muted" }, ` · ${tipo}, ${fecha(v.fecha)} · ${enGobierno ? "en el Gobierno" : "en la oposición"}`), " ",
-    coincide === null ? null : el("span", { class: `badge ${coincide ? "ok" : "ko"}` }, coincide ? "coincide con el programa" : "no coincide con el programa"));
+    coincide === null ? null : el("span", { class: `badge ${coincide ? "ok" : "ko"}` },
+      antes ? (coincide ? "cuadra con lo que promete ahora" : "choca con lo que promete ahora")
+        : coincide ? "coincide con el programa" : "no coincide con el programa"));
 }
 
 // Votaciones decisivas de fondo de una iniciativa con lo que votó un partido (apoyo a la iniciativa) y, si la ley

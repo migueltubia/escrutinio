@@ -168,7 +168,7 @@ def construir(con, destino, log=print):
                                            GROUP_CONCAT(DISTINCT CASE WHEN ci.sentido='misma' THEN p.partido END)
                                     FROM compromiso_iniciativa ci JOIN compromiso c ON c.id=ci.compromiso
                                     JOIN programa p ON p.id=c.programa
-                                    WHERE ci.estado<>'rechazado' GROUP BY 1, 2""")
+                                    WHERE ci.estado NOT IN ('rechazado', 'antecedente') GROUP BY 1, 2""")
     if n:
         log(f"  compromisos de programas electorales: {n}")
     copiar("tema", "SELECT codigo, nombre, subtemas FROM tema")

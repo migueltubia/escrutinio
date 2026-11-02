@@ -501,3 +501,4 @@ button.amb-abrir:hover { background: var(--surface-2); }
 .grupo-votaciones { margin-top: 12px; border-top: 1px solid var(--border); padding-top: 8px; }
 .grupo-votaciones > summary { cursor: pointer; font-weight: 600; padding: 4px 0; }
 .compromiso .antecedentes { margin-top: 8px; padding-top: 6px; border-top: 1px dashed var(--border); }
+.compromiso .en-linea { font-weight: 600; }

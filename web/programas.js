@@ -164,11 +164,17 @@ API.programas = (p) => {
     LEFT JOIN grupo gr ON gr.legislatura=v.legislatura AND gr.siglas=p.partido
     LEFT JOIN voto_grupo g ON g.votacion_id=v.id AND g.grupo=gr.codigo
     WHERE ci.compromiso IN (${marcas}) ORDER BY v.fecha`, ids) : [];
+  // Antecedentes: lo que votó cada grupo, para los partidos que entonces no estaban en el Congreso.
+  const votosGrupos = ids.length ? q(`SELECT DISTINCT v.id, g.grupo, ${SQL_APOYO} AS apoyo
+    FROM compromiso_iniciativa ci
+    JOIN votacion v ON v.legislatura=ci.legislatura AND v.expediente=ci.expediente AND v.decisiva=1 AND v.tipo_votacion IN (${FONDO_SQL})
+    JOIN voto_grupo g ON g.votacion_id=v.id
+    WHERE ci.compromiso IN (${marcas}) AND ci.estado='antecedente'`, ids) : [];
   const opciones = opcionesProgramas();
   // Efecto gobierno: estado de los compromisos según si el partido gobernaba en todas las votaciones relacionadas
   // (gobierno=1) o en ninguna (gobierno=0).
   const gobierno = q(`SELECT p.partido, ce.gobierno, ce.estado, COUNT(*) AS n ${base} AND ce.gobierno IS NOT NULL GROUP BY 1, 2, 3`, args);
-  return { programas, resumen, compromisos, contradichos, relacionadas, votos, total, pagina, tam, opciones, gobierno };
+  return { programas, resumen, compromisos, contradichos, relacionadas, votos, votosGrupos, total, pagina, tam, opciones, gobierno };
 };
 
 const opcionesProgramas = () => ({
@@ -454,14 +460,14 @@ function filaCompromiso(c, d, soloContra = false) {
       : c.verificable && c.estado !== "por_comparar" ? el("p", { class: "small muted", style: "margin:0" }, "No hay ninguna iniciativa del Pleno sobre esto.") : null,
     antes.length ? el("div", { class: "antecedentes" },
       el("div", { class: "small muted", title: AVISO_ANTECEDENTES }, "Votado antes sobre algo parecido · relaciones automáticas, sin analizar una a una"),
-      el("ul", { class: "relacionadas" }, antes.map((r) => filaRelacionada(r, c, votosDe(r))))) : null);
+      el("ul", { class: "relacionadas" }, antes.map((r) => filaRelacionada(r, c, votosDe(r), d.votosGrupos)))) : null);
 }
 
 const AVISO_ANTECEDENTES = "Estas elecciones aún no se han celebrado: la promesa se compara con lo que se votó en legislaturas anteriores. "
   + "Las iniciativas se han elegido solas, por parecido de palabras con la promesa (o porque se relacionaron con una promesa casi igual de un programa anterior), "
   + "y nadie ha comprobado una a una que traten exactamente lo mismo.";
 
-function filaRelacionada(r, c, votos) {
+function filaRelacionada(r, c, votos, votosGrupos = []) {
   const autor = r.grupo_autor ? grupo(r.legislatura, r.grupo_autor) : null;
   return el("li", {},
     el("div", {}, el("span", { class: "sentido-rel" }, r.origen === "parecido" ? "Iniciativa parecida" : SENTIDO_COMPROMISO[r.sentido] || r.sentido), " · ",
@@ -472,9 +478,29 @@ function filaRelacionada(r, c, votos) {
       r.estado === "propuesto" && r.sentido !== "relacionada"
         ? el("span", { class: "small muted", title: "La relación entre la promesa y la iniciativa todavía no se ha repasado con el criterio más estricto." }, " · pendiente de repasar") : null),
     r.estado === "antecedente" && votos.length && votos.every((v) => !v.grupo_partido)
-      ? el("div", { class: "small muted" }, `${c.partido} no estaba en el Congreso cuando se votó.`)
+      ? [el("div", { class: "small muted" }, `${c.partido} no estaba en el Congreso cuando se votó. Así votaron los grupos:`),
+        votos.map((v) => lineaGrupos(v, r.sentido, votosGrupos.filter((g) => g.id === v.id)))]
       : votos.map((v) => lineaVoto(v, r.sentido, c.partido, r.estado === "antecedente")),
     r.justificacion ? el("div", { class: "small muted" }, r.justificacion) : null);
+}
+
+// Lo que votó cada grupo en una votación (para un partido que entonces no estaba en el Congreso). Si la iniciativa
+// tiene dirección respecto a la promesa, se marca qué lado votó en su línea.
+function lineaGrupos(v, sentido, gs) {
+  const tipo = META.tipos_votacion[v.tipo_votacion] || v.tipo_votacion;
+  const siglas = (a) => gs.filter((g) => g.apoyo === a).map((g) => grupo(v.legislatura, g.grupo).siglas || g.grupo).sort();
+  const enLinea = sentido === "misma" ? "si" : sentido === "contraria" ? "no" : null;
+  const parte = (a, texto) => {
+    const xs = siglas(a);
+    return xs.length ? el("span", { class: a === enLinea ? "en-linea" : null, title: a === enLinea ? "Votar así iba en la línea de la promesa" : null },
+      `${texto}: ${xs.join(", ")}`) : null;
+  };
+  // En la totalidad, apoyar la ley es votar no a devolverla: se dice así, como en el resto de la web.
+  const total = v.tipo_votacion === "totalidad";
+  const partes = [parte("si", total ? "No a devolver la ley" : "A favor"), parte("no", total ? "Sí a devolver la ley" : "En contra"),
+    parte("abstencion", "Abstención")].filter(Boolean);
+  return el("div", { class: "small" }, el("span", { class: "muted" }, `${tipo}, ${fecha(v.fecha)} · `),
+    partes.length ? partes.flatMap((p, i) => (i ? [" · ", p] : [p])) : el("span", { class: "muted" }, "no consta el voto de los grupos"));
 }
 
 // Si un voto coincide con el compromiso según el sentido de la iniciativa respecto a él (null si no se puede decir).

@@ -10,8 +10,9 @@
 5. Votaciones autonómicas y locales: cada conector territorial trae lo nuevo desde su última
    votación guardada; con DeepSeek, además, se leen los diarios de sesiones y actas pendientes (con
    un límite por ejecución). Un conector que falla no para a los demás ni al resto del ciclo.
-6. Programas electorales: con DeepSeek, se leen los programas registrados pendientes y se relacionan
-   los compromisos con las iniciativas nuevas; con o sin clave, se recalcula su estado con los votos.
+6. Programas electorales: se buscan y se bajan los de las elecciones vigiladas; con DeepSeek, se leen los
+   pendientes, se relacionan los compromisos con las iniciativas nuevas y se traducen las citas que no están en
+   castellano; con o sin clave, se recalcula su estado con los votos.
 7. Se recalculan agregados, se regenera la web y se vuelve a trocear la base en data/bd/.
 
 Con un tiempo máximo (MINUTOS_MAX o --minutos; en GitHub Actions, algo menos que el límite del trabajo), cada

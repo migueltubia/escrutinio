@@ -250,6 +250,7 @@ CREATE TABLE IF NOT EXISTS compromiso(
   orden INTEGER,
   texto TEXT,
   cita TEXT,
+  cita_es TEXT,                -- traducción al castellano si la cita está en otra lengua (programas/traducir.py)
   pagina INTEGER,
   tema TEXT,
   etiquetas TEXT,
@@ -351,6 +352,8 @@ def init(con, catalogos=True):
     con.executescript(SCHEMA_PROGRAMAS)
     if "formato" not in {r[1] for r in con.execute("PRAGMA table_info(programa)")}:  # pdf o html
         con.execute("ALTER TABLE programa ADD COLUMN formato TEXT")
+    if "cita_es" not in {r[1] for r in con.execute("PRAGMA table_info(compromiso)")}:
+        con.execute("ALTER TABLE compromiso ADD COLUMN cita_es TEXT")
     from .catalogos import TIPOS_EXPEDIENTE, TEMAS
     from .territorial.modelo import TIPOS_INICIATIVA
 

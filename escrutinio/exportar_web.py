@@ -112,7 +112,7 @@ CREATE TABLE programa_iniciativa(legislatura INTEGER, expediente TEXT, partidos 
 # Compromisos de los programas, sus iniciativas relacionadas y su estado: van en programas.js, que la web
 # solo descarga al entrar en «Programas» o al abrir una iniciativa que aparece en algún programa.
 ESQUEMA_PROGRAMAS = """
-CREATE TABLE compromiso(id TEXT PRIMARY KEY, programa TEXT, orden INTEGER, texto TEXT, cita TEXT, pagina INTEGER,
+CREATE TABLE compromiso(id TEXT PRIMARY KEY, programa TEXT, orden INTEGER, texto TEXT, cita TEXT, cita_es TEXT, pagina INTEGER,
   tema TEXT, etiquetas TEXT, tipo_accion TEXT, responsable TEXT, verificable INTEGER);
 CREATE INDEX ix_compromiso_programa ON compromiso(programa);
 CREATE TABLE compromiso_iniciativa(compromiso TEXT, legislatura INTEGER, expediente TEXT, sentido TEXT,
@@ -158,7 +158,7 @@ def construir(con, destino, log=print):
     copiar("programa", """SELECT id, eleccion, fecha_eleccion, cuerpo, legislatura, partido, titulo, origen, url, url_oficial,
                                  descargado, paginas, estado, leido, compromisos, verificables,
                                  COALESCE(formato, 'pdf') FROM programa""")
-    n = copiar("compromiso", """SELECT id, programa, orden, texto, cita, pagina, tema, etiquetas, tipo_accion, responsable,
+    n = copiar("compromiso", """SELECT id, programa, orden, texto, cita, cita_es, pagina, tema, etiquetas, tipo_accion, responsable,
                                    verificable FROM compromiso""")
     copiar("compromiso_iniciativa", """SELECT compromiso, legislatura, expediente, sentido, justificacion, origen, estado
                                       FROM compromiso_iniciativa WHERE estado<>'rechazado'""")

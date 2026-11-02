@@ -19,6 +19,7 @@ from ..analisis import TIPOS_FONDO
 from ..gobiernos import GOBIERNOS
 from . import registro
 from .emparejar import _legislatura, leer_emparejamientos
+from .traducir import vigentes as traducciones
 from .leer import leer_compromisos
 from .verificar import leer_verificaciones
 
@@ -82,10 +83,12 @@ def cargar(con, log=print):
         if e["estado"] != "leido":
             continue
         compromisos = leer_compromisos(e["id"])
+        traducidas = traducciones(e["id"], compromisos)
         con.executemany(
-            """INSERT INTO compromiso(id, programa, orden, texto, cita, pagina, tema, etiquetas, tipo_accion, responsable, verificable)
-               VALUES (?,?,?,?,?,?,?,?,?,?,?)""",
-            [(c["id"], e["id"], k, c["texto"], c["cita"], c["pagina"], c["tema"], json.dumps(c["etiquetas"], ensure_ascii=False),
+            """INSERT INTO compromiso(id, programa, orden, texto, cita, cita_es, pagina, tema, etiquetas, tipo_accion, responsable,
+                 verificable) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)""",
+            [(c["id"], e["id"], k, c["texto"], c["cita"], traducidas.get(c["id"]), c["pagina"], c["tema"],
+              json.dumps(c["etiquetas"], ensure_ascii=False),
               c["tipo_accion"], c["responsable"], int(c["verificable"])) for k, c in enumerate(compromisos, 1)])
         n_comp += len(compromisos)
         ids = {c["id"] for c in compromisos}

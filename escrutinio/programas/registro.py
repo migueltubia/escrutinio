@@ -191,8 +191,19 @@ def _altas():
     return salida
 
 
+def _encontrados():
+    """Programas que buscar.py ha encontrado solos en las webs de los partidos (data/llm/programas/encontrados.json)."""
+    try:
+        datos = json.loads((PROGRAMAS_DIR / "encontrados.json").read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return []
+    return [{c: p.get(c) for c in CAMPOS} for p in datos.get("programas", []) if p.get("id") and p.get("url")]
+
+
 def catalogo(ids=None):
     salida = [dict(zip(CAMPOS, p)) for p in PROGRAMAS] + _altas()
+    vistos = {p["id"] for p in salida}
+    salida += [p for p in _encontrados() if p["id"] not in vistos]  # lo puesto a mano manda
     return [p for p in salida if not ids or p["id"] in ids]
 
 
@@ -387,6 +398,13 @@ def descargar(ids=None, forzar=False, log=print):
         guardar_registro(leer_registro() + nuevos)
     log(f"Programas nuevos en el registro: {len(nuevos)}")
     return len(nuevos)
+
+
+def sin_registrar():
+    """Ids del catálogo que aún no tienen ninguna línea en el registro: los únicos que hay que bajar a diario (en
+    GitHub Actions no hay caché de PDF, así que descargar el catálogo entero los bajaría todos cada día)."""
+    hechos = {e["base"] for e in leer_registro()}
+    return [p["id"] for p in catalogo() if p["id"] not in hechos]
 
 
 # ---------------------------------------------------------------- estado

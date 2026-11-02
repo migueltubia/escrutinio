@@ -88,18 +88,33 @@ function barraPromesas(o) {
   return barra;
 }
 
+// Filtro de elección: el número de la legislatura que cubre el programa o, si aún no ha empezado (elecciones por
+// celebrar o recién celebradas), el código de la elección («generales-2026»). Devuelve [condición, argumentos].
+function enEleccion(valor) {
+  const xs = lista(valor);
+  if (!xs.length) return ["", []];
+  const legs = xs.filter((x) => /^\d+$/.test(x)).map(Number), elecs = xs.filter((x) => !/^\d+$/.test(x));
+  const marcas = (ys) => ys.map(() => "?").join(",");
+  const partes = [legs.length ? `p.legislatura IN (${marcas(legs)})` : null,
+    elecs.length ? `(p.legislatura IS NULL AND p.eleccion IN (${marcas(elecs)}))` : null].filter(Boolean);
+  return [`(${partes.join(" OR ")})`, [...legs, ...elecs]];
+}
+const conEleccion = (valor) => { const [c, a] = enEleccion(valor); return [c ? ` AND ${c}` : "", a]; };
+// «Generales de 2023 · Leg. XV»; si la legislatura aún no ha empezado, solo la elección.
+const opcionEleccion = (l) => [l.valor, l.legislatura ? `${eleccionTexto(l.eleccion)} · ${legTexto(l.legislatura)}` : `${eleccionTexto(l.eleccion)} · por empezar`];
+
 // Filtros de la lista de compromisos: partido, legislatura, tema, acción y texto van en base (también cuentan en los
 // recuentos); el de estado (we) solo filtra la lista.
 function filtrosProgramas(p) {
   const [wg, ag] = enSQL("p.partido", p.g);
-  const [wl, al] = enSQL("p.legislatura", p.leg, { conv: Number });
+  const [wl, al] = conEleccion(p.leg);
   const [wt, at] = enSQL("c.tema", p.tema);
   const [wa, aa] = enSQL("c.tipo_accion", p.accion);
   const [we, ae] = enSQL("COALESCE(ce.estado, 'generico')", p.estado);
   // Palabras sueltas: todas tienen que salir en el texto, la cita o las etiquetas.
   const palabras = (p.q || "").split(/\s+/).filter(Boolean);
-  const wq = palabras.map(() => "AND (c.texto LIKE ? OR c.cita LIKE ? OR c.etiquetas LIKE ?)").join(" ");
-  const aq = palabras.flatMap((x) => Array(3).fill(`%${x}%`));
+  const wq = palabras.map(() => "AND (c.texto LIKE ? OR c.cita LIKE ? OR c.cita_es LIKE ? OR c.etiquetas LIKE ?)").join(" ");
+  const aq = palabras.flatMap((x) => Array(4).fill(`%${x}%`));
   return {
     wg, ag, wl, al, we, ae,
     base: `FROM compromiso c JOIN programa p ON p.id=c.programa LEFT JOIN compromiso_estado ce ON ce.compromiso=c.id
@@ -158,14 +173,17 @@ API.programas = (p) => {
 
 const opcionesProgramas = () => ({
   partidos: q("SELECT DISTINCT partido FROM programa ORDER BY 1").map((r) => r.partido),
-  legislaturas: q("SELECT legislatura, MIN(eleccion) AS eleccion FROM programa WHERE legislatura IS NOT NULL GROUP BY 1 ORDER BY 1 DESC"),
+  // Una opción por elección: las que aún no tienen legislatura van por su código. «leidos»: partidos con el programa leído.
+  legislaturas: q(`SELECT COALESCE(CAST(legislatura AS TEXT), eleccion) AS valor, legislatura, MIN(eleccion) AS eleccion,
+      COUNT(DISTINCT CASE WHEN estado='leido' THEN partido END) AS leidos
+    FROM programa GROUP BY 1 ORDER BY MAX(fecha_eleccion) DESC`),
 });
 
 // Para Comparar · Programas: compromisos verificables por partido, tema y tipo de medida, y lo que presentó cada
 // partido en la legislatura que cubre su programa, por tema (para comparar el peso de cada tema).
 API.programasComparar = (p) => {
   const [wg, ag] = enSQL("p.partido", p.g);
-  const [wl, al] = enSQL("p.legislatura", p.leg, { conv: Number });
+  const [wl, al] = conEleccion(p.leg);
   const [wt, at] = enSQL("c.tema", p.tema);
   const acciones = q(`SELECT p.partido, c.tema, c.tipo_accion AS accion, COUNT(*) AS n
     FROM compromiso c JOIN programa p ON p.id=c.programa LEFT JOIN compromiso_estado ce ON ce.compromiso=c.id
@@ -194,7 +212,7 @@ VISTAS.programas = async (ruta) => {
     formFiltros([
       el("input", { type: "search", name: "q", value: ruta.q || "", placeholder: "Buscar en las promesas (alquiler, IVA, pensiones…)" }),
       multiSelect("g", d.opciones.partidos.map((s) => [s, s]), ruta.g, "Todos los partidos", "partidos"),
-      multiSelect("leg", d.opciones.legislaturas.map((l) => [l.legislatura, `${eleccionTexto(l.eleccion)} · ${legTexto(l.legislatura)}`]), ruta.leg, "Todas las elecciones", "elecciones"),
+      multiSelect("leg", d.opciones.legislaturas.map(opcionEleccion), ruta.leg, "Todas las elecciones", "elecciones"),
       multiSelect("tema", optTemas(), ruta.tema, "Todos los temas", "temas"),
       multiSelect("accion", Object.entries(ACCION_COMPROMISO), ruta.accion, "Cualquier tipo de medida", "medidas"),
       multiSelect("estado", Object.entries(ESTADO_COMPROMISO).map(([k, v]) => [k, v[0]]), ruta.estado, "Votaran lo que votaran", "opciones"),
@@ -234,7 +252,7 @@ VISTAS.programas = async (ruta) => {
         const co = coinciden(o);
         // Leído pero aún sin comparar con lo votado: no hay nada que enseñar en la barra.
         const comparado = p.estado === "leido" && !o.por_comparar;
-        return el("tr", { class: "clic", onclick: () => ir({ g: p.partido, leg: p.legislatura ? String(p.legislatura) : "" }) },
+        return el("tr", { class: "clic", onclick: () => ir({ g: p.partido, leg: p.legislatura ? String(p.legislatura) : p.eleccion }) },
           el("td", { style: "white-space:nowrap" }, swatch(colorSiglas(p.partido)), p.partido),
           el("td", {}, el("a", { href: enlaceCita(p.url, p.formato, 1).href.replace(/#page=1$/, ""), target: "_blank", rel: "noopener", onclick: (e) => e.stopPropagation() }, p.titulo),
             el("div", { class: "small muted" }, [eleccionTexto(p.eleccion), p.formato === "html" ? `página web, ${fmt(p.paginas)} apartados` : `${fmt(p.paginas)} páginas`, p.legislatura ? `para la ${legTexto(p.legislatura)}` : null,
@@ -295,8 +313,8 @@ VISTAS.programas = async (ruta) => {
   const csv = async () => {
     const filas = await api("programasCSV", filtros);
     descargarCSV(`programas-${hoyISO()}.csv`,
-      ["Partido", "Elección", "Promesa", "Frase del programa", "Página", "Tema", "Tipo de medida", "Depende de", "Qué pasó", "Enlace"],
-      filas.map((c) => [c.partido, eleccionTexto(c.eleccion), c.texto, c.cita, c.pagina, temaNombre(c.tema), ACCION_COMPROMISO[c.tipo_accion] || "",
+      ["Partido", "Elección", "Promesa", "Frase del programa", "Frase en castellano", "Página", "Tema", "Tipo de medida", "Depende de", "Qué pasó", "Enlace"],
+      filas.map((c) => [c.partido, eleccionTexto(c.eleccion), c.texto, c.cita, c.cita_es || "", c.pagina, temaNombre(c.tema), ACCION_COMPROMISO[c.tipo_accion] || "",
         c.verificable ? (RESPONSABLE_COMPROMISO[c.responsable] || "").replace(/^Depende de(l| las)? /, "") : "", ESTADO_COMPROMISO[c.estado][0], enlaceCita(c.url, c.formato, c.pagina).href]));
   };
   cont.append(el("div", { class: "card", style: "margin-top:16px" }, el("h3", {}, `Todas las promesas (${fmt(d.total)})`),
@@ -323,14 +341,15 @@ VISTAS["comparar-programas"] = async (ruta) => {
   if (!(await cargarProgramas())) return el("div", {}, cabecera, el("div", { class: "vacio" }, "Todavía no hay programas electorales."));
   const opciones = opcionesProgramas();
   // Sin elección elegida, la última: sumar programas de años distintos mezcla épocas.
-  const leg = ruta.leg || String((opciones.legislaturas[0] || {}).legislatura || "");
+  // Por defecto, la última elección con al menos dos programas leídos: con uno solo no hay nada que comparar.
+  const leg = ruta.leg || String((opciones.legislaturas.find((l) => l.leidos >= 2) || opciones.legislaturas[0] || {}).valor || "");
   const d = await api("programasComparar", { g: ruta.g, leg, tema: ruta.tema });
   const verCompromisos = (cambios) => irA("programas", { leg, tema: ruta.tema, ...cambios });
   const cont = el("div", {}, cabecera,
     el("p", { class: "sub" }, "Los programas de los partidos comparados entre sí, contando solo las promesas concretas. Aquí no entra lo que votaron después: eso está en Activismo · Programas electorales."),
     formFiltros([
       multiSelect("g", opciones.partidos.map((s) => [s, s]), ruta.g, "Todos los partidos", "partidos"),
-      multiSelect("leg", opciones.legislaturas.map((l) => [l.legislatura, `${eleccionTexto(l.eleccion)} · ${legTexto(l.legislatura)}`]), leg, "Última elección", "elecciones"),
+      multiSelect("leg", opciones.legislaturas.map(opcionEleccion), leg, "Última elección", "elecciones"),
       multiSelect("tema", optTemas(), ruta.tema, "Todos los temas", "temas"),
     ], { ...ruta, leg }, (f) => irA("comparar-programas", f)));
   if (!d.acciones.length) {
@@ -426,7 +445,8 @@ function filaCompromiso(c, d, soloContra = false) {
         `Programa ${c.partido} ${anio}, ${enlaceCita(c.url, c.formato, c.pagina).texto}`),
       c.aprobada ? el("span", { class: "badge ok" }, "Se aprobó algo en esa línea") : null),
     el("div", { class: "texto" }, c.texto),
-    el("blockquote", {}, `«${c.cita}»`),
+    el("blockquote", {}, `«${c.cita}»`,
+      c.cita_es ? el("div", { class: "small muted traduccion" }, `En castellano: «${c.cita_es}»`) : null),
     rels.length ? el("ul", { class: "relacionadas" }, rels.map((r) => filaRelacionada(r, c, votosDe(r))))
       : c.verificable && c.estado !== "por_comparar" ? el("p", { class: "small muted", style: "margin:0" }, "No hay ninguna iniciativa del Pleno sobre esto.") : null);
 }
@@ -486,13 +506,14 @@ function votosPartido(leg, exp, partido) {
 API.programasCausa = (p) => {
   const w = ["c.verificable=1"], a = [];
   condIn(w, a, "c.tema", p.tema);
-  condIn(w, a, "p.legislatura", p.leg, Number);
+  const [cl, al] = enEleccion(p.leg);
+  if (cl) { w.push(cl); a.push(...al); }
   condJson(w, a, "c.etiquetas", p.etiqueta);
   for (const palabra of (p.q || "").split(/\s+/).filter(Boolean)) {
-    w.push("(c.texto LIKE ? OR c.cita LIKE ? OR c.etiquetas LIKE ?)");
-    a.push(...Array(3).fill(`%${palabra}%`));
+    w.push("(c.texto LIKE ? OR c.cita LIKE ? OR c.cita_es LIKE ? OR c.etiquetas LIKE ?)");
+    a.push(...Array(4).fill(`%${palabra}%`));
   }
-  return q(`SELECT c.id, c.texto, c.cita, c.pagina, c.orden, p.partido, p.eleccion, p.fecha_eleccion, p.url, p.formato,
+  return q(`SELECT c.id, c.texto, c.cita, c.cita_es, c.pagina, c.orden, p.partido, p.eleccion, p.fecha_eleccion, p.url, p.formato,
       COALESCE(ce.estado, 'generico') AS estado
     FROM compromiso c JOIN programa p ON p.id=c.programa LEFT JOIN compromiso_estado ce ON ce.compromiso=c.id
     WHERE ${w.join(" AND ")}`, a);
@@ -534,7 +555,8 @@ function listaCausaProgramas(cs, causa) {
     const cita = enlaceCita(c.url, c.formato, c.pagina);
     return el("li", {},
       el("div", {}, el("span", { class: "badge", title: explicacion }, puntoEstado(c.estado), nombre), " ", c.texto),
-      el("div", { class: "small muted" }, el("a", { href: cita.href, target: "_blank", rel: "noopener", title: `«${c.cita}»` },
+      el("div", { class: "small muted" }, el("a", { href: cita.href, target: "_blank", rel: "noopener", title: `«${c.cita}»${c.cita_es ? `
+En castellano: «${c.cita_es}»` : ""}` },
         `Programa ${c.partido}, ${eleccionTexto(c.eleccion).toLowerCase()}, ${cita.texto}`)));
   };
   const MUESTRA = 5;

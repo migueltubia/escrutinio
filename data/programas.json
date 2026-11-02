@@ -16,10 +16,222 @@
     "  - url:            URL que se descarga (PDF o página web del programa).",
     "  - origen:         'web-partido' | 'copia-prensa' | 'archivo-web' (de dónde sale la copia).",
     "  - url_oficial:    la URL oficial si 'url' es una copia; si bajas la oficial directamente, null.",
-    "La ruta del PDF NO se descubre sola: la pones aquí cuando el partido publique su programa.",
-    "Ejemplo (cuando exista el PDF): { \"id\": \"generales-2026-salf\", \"eleccion\": \"generales-2026\",",
-    "  \"fecha_eleccion\": \"2026-11-29\", \"cuerpo\": \"congreso\", \"partido\": \"SALF\",",
-    "  \"titulo\": \"Programa electoral 2026\", \"url\": \"https://…/programa.pdf\", \"origen\": \"web-partido\", \"url_oficial\": null }"
+    "PROGRAMAS NUEVOS SIN TOCAR NADA: la lista «vigilar» dice qué partidos se presentan a cada elección y en qué",
+    "páginas de su web suele salir el programa (la portada vale). Cada actualización diaria, hasta 7 días después de",
+    "la votación, mira esas páginas y las del mismo sitio que enlazan con «programa», y cada PDF nuevo cuyo enlace",
+    "hable de programa y del año de la elección entra solo en data/llm/programas/encontrados.json, se descarga y se lee.",
+    "Para una elección o un partido nuevo, basta añadir una línea a «vigilar»: eleccion, fecha_eleccion, cuerpo,",
+    "partido (siglas como en data/partidos.json o la tabla base) y paginas. Opcional: 'patron' (expresión regular",
+    "sobre el enlace en minúsculas y sin tildes, por defecto 'programa|programme|egitarau') y 'titulo'.",
+    "Comprobación a mano: python -m escrutinio programas-buscar. Un PDF encontrado que no es el programa se borra de",
+    "encontrados.json y se pone su URL en «descartar» de ese mismo fichero.",
+    "Si un partido publica el programa en otro sitio (o con otro nombre), se da de alta abajo, en «programas»:",
+    "lo puesto a mano manda sobre lo encontrado."
   ],
-  "programas": []
+  "vigilar": [
+    {
+      "eleccion": "generales-2026",
+      "fecha_eleccion": "2026-11-29",
+      "cuerpo": "congreso",
+      "partido": "PSOE",
+      "paginas": [
+        "https://www.psoe.es/"
+      ]
+    },
+    {
+      "eleccion": "generales-2026",
+      "fecha_eleccion": "2026-11-29",
+      "cuerpo": "congreso",
+      "partido": "PP",
+      "paginas": [
+        "https://www.pp.es/"
+      ]
+    },
+    {
+      "eleccion": "generales-2026",
+      "fecha_eleccion": "2026-11-29",
+      "cuerpo": "congreso",
+      "partido": "VOX",
+      "paginas": [
+        "https://www.voxespana.es/"
+      ]
+    },
+    {
+      "eleccion": "generales-2026",
+      "fecha_eleccion": "2026-11-29",
+      "cuerpo": "congreso",
+      "partido": "Sumar",
+      "paginas": [
+        "https://movimientosumar.es/"
+      ]
+    },
+    {
+      "eleccion": "generales-2026",
+      "fecha_eleccion": "2026-11-29",
+      "cuerpo": "congreso",
+      "partido": "ERC",
+      "paginas": [
+        "https://www.esquerra.cat/"
+      ]
+    },
+    {
+      "eleccion": "generales-2026",
+      "fecha_eleccion": "2026-11-29",
+      "cuerpo": "congreso",
+      "partido": "Junts",
+      "paginas": [
+        "https://junts.cat/"
+      ]
+    },
+    {
+      "eleccion": "generales-2026",
+      "fecha_eleccion": "2026-11-29",
+      "cuerpo": "congreso",
+      "partido": "Bildu",
+      "paginas": [
+        "https://ehbildu.eus/"
+      ]
+    },
+    {
+      "eleccion": "generales-2026",
+      "fecha_eleccion": "2026-11-29",
+      "cuerpo": "congreso",
+      "partido": "PNV",
+      "paginas": [
+        "https://www.eaj-pnv.eus/es/"
+      ]
+    },
+    {
+      "eleccion": "generales-2026",
+      "fecha_eleccion": "2026-11-29",
+      "cuerpo": "congreso",
+      "partido": "BNG",
+      "paginas": [
+        "https://www.bng.gal/",
+        "https://www.bng.gal/estaticas/programas-eleitorais.html"
+      ]
+    },
+    {
+      "eleccion": "generales-2026",
+      "fecha_eleccion": "2026-11-29",
+      "cuerpo": "congreso",
+      "partido": "CC",
+      "paginas": [
+        "https://coalicioncanaria.org/",
+        "https://coalicioncanaria.org/programas-electorales/"
+      ]
+    },
+    {
+      "eleccion": "generales-2026",
+      "fecha_eleccion": "2026-11-29",
+      "cuerpo": "congreso",
+      "partido": "UPN",
+      "paginas": [
+        "https://upn.org/"
+      ]
+    },
+    {
+      "eleccion": "generales-2026",
+      "fecha_eleccion": "2026-11-29",
+      "cuerpo": "congreso",
+      "partido": "Podemos",
+      "paginas": [
+        "https://podemos.info/"
+      ]
+    },
+    {
+      "eleccion": "generales-2026",
+      "fecha_eleccion": "2026-11-29",
+      "cuerpo": "congreso",
+      "partido": "SALF",
+      "paginas": [
+        "https://seacabolafiesta.es/"
+      ]
+    },
+    {
+      "eleccion": "generales-2026",
+      "fecha_eleccion": "2026-11-29",
+      "cuerpo": "congreso",
+      "partido": "Democracia 21",
+      "paginas": [
+        "https://democracia21.es/"
+      ]
+    },
+    {
+      "eleccion": "generales-2026",
+      "fecha_eleccion": "2026-11-29",
+      "cuerpo": "congreso",
+      "partido": "Cree",
+      "paginas": [
+        "https://cree.org.es/"
+      ]
+    },
+    {
+      "eleccion": "generales-2026",
+      "fecha_eleccion": "2026-11-29",
+      "cuerpo": "congreso",
+      "partido": "Cs",
+      "paginas": [
+        "https://www.ciudadanos-cs.org/"
+      ]
+    },
+    {
+      "eleccion": "generales-2026",
+      "fecha_eleccion": "2026-11-29",
+      "cuerpo": "congreso",
+      "partido": "CUP",
+      "paginas": [
+        "https://www.cup.cat/"
+      ]
+    },
+    {
+      "eleccion": "generales-2026",
+      "fecha_eleccion": "2026-11-29",
+      "cuerpo": "congreso",
+      "partido": "Compromís",
+      "paginas": [
+        "https://compromis.net/"
+      ]
+    },
+    {
+      "eleccion": "generales-2026",
+      "fecha_eleccion": "2026-11-29",
+      "cuerpo": "congreso",
+      "partido": "Geroa Bai",
+      "paginas": [
+        "https://geroabai.eus/"
+      ]
+    },
+    {
+      "eleccion": "generales-2026",
+      "fecha_eleccion": "2026-11-29",
+      "cuerpo": "congreso",
+      "partido": "NC",
+      "paginas": [
+        "https://www.nuevacanarias.org/"
+      ]
+    },
+    {
+      "eleccion": "generales-2026",
+      "fecha_eleccion": "2026-11-29",
+      "cuerpo": "congreso",
+      "partido": "Teruel Existe",
+      "paginas": [
+        "https://teruelexiste.info/"
+      ]
+    }
+  ],
+  "programas": [
+    {
+      "eleccion": "generales-2026",
+      "fecha_eleccion": "2026-11-29",
+      "cuerpo": "congreso",
+      "id": "generales-2026-pp-contrato",
+      "partido": "PP",
+      "titulo": "Mi contrato con España. Respeto a la gente. Respeto a la nación",
+      "url": "https://www.pp.es/wp-content/uploads/2026/10/CONTRATO-CON-ESPANA-.pdf",
+      "origen": "web-partido",
+      "url_oficial": null
+    }
+  ]
 }

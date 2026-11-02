@@ -1,16 +1,16 @@
 // Generado por `python -m escrutinio web`. Ficheros de datos que carga la web, en orden.
 window.ESCRUTINIO_INDICE = {
- "generado": "2026-11-01T11:46:37+00:00",
+ "generado": "2026-11-02T17:17:31+00:00",
  "ficheros": [
   {
    "nombre": "comun",
-   "huella": "598fc610bbbafe09",
-   "bytes": 131328
+   "huella": "7bb441eae75caa12",
+   "bytes": 148479
   },
   {
    "nombre": "programas",
-   "huella": "ee1861120e6d5955",
-   "bytes": 6389192
+   "huella": "04b7550130f59306",
+   "bytes": 6692191
   },
   {
    "nombre": "congreso/leg10",
@@ -34,7 +34,7 @@ window.ESCRUTINIO_INDICE = {
    "nombre": "congreso/leg13",
    "cuerpo": "congreso",
    "huella": "a56c72d509106d51",
-   "bytes": 38129
+   "bytes": 38132
   },
   {
    "nombre": "congreso/leg14",
@@ -94,7 +94,7 @@ window.ESCRUTINIO_INDICE = {
    "nombre": "parl-AR/leg12",
    "cuerpo": "parl-AR",
    "huella": "28a53fcebbd8ba2f",
-   "bytes": 13772
+   "bytes": 13775
   },
   {
    "nombre": "parl-AS/leg10",
@@ -118,25 +118,25 @@ window.ESCRUTINIO_INDICE = {
    "nombre": "parl-IB/leg8",
    "cuerpo": "parl-IB",
    "huella": "5408a84ea9c69dcf",
-   "bytes": 123043
+   "bytes": 123046
   },
   {
    "nombre": "parl-IB/leg9",
    "cuerpo": "parl-IB",
    "huella": "66bfe29f8790dcb1",
-   "bytes": 272735
+   "bytes": 272738
   },
   {
    "nombre": "parl-IB/leg10",
    "cuerpo": "parl-IB",
    "huella": "d7a982599796ae4d",
-   "bytes": 312236
+   "bytes": 312239
   },
   {
    "nombre": "parl-IB/leg11",
    "cuerpo": "parl-IB",
    "huella": "c9fbd813e4558ee8",
-   "bytes": 215168
+   "bytes": 215171
   },
   {
    "nombre": "parl-CN/leg4",
@@ -160,7 +160,7 @@ window.ESCRUTINIO_INDICE = {
    "nombre": "parl-CN/leg7",
    "cuerpo": "parl-CN",
    "huella": "40d11b573239e0af",
-   "bytes": 127547
+   "bytes": 127550
   },
   {
    "nombre": "parl-CN/leg8",
@@ -190,19 +190,19 @@ window.ESCRUTINIO_INDICE = {
    "nombre": "parl-CB/leg8",
    "cuerpo": "parl-CB",
    "huella": "f35cfb12321c341c",
-   "bytes": 94655
+   "bytes": 94658
   },
   {
    "nombre": "parl-CB/leg9",
    "cuerpo": "parl-CB",
    "huella": "537cb50a53b4b898",
-   "bytes": 171811
+   "bytes": 171814
   },
   {
    "nombre": "parl-CB/leg10",
    "cuerpo": "parl-CB",
    "huella": "6eb6fd62b2720e73",
-   "bytes": 175600
+   "bytes": 175603
   },
   {
    "nombre": "parl-CB/leg11",
@@ -238,19 +238,19 @@ window.ESCRUTINIO_INDICE = {
    "nombre": "parl-CM/leg8",
    "cuerpo": "parl-CM",
    "huella": "4a96850e90061b8c",
-   "bytes": 57619
+   "bytes": 57622
   },
   {
    "nombre": "parl-CM/leg9",
    "cuerpo": "parl-CM",
    "huella": "d75da0935246b4c2",
-   "bytes": 82267
+   "bytes": 82270
   },
   {
    "nombre": "parl-CM/leg10",
    "cuerpo": "parl-CM",
    "huella": "70c3cff70aa5899c",
-   "bytes": 124804
+   "bytes": 124807
   },
   {
    "nombre": "parl-CM/leg11",
@@ -280,19 +280,19 @@ window.ESCRUTINIO_INDICE = {
    "nombre": "parl-VC/leg5",
    "cuerpo": "parl-VC",
    "huella": "8cae30d9e3844714",
-   "bytes": 270095
+   "bytes": 270098
   },
   {
    "nombre": "parl-VC/leg6",
    "cuerpo": "parl-VC",
    "huella": "fe7349f67a9c314f",
-   "bytes": 664387
+   "bytes": 664390
   },
   {
    "nombre": "parl-VC/leg7",
    "cuerpo": "parl-VC",
    "huella": "a51bff862b51d62a",
-   "bytes": 101935
+   "bytes": 101938
   },
   {
    "nombre": "parl-VC/leg8",

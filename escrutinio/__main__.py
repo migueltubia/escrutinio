@@ -1,4 +1,5 @@
 import argparse
+import json
 import sys
 import time
 
@@ -97,6 +98,16 @@ def main(argv=None):
     s.add_argument("--forzar", action="store_true", help="Vuelve a descargar aunque esté en la caché (si cambió, entra como documento nuevo)")
 
     sub.add_parser("programas-estado", help="Registro de programas: qué está leído, qué falta, qué falló y el gasto")
+    s = sub.add_parser("programas-traducir", help="Traduce al castellano con DeepSeek las citas en catalán, euskera o gallego (una sola vez)")
+    s.add_argument("--id", help="Programas separados por comas (por defecto, todos los leídos)")
+    s = sub.add_parser("programas-traducciones-pendientes", help="Escribe en un JSON las citas sin traducir, para traducirlas fuera de DeepSeek")
+    s.add_argument("--id", help="Programas separados por comas (por defecto, todos los leídos)")
+    s.add_argument("--salida", default="traducciones-pendientes.json")
+    s = sub.add_parser("programas-importar-traducciones", help="Importa traducciones hechas fuera de DeepSeek (JSON {id: cita_es})")
+    s.add_argument("ficheros", nargs="+")
+    s.add_argument("--modelo", required=True, help="Quién tradujo, p. ej. claude-sonnet-5-5 o «a mano»")
+    s.add_argument("--id", help=argparse.SUPPRESS)
+    sub.add_parser("programas-buscar", help="Busca en las webs de los partidos los programas de las elecciones vigiladas y los descarga")
 
     s = sub.add_parser("programas-leer", help="Extrae con DeepSeek los compromisos de los programas pendientes (una sola vez)")
     s.add_argument("--id", help="Programas separados por comas")
@@ -176,11 +187,17 @@ def main(argv=None):
         from .llm.fichas_io import validar_lote
 
         sys.exit(0 if validar_lote(a.lote) else 1)
-    if a.cmd in ("programas-descargar", "programas-estado"):
+    if a.cmd in ("programas-descargar", "programas-estado", "programas-buscar"):
         # Solo el registro y los textos: no hace falta la base.
         from .programas import registro
 
-        if a.cmd == "programas-descargar":
+        if a.cmd == "programas-buscar":
+            from .programas.buscar import buscar
+
+            buscar(log=log)
+            if registro.sin_registrar():  # lo encontrado y lo dado de alta a mano que aún no esté registrado
+                registro.descargar(ids=registro.sin_registrar(), log=log)
+        elif a.cmd == "programas-descargar":
             registro.descargar(ids=a.id.split(",") if a.id else None, forzar=a.forzar, log=log)
         else:
             registro.estado()
@@ -270,6 +287,21 @@ def main(argv=None):
             from .programas.verificar import verificar
 
             verificar(con, ids=ids, limite=a.limite, modelo=a.modelo, rehacer=a.rehacer, solo=a.solo, cifras=a.cifras, log=log)
+        elif a.cmd == "programas-traducir":
+            from .programas.traducir import traducir
+
+            traducir(ids=ids, log=log)
+        elif a.cmd == "programas-traducciones-pendientes":
+            from .programas.traducir import pendientes
+
+            filas = pendientes(ids)
+            with open(a.salida, "w", encoding="utf-8") as f:
+                json.dump(filas, f, ensure_ascii=False, indent=0)
+            log(f"{len(filas)} citas por traducir en {a.salida}")
+        elif a.cmd == "programas-importar-traducciones":
+            from .programas.traducir import importar
+
+            importar(a.ficheros, a.modelo, log=log)
         cargar(con, log)
         log("Para verlo en la web: python -m escrutinio web")
     elif a.cmd == "analizar":

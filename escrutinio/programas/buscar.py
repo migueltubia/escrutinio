@@ -27,11 +27,14 @@ DIAS_DESPUES = 7  # tras la votación ya no se publican programas: se deja de mi
 MAX_SUBPAGINAS = 6  # páginas del mismo sitio que se siguen desde cada página vigilada
 # Lo que tiene que decir el enlace (o su dirección) para tomarlo por el programa. Es estrecho a propósito: en campaña
 # los partidos cuelgan muchos PDF y leer uno que no es el programa cuesta dinero. Un documento con otro nombre
-# («Contrato con España») se pone con «patron» en su línea de «vigilar».
+# («Contrato con España») se pone con «patron» en su línea de «vigilar». Un partido nuevo que no pone el año en sus
+# documentos lleva «anio»: false.
 PATRON = r"programa|programme|egitarau"
 # Programas de otras elecciones que el partido cuelga a la vez (el BNG publicó en 2026 el de las municipales de
 # 2027, en una carpeta de 2026). Se puede cambiar con «excluir» en la línea de «vigilar».
-EXCLUIR = r"municipa|autonomic|europe|foral|insular|cabild|concell|ajuntament|udal"
+# Tampoco los documentos internos del partido: estatutos, código ético, reglamentos, cuentas, transparencia.
+EXCLUIR = (r"municipa|autonomic|europe|foral|insular|cabild|concell|ajuntament|udal|"
+           r"estatut|cod\w*[- _]etic|reglament|cuentas|comptes|transparen")
 
 _ENLACE = re.compile(r"<a\b[^>]*?href\s*=\s*[\"']([^\"'#]+)[\"'][^>]*>(.*?)</a>", re.I | re.S)
 
@@ -115,8 +118,9 @@ def candidatos(v, log=print):
                 # documento aunque esté en una carpeta de este año.
                 propio = f"{_plano(urlsplit(href).path.rsplit('/', 1)[-1])} {texto}"
                 anios = set(re.findall(r"20\d\d", propio))
-                if (patron.search(dice) and anio in dice and (not anios or anio in anios) and not excluir.search(dice)
-                        and href not in salida):
+                con_anio = v.get("anio", True)  # false: partido nuevo, todo lo que publica es para esta elección
+                if (patron.search(dice) and (not con_anio or (anio in dice and (not anios or anio in anios)))
+                        and not excluir.search(dice) and href not in salida):
                     salida.append(href)
             elif (urlsplit(href).hostname in sitios and re.search(r"programa|programme|egitarau", dice)
                   and seguidas < MAX_SUBPAGINAS and href not in vistas and href.startswith("http")):

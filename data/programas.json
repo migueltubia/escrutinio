@@ -22,7 +22,8 @@
     "hable de programa y del año de la elección entra solo en data/llm/programas/encontrados.json, se descarga y se lee.",
     "Para una elección o un partido nuevo, basta añadir una línea a «vigilar»: eleccion, fecha_eleccion, cuerpo,",
     "partido (siglas como en data/partidos.json o la tabla base) y paginas. Opcional: 'patron' (expresión regular",
-    "sobre el enlace en minúsculas y sin tildes, por defecto 'programa|programme|egitarau') y 'titulo'.",
+    "sobre el enlace en minúsculas y sin tildes, por defecto 'programa|programme|egitarau'), 'titulo' y 'anio' (false para",
+    "no exigir el año de la elección en el enlace: partidos nuevos que no lo ponen, como Democracia 21).",
     "Comprobación a mano: python -m escrutinio programas-buscar. Un PDF encontrado que no es el programa se borra de",
     "encontrados.json y se pone su URL en «descartar» de ese mismo fichero.",
     "Si un partido publica el programa en otro sitio (o con otro nombre), se da de alta abajo, en «programas»:",
@@ -155,7 +156,9 @@
       "partido": "Democracia 21",
       "paginas": [
         "https://democracia21.es/"
-      ]
+      ],
+      "patron": "democracia21\\.pdf|programa",
+      "anio": false
     },
     {
       "eleccion": "generales-2026",
@@ -230,6 +233,28 @@
       "partido": "PP",
       "titulo": "Mi contrato con España. Respeto a la gente. Respeto a la nación",
       "url": "https://www.pp.es/wp-content/uploads/2026/10/CONTRATO-CON-ESPANA-.pdf",
+      "origen": "web-partido",
+      "url_oficial": null
+    },
+    {
+      "eleccion": "generales-2026",
+      "fecha_eleccion": "2026-11-29",
+      "cuerpo": "congreso",
+      "id": "generales-2026-d21-espana-limpia",
+      "partido": "Democracia 21",
+      "titulo": "España limpia (limpieza política radical)",
+      "url": "https://democracia21.es/docs/espana-limpia-democracia21.pdf",
+      "origen": "web-partido",
+      "url_oficial": null
+    },
+    {
+      "eleccion": "generales-2026",
+      "fecha_eleccion": "2026-11-29",
+      "cuerpo": "congreso",
+      "id": "generales-2026-d21-vivienda",
+      "partido": "Democracia 21",
+      "titulo": "Vivienda, prioridad nº 1",
+      "url": "https://democracia21.es/docs/vivienda-prioridad-1-democracia21.pdf",
       "origen": "web-partido",
       "url_oficial": null
     }

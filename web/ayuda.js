@@ -476,7 +476,8 @@ Los votos, los totales y los resultados son siempre los oficiales. Lo que calcul
 
     seccion("privacidad", "Privacidad y código",
       markdown(`
-- La web no usa cookies ni analítica. Tus causas y el tema claro u oscuro se guardan solo en tu navegador.
+- La web no usa cookies. Tus causas y el tema claro u oscuro se guardan solo en tu navegador.
+- Contamos las visitas de forma anónima con [GoatCounter](https://www.goatcounter.com): qué sección se abre, desde qué web se llega y el país aproximado. No guarda tu IP ni te sigue entre webs, y no ve lo que buscas ni los filtros que usas.
 - La web se sirve desde GitHub Pages, que como cualquier servidor registra las visitas.
 - El código es libre (licencia MIT) y está en GitHub: [migueltubia/escrutinio](https://github.com/migueltubia/escrutinio). SQLite en el navegador con [sql.js](https://github.com/sql-js/sql.js).
 - Los datos completos, con el voto de cada diputado, se pueden descargar del repositorio: una base SQLite por institución y legislatura en [data/bd](https://github.com/migueltubia/escrutinio/tree/main/data/bd).`)));

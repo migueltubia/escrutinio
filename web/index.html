@@ -78,5 +78,18 @@
   <script src="programas.js"></script>
   <script src="ayuda.js"></script>
   <script src="inicio.js"></script>
+  <!-- Visitas anónimas con GoatCounter, sin cookies. Se cuenta la sección (#/votaciones…), no los filtros
+       ni las búsquedas. Abierta desde el disco (file://) o en localhost no cuenta nada. -->
+  <script>
+    window.goatcounter = { path: () => location.pathname + "#/" + (location.hash.replace(/^#\/?/, "").split("?")[0] || "resumen") };
+    let seccionContada = window.goatcounter.path();
+    window.addEventListener("hashchange", () => {
+      const p = window.goatcounter.path();
+      if (p === seccionContada || !window.goatcounter.count) return;
+      seccionContada = p;
+      window.goatcounter.count({ path: p });
+    });
+  </script>
+  <script data-goatcounter="https://escrutinio.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
 </body>
 </html>

@@ -1,6 +1,6 @@
 {
  "comun": {
-  "huella": "c94e250ef446360a3ea243f3bd836579fefe84bf4055af8cf4ef1b6e44ed0d81",
+  "huella": "8bf9280a24f74d29d6a23cdf3a17f4bc89ae44189a7b584d88fde18b1a5251aa",
   "bytes": 372736
  },
  "congreso/leg10": {
@@ -39,11 +39,11 @@
   "bytes": 13950976
  },
  "congreso/leg15": {
-  "huella": "8fb1d6ad4365e53bd4d9b931c88f6e3508d4b0596839d012d167069c3e8f7195",
+  "huella": "1cde8e6568c2378c9a7ba27aa6265b409c02fe3fb4ad168c5c09e4506c160ee6",
   "votaciones": 2175,
   "iniciativas": 1906,
   "fichas": 932,
-  "bytes": 7180288
+  "bytes": 7237632
  },
  "parl-AN/leg9": {
   "huella": "f04071ebc0df6cd9ee277a594d9a27b42b4b4aae2b7dbe3cf92e06b0e6da8742",
@@ -116,11 +116,11 @@
   "bytes": 1949696
  },
  "parl-AS/leg12": {
-  "huella": "4196b3c1cb8d3a10cedf31aba10b14567e923f4af54aad18cf352e5f683b37ad",
-  "votaciones": 1538,
-  "iniciativas": 260,
+  "huella": "6c4ea61451d3a7b1731cae155eb7d7cfb3c33d189e5ff2665cebff2278770aa8",
+  "votaciones": 1541,
+  "iniciativas": 262,
   "fichas": 254,
-  "bytes": 1081344
+  "bytes": 1085440
  },
  "parl-IB/leg8": {
   "huella": "57746731612645c190a5acba35deb4db66aa45acdcec7d2c206b3ab9d72d90b7",
@@ -200,11 +200,11 @@
   "bytes": 1208320
  },
  "parl-CN/leg11": {
-  "huella": "71df6803e8913858977366ea8f0bf476fa0fad81ba91e9be8dda28e909c34ca1",
+  "huella": "c61b124651a6ee2ad3605aa4c33014d19dfda14ea5ef52eb7f9d0b0bd79ea90e",
   "votaciones": 883,
-  "iniciativas": 720,
+  "iniciativas": 723,
   "fichas": 418,
-  "bytes": 1089536
+  "bytes": 1097728
  },
  "parl-CB/leg8": {
   "huella": "bff7608a23e59c4089afcfaca4a2ec791af9159ef8c03e426107dd9632bc6562",
@@ -228,11 +228,11 @@
   "bytes": 1056768
  },
  "parl-CB/leg11": {
-  "huella": "bf064dab81f58aa862a788d481a47e6cc5535e7024bb34b72c4d16a8b5e20e97",
-  "votaciones": 1077,
-  "iniciativas": 726,
+  "huella": "efcaa258c6d72a203398ecaff4826a17d33d799080ca1dcd2497c2afb75b0236",
+  "votaciones": 1081,
+  "iniciativas": 731,
   "fichas": 0,
-  "bytes": 1155072
+  "bytes": 1163264
  },
  "parl-CL/leg9": {
   "huella": "062486399c78f9051fdda8092795fdd2fdfc86f9f49bea6a6781d5946e6c62bd",
@@ -284,11 +284,11 @@
   "bytes": 839680
  },
  "parl-CM/leg11": {
-  "huella": "ecedfa44efbecb2a98e384a191a2dff4757fceb83d24d8801b4118502fb85318",
-  "votaciones": 844,
-  "iniciativas": 215,
+  "huella": "7b711a3bdfcf7424c7795d2cbfca94fe2f505809af6606d43d4cc06b8f106bf0",
+  "votaciones": 865,
+  "iniciativas": 218,
   "fichas": 0,
-  "bytes": 655360
+  "bytes": 671744
  },
  "parl-CT/leg12": {
   "huella": "b4b78d07b0b160e1ad25464bd30b7d18cf0a0bd29d920e92d8a66cae848054a0",
@@ -305,11 +305,11 @@
   "bytes": 2220032
  },
  "parl-CT/leg15": {
-  "huella": "37b8b1e9e896aa0f7ac1e154d3191851e440609190497a97c20ef92bf88ac24c",
-  "votaciones": 3808,
-  "iniciativas": 423,
+  "huella": "99e08c6599fe25631bb63ba512bb0ed6d0f5346c7bb93748f17cf6698c016e4e",
+  "votaciones": 3845,
+  "iniciativas": 433,
   "fichas": 393,
-  "bytes": 1892352
+  "bytes": 1908736
  },
  "parl-VC/leg5": {
   "huella": "242be78d0fb6eea214452d688e78860b542cdda751cd20b6af1e4e89f4548024",
@@ -382,9 +382,9 @@
   "bytes": 831488
  },
  "parl-EX/leg12": {
-  "huella": "fd68f8d5e0cc99970280ccc6dcbd16fe39f89a9d55ee866da55ae0f728b56a08",
-  "votaciones": 111,
-  "iniciativas": 58,
+  "huella": "aad0d9f386683e90ce1ce94ade486e20461c41bc2ab530f4975e18084c35137a",
+  "votaciones": 113,
+  "iniciativas": 59,
   "fichas": 52,
   "bytes": 323584
  },
@@ -403,11 +403,11 @@
   "bytes": 1236992
  },
  "parl-GA/leg12": {
-  "huella": "cd5c48c291457e0e340bc21de9f63ec768dd94b93502301a72de8597ea23c5d4",
-  "votaciones": 661,
-  "iniciativas": 473,
+  "huella": "92a9416138ec78d370567f0b932537bc2f5e14098d3281e6323e4fc17a6e9be8",
+  "votaciones": 670,
+  "iniciativas": 482,
   "fichas": 458,
-  "bytes": 876544
+  "bytes": 888832
  },
  "parl-MC/leg9": {
   "huella": "16a86a501fa622b81ca23aa906d10e5fc496166c34ed7a89cff20f43c1e1de03",
@@ -550,11 +550,11 @@
   "bytes": 1298432
  },
  "jjgg-alava/leg12": {
-  "huella": "af9f8379771d79564103da432801f55f7dfdc1864347d357b010076b3ac2e1a9",
+  "huella": "96da976e6c00f47c6db0df5c71f4c6f57ebbf4a04fe0f2bdf4287ef19f031f64",
   "votaciones": 579,
-  "iniciativas": 600,
+  "iniciativas": 606,
   "fichas": 311,
-  "bytes": 1015808
+  "bytes": 1019904
  },
  "jjgg-bizkaia/leg6": {
   "huella": "20ef1a4a8b32b59c9e1420334d825b3ef92f630d33e4a106f76cadc2d87d7756",
@@ -641,8 +641,8 @@
   "bytes": 491520
  },
  "jjgg-gipuzkoa/leg12": {
-  "huella": "07bc26a4ad286ce5145575c897f567bb5530aa1c8770d078cbb60ca8379bc4ce",
-  "votaciones": 264,
+  "huella": "926d43eb3de600cca0477ac0193d778e79a6775c0c1e46aa7150be7d014d424b",
+  "votaciones": 265,
   "iniciativas": 293,
   "fichas": 123,
   "bytes": 471040
@@ -718,18 +718,25 @@
   "bytes": 1568768
  },
  "ayto-alicante/leg12": {
-  "huella": "60f3ffea9c9e51374b8bafbafb231e95abe949d9394e655a338516fb38f69ac4",
-  "votaciones": 627,
-  "iniciativas": 615,
+  "huella": "d443191d7ab00afb9dead2b26ad466ec40fa9937688b87ecbdc4c4d6e48d38c3",
+  "votaciones": 628,
+  "iniciativas": 616,
   "fichas": 607,
   "bytes": 1081344
  },
- "ayto-badalona/leg11": {
-  "huella": "76fdd2d175848a95e505911682e6b5b4c725561547131b8075a4850e59ac14c6",
-  "votaciones": 1206,
-  "iniciativas": 1040,
+ "ayto-badalona/leg10": {
+  "huella": "3f1ce7537d30ffaf24e35b6f467b884c8be95d82df9a990cdd208ae3e2bba8a7",
+  "votaciones": 137,
+  "iniciativas": 129,
   "fichas": 0,
-  "bytes": 1269760
+  "bytes": 278528
+ },
+ "ayto-badalona/leg11": {
+  "huella": "ae859d1836ec783a21f4ed93ad8354336eba621146f00a80baf70dc6b41b52e0",
+  "votaciones": 1587,
+  "iniciativas": 1379,
+  "fichas": 0,
+  "bytes": 1626112
  },
  "ayto-badalona/leg12": {
   "huella": "e2422fa596294a63b7876b2131aeaab4e5d91477dbf51ba1fadd8739aa8a2612",
@@ -739,9 +746,9 @@
   "bytes": 978944
  },
  "ayto-barcelona/leg11": {
-  "huella": "32fea90f8fa4aa7f06524c9c3094ee25e420e3aba6e0d535a4c13bea76ceb75d",
-  "votaciones": 93,
-  "iniciativas": 92,
+  "huella": "a14ed371905f15d7914e324fa5a1bf20720402ceb44ced0667ac93cc348dbb5a",
+  "votaciones": 94,
+  "iniciativas": 93,
   "fichas": 0,
   "bytes": 225280
  },
@@ -752,12 +759,19 @@
   "fichas": 0,
   "bytes": 303104
  },
- "ayto-calella/leg11": {
-  "huella": "11acb75e893f3fefe9b6b07ce894d4e225eeb7141fc8504eb54c662862bdecb8",
-  "votaciones": 227,
-  "iniciativas": 223,
+ "ayto-calella/leg10": {
+  "huella": "cf2852f63d76f1974db78a203f9ef3f15402f4a24b477f63b5c8b9aac62012d1",
+  "votaciones": 7,
+  "iniciativas": 7,
   "fichas": 0,
-  "bytes": 331776
+  "bytes": 159744
+ },
+ "ayto-calella/leg11": {
+  "huella": "e15d4c67fc7fa966b6d955fe6fc169a726eb9385bdb7fdd4a5c14053e5098726",
+  "votaciones": 303,
+  "iniciativas": 291,
+  "fichas": 0,
+  "bytes": 393216
  },
  "ayto-calella/leg12": {
   "huella": "eb04becf32a06c0ab089cf7f0106b64aa70983fe1dbf5196061b66e366dce41a",
@@ -766,12 +780,19 @@
   "fichas": 0,
   "bytes": 397312
  },
- "ayto-castellar-del-valles/leg11": {
-  "huella": "8b1217cfc1d7842ec526ea0d6d718e3f49e68b0df9909a1d711a8b9293abed29",
-  "votaciones": 324,
-  "iniciativas": 271,
+ "ayto-castellar-del-valles/leg10": {
+  "huella": "df3eac4e57867e91437dd9dd15b53080fa71ec18cfa6901f0d7c749b90bf2a31",
+  "votaciones": 15,
+  "iniciativas": 14,
   "fichas": 0,
-  "bytes": 376832
+  "bytes": 159744
+ },
+ "ayto-castellar-del-valles/leg11": {
+  "huella": "39abbe294ec2c4318cfee49aa18cc507b5c9b7944c12c065339a3336e7cd8370",
+  "votaciones": 395,
+  "iniciativas": 337,
+  "fichas": 0,
+  "bytes": 434176
  },
  "ayto-castellar-del-valles/leg12": {
   "huella": "45a6748eb9adf6b97b87008b727f8c0eb1133e3e0777604098e657af2ea69270",
@@ -781,11 +802,11 @@
   "bytes": 421888
  },
  "ayto-castelldefels/leg11": {
-  "huella": "5025d796be00391c3d0d4bfc45e5e44025dda3a387a5a67a3521eea80e31caa8",
-  "votaciones": 37,
-  "iniciativas": 34,
+  "huella": "d61e82658568e059a7fa0bbca8400ab9f6091b5ba8397ddd230e15eae84d229a",
+  "votaciones": 45,
+  "iniciativas": 40,
   "fichas": 0,
-  "bytes": 184320
+  "bytes": 188416
  },
  "ayto-castelldefels/leg12": {
   "huella": "9510ef68da078474f581064662e103ea0fadcbcf46b4a1a92402224ceaf633d3",
@@ -794,12 +815,19 @@
   "fichas": 0,
   "bytes": 196608
  },
- "ayto-cornella-de-llobregat/leg11": {
-  "huella": "8c9d516f7be65cd6335173d090663a510c20c0641791cd7b2c161cf106a8a725",
-  "votaciones": 556,
-  "iniciativas": 496,
+ "ayto-cornella-de-llobregat/leg10": {
+  "huella": "7a8222fd75d779e077a6985ae8a7b890c8b019969cfee0956174b1d88cf484e3",
+  "votaciones": 47,
+  "iniciativas": 27,
   "fichas": 0,
-  "bytes": 610304
+  "bytes": 176128
+ },
+ "ayto-cornella-de-llobregat/leg11": {
+  "huella": "027e5bc01b8268012c942f79a03523ccc3be292767f13da102ee10af1e834fdf",
+  "votaciones": 694,
+  "iniciativas": 613,
+  "fichas": 0,
+  "bytes": 716800
  },
  "ayto-cornella-de-llobregat/leg12": {
   "huella": "573085e8c43312c964dea7bb7bb1b0807a3cb4cde38e13fc66777fe18698e40a",
@@ -808,12 +836,19 @@
   "fichas": 0,
   "bytes": 405504
  },
- "ayto-esparreguera/leg11": {
-  "huella": "4c15692d033c98dc5f03dd5a1087e055f14458bac0ffd36a29d758cad6ff9f4b",
-  "votaciones": 343,
-  "iniciativas": 327,
+ "ayto-esparreguera/leg10": {
+  "huella": "c54e1bf1d2bfec9d77cbba3319e5aa01a1f53454b16f42f1e6cedd1c8b9736aa",
+  "votaciones": 31,
+  "iniciativas": 31,
   "fichas": 0,
-  "bytes": 421888
+  "bytes": 167936
+ },
+ "ayto-esparreguera/leg11": {
+  "huella": "98bf7464bac2312f6047d8f19f070df93717cdb234e5f36bdb13c064d1522268",
+  "votaciones": 421,
+  "iniciativas": 403,
+  "fichas": 0,
+  "bytes": 479232
  },
  "ayto-esparreguera/leg12": {
   "huella": "864c4346b149101dd4b4cfe701b5b4a9d16448123894815cf81fc818749fd568",
@@ -822,12 +857,19 @@
   "fichas": 0,
   "bytes": 393216
  },
- "ayto-esplugues-de-llobregat/leg11": {
-  "huella": "bb9b536ef3c9dae713edf92effbe88cc0db2bb998bd2149262d4640633dbae22",
-  "votaciones": 374,
-  "iniciativas": 358,
+ "ayto-esplugues-de-llobregat/leg10": {
+  "huella": "c3b7604cd379b4461c62c7e6d10b98e921a75ee92f7e4d276704b3d50ef67269",
+  "votaciones": 36,
+  "iniciativas": 35,
   "fichas": 0,
-  "bytes": 446464
+  "bytes": 167936
+ },
+ "ayto-esplugues-de-llobregat/leg11": {
+  "huella": "712f35d8a487fd2c67ac5d2aa9fbdd992b6d62bdbef296190c41b781c3526521",
+  "votaciones": 478,
+  "iniciativas": 455,
+  "fichas": 0,
+  "bytes": 524288
  },
  "ayto-esplugues-de-llobregat/leg12": {
   "huella": "8642657bd88273872b0a7f1eac3c8f03a106009362efa3d45b3c128b9c15eb5e",
@@ -836,12 +878,19 @@
   "fichas": 0,
   "bytes": 376832
  },
- "ayto-les-franqueses-del-valles/leg11": {
-  "huella": "a18109a880ff259d73bec0e4cf60dd75b9167d81c2b73aea7b364d167391936b",
-  "votaciones": 214,
-  "iniciativas": 188,
+ "ayto-les-franqueses-del-valles/leg10": {
+  "huella": "4cb48841fa4d9171cc346b7675a0b50dd5aa36e272077f9d2378ba6ff5f490c7",
+  "votaciones": 9,
+  "iniciativas": 8,
   "fichas": 0,
-  "bytes": 356352
+  "bytes": 159744
+ },
+ "ayto-les-franqueses-del-valles/leg11": {
+  "huella": "9e4c9ffaaa785f666bdcfa4709361abf36d515880b27a6a262d4d2d4ed6affef",
+  "votaciones": 272,
+  "iniciativas": 241,
+  "fichas": 0,
+  "bytes": 405504
  },
  "ayto-les-franqueses-del-valles/leg12": {
   "huella": "e22a313f21a3364321822e7dde422da0745d53ab0db8ca5af8c48122ea8152a2",
@@ -850,12 +899,19 @@
   "fichas": 0,
   "bytes": 434176
  },
- "ayto-gava/leg11": {
-  "huella": "1f83c868f11b68b49de90595e7ae1be939c752fb9eacb5bcaabc7afdf50c9798",
-  "votaciones": 311,
-  "iniciativas": 282,
+ "ayto-gava/leg10": {
+  "huella": "371844b3aa1c3599a652d87f6f11bc43b033e0175ede51e34e5b6ce9eea14f34",
+  "votaciones": 28,
+  "iniciativas": 28,
   "fichas": 0,
-  "bytes": 401408
+  "bytes": 167936
+ },
+ "ayto-gava/leg11": {
+  "huella": "e5fcd1d0cdbaa1f95147a2469f47e4d59aa970143109c298be36b71c81edd082",
+  "votaciones": 404,
+  "iniciativas": 363,
+  "fichas": 0,
+  "bytes": 479232
  },
  "ayto-gava/leg12": {
   "huella": "83ec3f6f7e4bb9dac98134e74712cf36e03166b44c09b7e6c7f5d80f43e193ef",
@@ -864,12 +920,19 @@
   "fichas": 0,
   "bytes": 413696
  },
- "ayto-granollers/leg11": {
-  "huella": "0fbdd47ec28806d8b0ae3a9cb261e29efb90ddd0771d57475257114cc1f648b7",
-  "votaciones": 380,
-  "iniciativas": 368,
+ "ayto-granollers/leg10": {
+  "huella": "9fa9f17ad96cb3a0fd94bcb265fa7c12c38c7bb071460a75b094143f4b4da544",
+  "votaciones": 30,
+  "iniciativas": 30,
   "fichas": 0,
-  "bytes": 458752
+  "bytes": 163840
+ },
+ "ayto-granollers/leg11": {
+  "huella": "c2a3256167a1a9a65b60cf8929e3f598ab3e1a66d938881d7a1f67e571c56de2",
+  "votaciones": 464,
+  "iniciativas": 450,
+  "fichas": 0,
+  "bytes": 536576
  },
  "ayto-granollers/leg12": {
   "huella": "a9737376d7e670ad36cc1487245e7f0103201085de327bbbf41d3ac539aeb5ce",
@@ -892,12 +955,19 @@
   "fichas": 24,
   "bytes": 860160
  },
- "ayto-igualada/leg11": {
-  "huella": "9f5a80a9f720a8c58e209338c3cd387aa400e03c7de53b35f682ef6aed27b06e",
-  "votaciones": 399,
-  "iniciativas": 367,
+ "ayto-igualada/leg10": {
+  "huella": "6b23ecd71d7810c2e19e650a7301b0e78e3df1bfb49cc825afb887cbf93a9c1b",
+  "votaciones": 23,
+  "iniciativas": 22,
   "fichas": 0,
-  "bytes": 479232
+  "bytes": 163840
+ },
+ "ayto-igualada/leg11": {
+  "huella": "2360f00e64d6e4ac305516abebff62e02e0e2c268651b18d87376dcdc3f2c228",
+  "votaciones": 638,
+  "iniciativas": 547,
+  "fichas": 0,
+  "bytes": 675840
  },
  "ayto-igualada/leg12": {
   "huella": "3d2ac741a841cacbdc74e4276bf68220ba2ac2d21075bb2d1da28ba8fabb2378",
@@ -906,12 +976,19 @@
   "fichas": 0,
   "bytes": 458752
  },
- "ayto-manlleu/leg11": {
-  "huella": "85a803d53d280709982e961fdc3aaedb9bb6b1dce0677c37d3987ddb67e4456d",
-  "votaciones": 352,
-  "iniciativas": 271,
+ "ayto-manlleu/leg10": {
+  "huella": "e37d85ff40356ceff2e4d03913442641814fc1c5b81e1610360be4e3b6bc79e4",
+  "votaciones": 20,
+  "iniciativas": 18,
   "fichas": 0,
-  "bytes": 413696
+  "bytes": 159744
+ },
+ "ayto-manlleu/leg11": {
+  "huella": "4ac94ac44b99b10cec3f4e726a346f0d5fc0724ec81079708a4d9121cee44b9c",
+  "votaciones": 392,
+  "iniciativas": 309,
+  "fichas": 0,
+  "bytes": 442368
  },
  "ayto-manlleu/leg12": {
   "huella": "03b07bb321e8a77b6380fa0a2346368a622d85b370b3b2b4c9388d3c76836916",
@@ -920,12 +997,19 @@
   "fichas": 0,
   "bytes": 458752
  },
- "ayto-manresa/leg11": {
-  "huella": "de1b3b7543e32f4e4e83f82417feb44b5f82d296d17188d56ab0e8b84034d6e5",
-  "votaciones": 596,
-  "iniciativas": 513,
+ "ayto-manresa/leg10": {
+  "huella": "bea97fffbcd05f9efd8c10385f40b29ea282f85352e37916ea6e0af65b572801",
+  "votaciones": 42,
+  "iniciativas": 38,
   "fichas": 0,
-  "bytes": 679936
+  "bytes": 176128
+ },
+ "ayto-manresa/leg11": {
+  "huella": "b6c33fcc12aa4610ca308fee2f5c94b51ec5ac65130c9decb9ee4aeb21c0771a",
+  "votaciones": 735,
+  "iniciativas": 632,
+  "fichas": 0,
+  "bytes": 798720
  },
  "ayto-manresa/leg12": {
   "huella": "3a1a0bfceb6bb5c0b3dd08013193c4d41cf52428282a2b405111c0a293f7b76a",
@@ -934,12 +1018,19 @@
   "fichas": 0,
   "bytes": 827392
  },
- "ayto-martorell/leg11": {
-  "huella": "02405b31ac09d80cba4f816a21547aa7d86970ceb78f2474859143fdce25ec1a",
-  "votaciones": 214,
-  "iniciativas": 180,
+ "ayto-martorell/leg10": {
+  "huella": "362a7d73ebdaa260acba0225ea77ac433056e42f8978bcb3b25d7a24fb810fee",
+  "votaciones": 13,
+  "iniciativas": 13,
   "fichas": 0,
-  "bytes": 303104
+  "bytes": 159744
+ },
+ "ayto-martorell/leg11": {
+  "huella": "82027c8d70e14c10ba90fb11aa63aa5951ba1883fab12106346090403f9e8d64",
+  "votaciones": 256,
+  "iniciativas": 217,
+  "fichas": 0,
+  "bytes": 331776
  },
  "ayto-martorell/leg12": {
   "huella": "edbf9f7c1ab72fcf1f1a1d7cb3e91d2691f33da3a1b1c9700efd5c9ef0a0282b",
@@ -962,12 +1053,19 @@
   "fichas": 0,
   "bytes": 479232
  },
- "ayto-mataro/leg11": {
-  "huella": "24f598582dcae3fae25e2c20d5d1dbc629da915f67dc709890bf6c3154ee21a5",
-  "votaciones": 426,
-  "iniciativas": 413,
+ "ayto-mataro/leg10": {
+  "huella": "3e0cc18647e4aaf8061107ca6f5362be3ec69dad70b5416f634fefcbcc04b9bb",
+  "votaciones": 33,
+  "iniciativas": 32,
   "fichas": 0,
-  "bytes": 479232
+  "bytes": 167936
+ },
+ "ayto-mataro/leg11": {
+  "huella": "64d52c46ed72d564c459653c9917b81ec8c98d0683fd9bfc42828b19c24662d4",
+  "votaciones": 514,
+  "iniciativas": 497,
+  "fichas": 0,
+  "bytes": 557056
  },
  "ayto-mataro/leg12": {
   "huella": "17b115643420fd409aa5d45eb4c6e766a3cb08b57b590abc2cef76fbd122c06a",
@@ -976,26 +1074,40 @@
   "fichas": 0,
   "bytes": 544768
  },
- "ayto-molins-de-rei/leg11": {
-  "huella": "7a53e025c15bfffb2adc4b8c4c977b8519660fe12ce0b08bd1084caac0b57730",
-  "votaciones": 417,
-  "iniciativas": 363,
-  "fichas": 0,
-  "bytes": 495616
- },
- "ayto-molins-de-rei/leg12": {
-  "huella": "27e26e514e78462220cf295d46366fcc3e1ed8ad57c72cca37453f1fa538ea00",
-  "votaciones": 371,
-  "iniciativas": 331,
-  "fichas": 0,
-  "bytes": 462848
- },
- "ayto-mollet-del-valles/leg11": {
-  "huella": "2724d098ddc8129a02397c6a0587160e8fd0fe0889182cf81a1d2e81711f9eec",
-  "votaciones": 37,
-  "iniciativas": 37,
+ "ayto-molins-de-rei/leg10": {
+  "huella": "b3d39f5d5b76f7c7533215fa267f48bcc13254727e7281aa61bcda3b09dc3393",
+  "votaciones": 29,
+  "iniciativas": 28,
   "fichas": 0,
   "bytes": 167936
+ },
+ "ayto-molins-de-rei/leg11": {
+  "huella": "218dcf25f9f16f06ce088889eaf1a81645c6adf67ee2441622ae0bd794cca1fa",
+  "votaciones": 553,
+  "iniciativas": 476,
+  "fichas": 0,
+  "bytes": 606208
+ },
+ "ayto-molins-de-rei/leg12": {
+  "huella": "731aa135e8a64a359242778369fc779d44042fc154a540cbb12877892841c4ca",
+  "votaciones": 385,
+  "iniciativas": 342,
+  "fichas": 0,
+  "bytes": 479232
+ },
+ "ayto-mollet-del-valles/leg10": {
+  "huella": "6039ad022cc763730c9a45d3efb807445495e0c3ce601a7c24b5d3997578f436",
+  "votaciones": 15,
+  "iniciativas": 15,
+  "fichas": 0,
+  "bytes": 159744
+ },
+ "ayto-mollet-del-valles/leg11": {
+  "huella": "bac674af6b13400d9448315dc386497c8a9fb571f3462c8dc56e301c835ac299",
+  "votaciones": 92,
+  "iniciativas": 87,
+  "fichas": 0,
+  "bytes": 204800
  },
  "ayto-mollet-del-valles/leg12": {
   "huella": "19faa5d6b269255a22fc48cd34ce985538d63472541eadc620b4efdd5b20949b",
@@ -1032,12 +1144,19 @@
   "fichas": 0,
   "bytes": 344064
  },
- "ayto-pineda-de-mar/leg11": {
-  "huella": "46925fe0caa0f06c1ae84c530801d662286458915f995901aebe1fc6b4cec14f",
-  "votaciones": 250,
-  "iniciativas": 208,
+ "ayto-pineda-de-mar/leg10": {
+  "huella": "4e13972f723926529dcf85687be6d6e571c4fcd99770519003b920b8bf2bf534",
+  "votaciones": 15,
+  "iniciativas": 14,
   "fichas": 0,
-  "bytes": 348160
+  "bytes": 159744
+ },
+ "ayto-pineda-de-mar/leg11": {
+  "huella": "c5390567355524dc737d5ead6d83c1fbb35d491ac9cb30a1b8da0722ea59b205",
+  "votaciones": 298,
+  "iniciativas": 250,
+  "fichas": 0,
+  "bytes": 393216
  },
  "ayto-pineda-de-mar/leg12": {
   "huella": "d61820b72f0161ed3f1435f2d5c58957b48febd73d8f4f7c961b6a6219740846",
@@ -1046,12 +1165,19 @@
   "fichas": 0,
   "bytes": 319488
  },
- "ayto-el-prat-de-llobregat/leg11": {
-  "huella": "1e4a970ad2c72ad0c6ddfdac4b5792e9ce63089d117a07e90b3a9ee1b5be3b00",
-  "votaciones": 469,
-  "iniciativas": 410,
+ "ayto-el-prat-de-llobregat/leg10": {
+  "huella": "a3a9e53245baec744670e84f7c691fe4449f94b9877ca8262cb1983450f18db5",
+  "votaciones": 42,
+  "iniciativas": 42,
   "fichas": 0,
-  "bytes": 503808
+  "bytes": 176128
+ },
+ "ayto-el-prat-de-llobregat/leg11": {
+  "huella": "3804e11607365ed8bc1d898c9dd5154e8bb5ed0e5b49dc4a46ff8071c862290a",
+  "votaciones": 579,
+  "iniciativas": 507,
+  "fichas": 0,
+  "bytes": 581632
  },
  "ayto-el-prat-de-llobregat/leg12": {
   "huella": "73875bb8e49d2b0dd962d684a7d3f7cf242c4a2f802872a0dc80bffdce7e3bc8",
@@ -1060,26 +1186,40 @@
   "fichas": 21,
   "bytes": 741376
  },
- "ayto-ripollet/leg11": {
-  "huella": "1538c3e2ed77857c7b7339426e35296129ab72a8fd325c86a7022cf2e21b16a0",
-  "votaciones": 282,
-  "iniciativas": 261,
+ "ayto-ripollet/leg10": {
+  "huella": "ae3f9dd7980fe0c2245e44bcfb682a5f7852a31a21722d18896f8a3ba1812e64",
+  "votaciones": 17,
+  "iniciativas": 17,
   "fichas": 0,
-  "bytes": 368640
+  "bytes": 159744
+ },
+ "ayto-ripollet/leg11": {
+  "huella": "49422e8d082df9d1ef11da39ea12b6af84c87f7ef7d74231c2ee5954c7818bfb",
+  "votaciones": 388,
+  "iniciativas": 358,
+  "fichas": 0,
+  "bytes": 450560
  },
  "ayto-ripollet/leg12": {
-  "huella": "0aa6452db079112419eecf84f9cc4120876c6b1c4b1eaf55bc62b6942058ee2a",
-  "votaciones": 275,
-  "iniciativas": 223,
+  "huella": "55fe424d2b9d4b1bedbebcd9240a436f253598ebabc69e4d003f30ce56e22b1e",
+  "votaciones": 282,
+  "iniciativas": 228,
   "fichas": 0,
-  "bytes": 348160
+  "bytes": 352256
+ },
+ "ayto-rubi/leg10": {
+  "huella": "eea2bcb9f06fda11bb472b48b8b7282dbcf04b5b22fbbf2329de1b382a886bdf",
+  "votaciones": 37,
+  "iniciativas": 33,
+  "fichas": 0,
+  "bytes": 192512
  },
  "ayto-rubi/leg11": {
-  "huella": "9468b7818d2996460d5957ae10d638c6b47f00b93436c5cc0062a801dc88cc80",
-  "votaciones": 751,
-  "iniciativas": 621,
+  "huella": "7cefbfca4e6d5070e702946e1e21ba74a65621a424a996a2295706cbfd6dab5a",
+  "votaciones": 903,
+  "iniciativas": 755,
   "fichas": 0,
-  "bytes": 737280
+  "bytes": 876544
  },
  "ayto-rubi/leg12": {
   "huella": "1c4c61c61dcd8805af352afcb2725f65737aa4ed5ec9145967f3a4b49fbfe493",
@@ -1088,12 +1228,19 @@
   "fichas": 26,
   "bytes": 729088
  },
- "ayto-sabadell/leg11": {
-  "huella": "3aae1f8ca21e76acb8ddfd0d4a6e2332289b3b57c53bebbd049a8f0130b7e951",
-  "votaciones": 698,
-  "iniciativas": 641,
+ "ayto-sabadell/leg10": {
+  "huella": "9b017860f6621f735355714e47ba1f7bae4c8a2deff684f159aeb8944807e9d7",
+  "votaciones": 98,
+  "iniciativas": 97,
   "fichas": 0,
-  "bytes": 753664
+  "bytes": 233472
+ },
+ "ayto-sabadell/leg11": {
+  "huella": "4d70b13de7810aa2837e3ce44daadb115956b4e7ea7690de3fd1bc9ca7e29509",
+  "votaciones": 810,
+  "iniciativas": 750,
+  "fichas": 0,
+  "bytes": 860160
  },
  "ayto-sabadell/leg12": {
   "huella": "ebd2d2b3981cf18ef74781257c670a23d2b350274528e5efb776e99327ed3ef7",
@@ -1102,19 +1249,33 @@
   "fichas": 0,
   "bytes": 819200
  },
- "ayto-sant-adria-de-besos/leg11": {
-  "huella": "5eabd9d554fca417cbad20fb229d2629af0a17444b8ff192d2d5528bfc7d3a90",
-  "votaciones": 211,
-  "iniciativas": 170,
+ "ayto-sant-adria-de-besos/leg10": {
+  "huella": "ac93c43e97104513bd36c2403e0be922e896aa67669a8217ebc090dad6ad0785",
+  "votaciones": 33,
+  "iniciativas": 28,
   "fichas": 0,
-  "bytes": 311296
+  "bytes": 176128
+ },
+ "ayto-sant-adria-de-besos/leg11": {
+  "huella": "fb71b3fb1274e7f72240086df6dd7d9a3078867d2ee9efe8256619c08bf2c4bf",
+  "votaciones": 317,
+  "iniciativas": 261,
+  "fichas": 0,
+  "bytes": 393216
+ },
+ "ayto-sant-andreu-de-la-barca/leg10": {
+  "huella": "008ff401c9a647b4c162d083c9779323e6715467ba36adadd2b9e5339fe4b51b",
+  "votaciones": 6,
+  "iniciativas": 6,
+  "fichas": 0,
+  "bytes": 159744
  },
  "ayto-sant-andreu-de-la-barca/leg11": {
-  "huella": "13d84a48067b649181c90ce750753dbb93e5bcdc3d8e1fef9f96286183c39357",
-  "votaciones": 302,
-  "iniciativas": 292,
+  "huella": "a46aa478c6979339c9bb9a56399332138cda622313f4e8754c087fcefda448b4",
+  "votaciones": 346,
+  "iniciativas": 334,
   "fichas": 0,
-  "bytes": 421888
+  "bytes": 462848
  },
  "ayto-sant-andreu-de-la-barca/leg12": {
   "huella": "4e9f021e078b1de235ebfa7045977bba00e201f27bd76bbc503c62a313c2d3c3",
@@ -1124,11 +1285,11 @@
   "bytes": 471040
  },
  "ayto-sant-boi-de-llobregat/leg11": {
-  "huella": "553ba63e9eac69c4b301e33aa49b65c25d44a60fc2738ca42994973363f55a50",
-  "votaciones": 399,
-  "iniciativas": 368,
+  "huella": "436ec26b77b74f17fefd2f251bcc45a3c36b44e1dde678d529ccafed5021630d",
+  "votaciones": 425,
+  "iniciativas": 392,
   "fichas": 0,
-  "bytes": 520192
+  "bytes": 540672
  },
  "ayto-sant-boi-de-llobregat/leg12": {
   "huella": "6c20a1c1e285bdd4b19f99c090b04cb9de651f58d7e7624023d1569868ac1d89",
@@ -1137,26 +1298,40 @@
   "fichas": 0,
   "bytes": 425984
  },
- "ayto-sant-cugat-del-valles/leg11": {
-  "huella": "18e2459b893301760e5f42b97825a77589bcca485a9afeeb440e4e0389121386",
-  "votaciones": 601,
-  "iniciativas": 438,
+ "ayto-sant-cugat-del-valles/leg10": {
+  "huella": "52f11b975bef9e2f9bc81cf9f78c53db4239a55cc566a1fad6b64fca2d5ac74e",
+  "votaciones": 22,
+  "iniciativas": 22,
   "fichas": 0,
-  "bytes": 643072
+  "bytes": 172032
+ },
+ "ayto-sant-cugat-del-valles/leg11": {
+  "huella": "363c55bb924cc7caec65d33fd6a839a79b00645d29a816169dc295914dac842c",
+  "votaciones": 693,
+  "iniciativas": 521,
+  "fichas": 0,
+  "bytes": 720896
  },
  "ayto-sant-cugat-del-valles/leg12": {
-  "huella": "a6e933c9c570df9e54cdfb16e79a32d245e8836c00376897fe765cb3e8f2c265",
-  "votaciones": 903,
-  "iniciativas": 693,
+  "huella": "7a1d564b53964c2a2e1370c89434d85d90f078051d62ab5a654bcc8c3d33d811",
+  "votaciones": 930,
+  "iniciativas": 715,
   "fichas": 34,
-  "bytes": 983040
+  "bytes": 1007616
+ },
+ "ayto-sant-feliu-de-llobregat/leg10": {
+  "huella": "3f9932cf37e2d41ac78ff8c48d5e020d32b642e47e055e7c76ff9f0300c974e0",
+  "votaciones": 69,
+  "iniciativas": 69,
+  "fichas": 0,
+  "bytes": 196608
  },
  "ayto-sant-feliu-de-llobregat/leg11": {
-  "huella": "47e132832b396630055afc6932d015feea5a067c9313f961dc48adc0b22afffe",
-  "votaciones": 784,
-  "iniciativas": 751,
+  "huella": "afc6b42d8136f6b2f9f9f82ff6196742704972228b9e50717d065bc845478909",
+  "votaciones": 986,
+  "iniciativas": 935,
   "fichas": 0,
-  "bytes": 794624
+  "bytes": 950272
  },
  "ayto-sant-feliu-de-llobregat/leg12": {
   "huella": "ddf0df18378b74ed40b38a22ae92359421f091febd5f73e8bd8b2ead446d9956",
@@ -1179,6 +1354,13 @@
   "fichas": 0,
   "bytes": 385024
  },
+ "ayto-vilassar-de-mar/leg10": {
+  "huella": "cd0335ed85b7e58abb40dc1202266abcecc0c7d6e7bd06f3107ac11b694dac3e",
+  "votaciones": 22,
+  "iniciativas": 22,
+  "fichas": 0,
+  "bytes": 163840
+ },
  "ayto-vilassar-de-mar/leg11": {
   "huella": "2d62fa9b37cfea3dc377852657e5088758846f7a80e8a0bfa98fc9ac9287bda2",
   "votaciones": 274,
@@ -1193,12 +1375,19 @@
   "fichas": 7,
   "bytes": 389120
  },
- "ayto-sant-just-desvern/leg11": {
-  "huella": "5fe81da15ad4b0fd3e1db7f896432484c70d385fd535475e4aa911a276a07703",
-  "votaciones": 431,
-  "iniciativas": 389,
+ "ayto-sant-just-desvern/leg10": {
+  "huella": "78c56106da3778fbe3f7771b0be742fb144371ea33a420699763d58182ae66de",
+  "votaciones": 51,
+  "iniciativas": 49,
   "fichas": 0,
-  "bytes": 536576
+  "bytes": 196608
+ },
+ "ayto-sant-just-desvern/leg11": {
+  "huella": "d1092abd1647a9c6630cd215f28477fd273b220ff0b2c212b29a5e3fa12270e2",
+  "votaciones": 539,
+  "iniciativas": 489,
+  "fichas": 0,
+  "bytes": 630784
  },
  "ayto-sant-just-desvern/leg12": {
   "huella": "be9994384084a34539897fdba3670c021b49be51cfc0ebafbafb077e8ab7bf4a",
@@ -1208,11 +1397,11 @@
   "bytes": 376832
  },
  "ayto-sant-pere-de-ribes/leg11": {
-  "huella": "12fe5944e64f7f07b8f01b566ce527c2f20e586b0d4765d929057fa600c9782b",
-  "votaciones": 301,
-  "iniciativas": 281,
+  "huella": "1a3c47b32c823c9db16ddbe37be20e78bd228bd6c6f918f835fa9031cabc6752",
+  "votaciones": 335,
+  "iniciativas": 314,
   "fichas": 0,
-  "bytes": 401408
+  "bytes": 421888
  },
  "ayto-sant-pere-de-ribes/leg12": {
   "huella": "631e16bcf0a33506cc9974ec136dd0973d4c1ca474abcc6cf7dee2e9e2549e15",
@@ -1220,6 +1409,13 @@
   "iniciativas": 824,
   "fichas": 0,
   "bytes": 1040384
+ },
+ "ayto-sant-quirze-del-valles/leg10": {
+  "huella": "e52db7dfc8b887aff5be344899f3456db6789075e5b8bb6eb7250d651895a544",
+  "votaciones": 6,
+  "iniciativas": 6,
+  "fichas": 0,
+  "bytes": 159744
  },
  "ayto-sant-quirze-del-valles/leg11": {
   "huella": "4d33cfba558c1313118599684ca3a2239549e2d89f42b15577ba69acb657da35",
@@ -1250,18 +1446,18 @@
   "bytes": 208896
  },
  "ayto-barbera-del-valles/leg11": {
-  "huella": "64f5458d5c6f89c16ded5335447d86a7a57331efa39b32b3bf42f6e1fd5c5b9d",
-  "votaciones": 370,
-  "iniciativas": 306,
+  "huella": "77e3be59ac69287dc0b9059fa64ac132a1444d56794cdb78088ed457ed26fe5a",
+  "votaciones": 384,
+  "iniciativas": 318,
   "fichas": 0,
-  "bytes": 425984
+  "bytes": 442368
  },
  "ayto-barbera-del-valles/leg12": {
-  "huella": "17a696e678e23f52feebc7b5d5b2799ddb9590f5721cb7b3ae134bc5f6dbb6e2",
-  "votaciones": 422,
-  "iniciativas": 343,
+  "huella": "7b1fd3d1423eeff61ad076a963d66d5f3b351a0ce4ea880ac95eb90c9bdcc4d4",
+  "votaciones": 426,
+  "iniciativas": 347,
   "fichas": 12,
-  "bytes": 516096
+  "bytes": 520192
  },
  "ayto-santa-perpetua-de-mogoda/leg11": {
   "huella": "948293f45b7257881da3442c71c3b5fc977611d0bf0f408b478e6829c2f626a6",
@@ -1277,12 +1473,19 @@
   "fichas": 0,
   "bytes": 286720
  },
- "ayto-sant-vicenc-dels-horts/leg11": {
-  "huella": "27db966726f5fe1d6da266a710a03c785396a88e2f1b5c8683feef16921165bb",
-  "votaciones": 429,
-  "iniciativas": 334,
+ "ayto-sant-vicenc-dels-horts/leg10": {
+  "huella": "4d10b4c67bf725c428f3244d70957d8d25dfa6ef9b59ef768813d6d214b0ee8a",
+  "votaciones": 36,
+  "iniciativas": 32,
   "fichas": 0,
-  "bytes": 483328
+  "bytes": 167936
+ },
+ "ayto-sant-vicenc-dels-horts/leg11": {
+  "huella": "dd4faa5731fe5b7526945db56ab5b5db873549648cf7918b5f991d9c62f2dca3",
+  "votaciones": 556,
+  "iniciativas": 424,
+  "fichas": 0,
+  "bytes": 573440
  },
  "ayto-sant-vicenc-dels-horts/leg12": {
   "huella": "60134e8765393d98f93386739349dfafdfde88910f17eee81d1021e63f7b4c26",
@@ -1291,12 +1494,19 @@
   "fichas": 0,
   "bytes": 397312
  },
- "ayto-cerdanyola-del-valles/leg11": {
-  "huella": "810fea4efc430b9f26c18a0bd2c0df26e31f2844549bc5eb4575325e17c2a210",
-  "votaciones": 676,
-  "iniciativas": 628,
+ "ayto-cerdanyola-del-valles/leg10": {
+  "huella": "9215689bf5e636acfe0ecb94633812f1785f75d2c4fe867c9fe47a81f41b9310",
+  "votaciones": 41,
+  "iniciativas": 37,
   "fichas": 0,
-  "bytes": 753664
+  "bytes": 172032
+ },
+ "ayto-cerdanyola-del-valles/leg11": {
+  "huella": "49f55f97e8eb76ffd513cced8c46115c7ff82f3775df1675d2635289e0312996",
+  "votaciones": 796,
+  "iniciativas": 734,
+  "fichas": 0,
+  "bytes": 856064
  },
  "ayto-cerdanyola-del-valles/leg12": {
   "huella": "5243de31479e6885c4756956f5099eca6a826c563314ea3db174bcca0122f3a0",
@@ -1305,12 +1515,19 @@
   "fichas": 0,
   "bytes": 1019904
  },
- "ayto-sitges/leg11": {
-  "huella": "d5170478699a6e4c465d5a1e2ba99a2d48a321099a451bb6e4741163490af721",
-  "votaciones": 520,
-  "iniciativas": 457,
+ "ayto-sitges/leg10": {
+  "huella": "d2d07c0ea8e22fa03e306738353450dba1b6ff20ae8b86e3dfa2b89c4eb196b8",
+  "votaciones": 53,
+  "iniciativas": 49,
   "fichas": 0,
-  "bytes": 700416
+  "bytes": 192512
+ },
+ "ayto-sitges/leg11": {
+  "huella": "9499d1cc5698ec526462588cfb9a1a7ef6b48acc21d5a220f96193b0a12687ae",
+  "votaciones": 676,
+  "iniciativas": 578,
+  "fichas": 0,
+  "bytes": 860160
  },
  "ayto-sitges/leg12": {
   "huella": "8fa5822207707c55aa5330a66cbe98706613ffe2d8d40c26ad9c7e7a3a09f3aa",
@@ -1319,12 +1536,19 @@
   "fichas": 10,
   "bytes": 663552
  },
- "ayto-vic/leg11": {
-  "huella": "efb684b72edb59b31100577c51db0e91c3103fe98a020d0d1f8de9cccbbaf251",
-  "votaciones": 779,
-  "iniciativas": 627,
+ "ayto-vic/leg10": {
+  "huella": "c173e05a12fdd6b6ee08e5c482805cfdc65660c93b261297e05aa84adff802df",
+  "votaciones": 25,
+  "iniciativas": 25,
   "fichas": 0,
-  "bytes": 745472
+  "bytes": 163840
+ },
+ "ayto-vic/leg11": {
+  "huella": "4b5bca12ac07c434a8e12702d9649f86a3eed40d6fb435ffaba89af039cd8b0c",
+  "votaciones": 941,
+  "iniciativas": 774,
+  "fichas": 0,
+  "bytes": 872448
  },
  "ayto-vic/leg12": {
   "huella": "00dc4a17cb458a7886e545154a98b515a887966220bf63b0e2d6d29f43c69355",
@@ -1333,12 +1557,19 @@
   "fichas": 33,
   "bytes": 667648
  },
- "ayto-viladecans/leg11": {
-  "huella": "706ceee625d185735744a0855218bd3156b53cd216f704166a584fa904657560",
-  "votaciones": 366,
-  "iniciativas": 347,
+ "ayto-viladecans/leg10": {
+  "huella": "9b326f211eefec2719c0d49abb892cd8e1669021a8651418f4f88e07a1fe0b0c",
+  "votaciones": 33,
+  "iniciativas": 31,
   "fichas": 0,
-  "bytes": 458752
+  "bytes": 167936
+ },
+ "ayto-viladecans/leg11": {
+  "huella": "74089621838e694ca33bf3ff09d683fb218d7a6ada998ae2515417ec786028bd",
+  "votaciones": 464,
+  "iniciativas": 442,
+  "fichas": 0,
+  "bytes": 544768
  },
  "ayto-viladecans/leg12": {
   "huella": "646461641792ff1775a763e964d48de93565ba78ac068f1195f3c3d6cd22d7c9",
@@ -1347,12 +1578,19 @@
   "fichas": 0,
   "bytes": 552960
  },
- "ayto-vilafranca-del-penedes/leg11": {
-  "huella": "72a6e21ea5a20375c8221e6504b12df9f03f192d1b892776e8af747c040b270e",
-  "votaciones": 358,
-  "iniciativas": 299,
+ "ayto-vilafranca-del-penedes/leg10": {
+  "huella": "edafa6c117dfb2ad5b6634ba77eb13d8c66c06b21a75b5a459b066055b288482",
+  "votaciones": 18,
+  "iniciativas": 18,
   "fichas": 0,
-  "bytes": 401408
+  "bytes": 159744
+ },
+ "ayto-vilafranca-del-penedes/leg11": {
+  "huella": "526f223a3254809325409089210b6a3c61086d8a5551763b97d4253709ccf7c0",
+  "votaciones": 411,
+  "iniciativas": 349,
+  "fichas": 0,
+  "bytes": 446464
  },
  "ayto-vilafranca-del-penedes/leg12": {
   "huella": "20a352ce957a1b650c6beed030bc314f69a89cacdd7417a0b9728e89c4158864",
@@ -1361,19 +1599,26 @@
   "fichas": 10,
   "bytes": 376832
  },
- "ayto-vilanova-i-la-geltru/leg11": {
-  "huella": "6c18c192776f700d1d2300aa90d0cbe76d87df5b1934d7b4a6e3bfc70fdd14c0",
-  "votaciones": 684,
-  "iniciativas": 597,
+ "ayto-vilanova-i-la-geltru/leg10": {
+  "huella": "9cb49e1f11b12ed278ce3a336548a304733da0993919db3bd97c7a2f7b2fe878",
+  "votaciones": 51,
+  "iniciativas": 51,
   "fichas": 0,
-  "bytes": 757760
+  "bytes": 192512
+ },
+ "ayto-vilanova-i-la-geltru/leg11": {
+  "huella": "1dea7a3cfe8c3b07fb4d4fd87dbd7a84619bc6e2cb02ad09106daba556bdf020",
+  "votaciones": 825,
+  "iniciativas": 718,
+  "fichas": 326,
+  "bytes": 1040384
  },
  "ayto-vilanova-i-la-geltru/leg12": {
-  "huella": "4ad924f9deb411581183d045b3c11774e0c3ca69bc5ef2c78d775e85747f7b09",
+  "huella": "32d378d538c7da91d8f35c8f6d1686a749f98e1b8447357379b802ea9abc1ddd",
   "votaciones": 754,
   "iniciativas": 672,
-  "fichas": 73,
-  "bytes": 892928
+  "fichas": 672,
+  "bytes": 1130496
  },
  "ayto-cordoba/leg9": {
   "huella": "1e759f5608a28fd034aaa7ca0e82fc9b09c1854dbb561a970c040d4b769713a2",
@@ -1397,102 +1642,130 @@
   "bytes": 1650688
  },
  "ayto-cordoba/leg12": {
-  "huella": "abf2aad9cd61767520255c4748210574a1ccfb28e5fab50433efd031286c92ea",
+  "huella": "c32d75d1d27465ef32561141968ff3b75e22fc226a75a23dce98bfc8d3f4b2b3",
   "votaciones": 991,
   "iniciativas": 853,
-  "fichas": 830,
-  "bytes": 1499136
+  "fichas": 853,
+  "bytes": 1507328
  },
- "ayto-banyoles/leg11": {
-  "huella": "10df0ab7c47fe9864ccf539615140a4615a05bb5f8675390046d981ac9561ce2",
-  "votaciones": 98,
-  "iniciativas": 83,
-  "fichas": 0,
-  "bytes": 221184
- },
- "ayto-banyoles/leg12": {
-  "huella": "8ca11e4cafd965c7cb664c8e142c870783e6003ddd3301a7152aba88987170c9",
-  "votaciones": 255,
-  "iniciativas": 228,
-  "fichas": 72,
-  "bytes": 385024
- },
- "ayto-blanes/leg11": {
-  "huella": "621b3b206a1f4dfb7f5a911b52bdb88236696e05d2f39a6ad4d8cac3a830c8b0",
-  "votaciones": 257,
-  "iniciativas": 199,
-  "fichas": 0,
-  "bytes": 331776
- },
- "ayto-blanes/leg12": {
-  "huella": "90b0340ecf7227fe18b0f882f9cf16cfc3788118c9faafce9a38c71fa9939fa0",
-  "votaciones": 357,
-  "iniciativas": 299,
-  "fichas": 109,
-  "bytes": 544768
- },
- "ayto-figueres/leg11": {
-  "huella": "4eb8b6c228d944e6b303d0eed62f4c0c5c0eac461aabfc68d8b3434350f206a7",
-  "votaciones": 598,
-  "iniciativas": 453,
-  "fichas": 0,
-  "bytes": 552960
- },
- "ayto-figueres/leg12": {
-  "huella": "355e745ee72ae6624a2f7144edbef14a903e8aabc2a8cfd54a2f2f1c4284e3e4",
-  "votaciones": 510,
-  "iniciativas": 415,
-  "fichas": 80,
-  "bytes": 544768
- },
- "ayto-girona/leg11": {
-  "huella": "b8496e1a8a9c9162046e693f3f1ec7990cbb2c61733e9fb7a1b21753810525ed",
-  "votaciones": 30,
-  "iniciativas": 29,
-  "fichas": 0,
-  "bytes": 167936
- },
- "ayto-girona/leg12": {
-  "huella": "ee20b05efefc7cd8fe303a63c1d4966cdd366e8b6684eb7ded8426cd162b4d3d",
-  "votaciones": 50,
-  "iniciativas": 50,
-  "fichas": 7,
+ "ayto-banyoles/leg10": {
+  "huella": "01f640cb10d41c8a38641746e9dc5340ee29509e06bd1e73cfaaa4891e0ecace",
+  "votaciones": 24,
+  "iniciativas": 24,
+  "fichas": 24,
   "bytes": 180224
  },
+ "ayto-banyoles/leg11": {
+  "huella": "d6d83d61166e55e1720e5d73449fca0f0f998c28cf7da741248f172442028c40",
+  "votaciones": 120,
+  "iniciativas": 104,
+  "fichas": 104,
+  "bytes": 286720
+ },
+ "ayto-banyoles/leg12": {
+  "huella": "f6980e1a29e655eecf00236bea6d83364bafb7ad06b45b744d9e2a1aea6a6109",
+  "votaciones": 255,
+  "iniciativas": 228,
+  "fichas": 228,
+  "bytes": 454656
+ },
+ "ayto-blanes/leg10": {
+  "huella": "4643ef6074955a2f122f49acee529e128d4a1411b3fc096b75730402bc155cba",
+  "votaciones": 25,
+  "iniciativas": 24,
+  "fichas": 24,
+  "bytes": 184320
+ },
+ "ayto-blanes/leg11": {
+  "huella": "afed26efc1b1168cfac6843d702fe881d2c74cc2380cbcc9bb40208cea0c6136",
+  "votaciones": 342,
+  "iniciativas": 257,
+  "fichas": 257,
+  "bytes": 507904
+ },
+ "ayto-blanes/leg12": {
+  "huella": "4fc5b2781d9be53e6fef46606376118454b25fad61fa6fb89e0e7ec1d4697f47",
+  "votaciones": 357,
+  "iniciativas": 299,
+  "fichas": 299,
+  "bytes": 634880
+ },
+ "ayto-figueres/leg10": {
+  "huella": "21967e3f6f2c1031d2d9f4717603eaf1b8dc7260ec6521a8ceb8c1c3b6e916a2",
+  "votaciones": 85,
+  "iniciativas": 72,
+  "fichas": 37,
+  "bytes": 217088
+ },
+ "ayto-figueres/leg11": {
+  "huella": "a230d438a38278ea86791f21b49fba55ab4eb29aaaee1d9dd7ca0c78411ee624",
+  "votaciones": 759,
+  "iniciativas": 581,
+  "fichas": 581,
+  "bytes": 897024
+ },
+ "ayto-figueres/leg12": {
+  "huella": "f445e65501f32338f156044672cf31627f63fc9dedc83f17b790edc4a797bf2d",
+  "votaciones": 510,
+  "iniciativas": 415,
+  "fichas": 415,
+  "bytes": 679936
+ },
+ "ayto-girona/leg11": {
+  "huella": "d53dbce8de4115b3b415fe0f4f6b41f496c7a1e2fa660b6b35dddddcf025bf59",
+  "votaciones": 31,
+  "iniciativas": 30,
+  "fichas": 30,
+  "bytes": 180224
+ },
+ "ayto-girona/leg12": {
+  "huella": "7483ddcc76aaa1ac94c8694b13edad0a100389566520c1303d7c31066a39e121",
+  "votaciones": 50,
+  "iniciativas": 50,
+  "fichas": 50,
+  "bytes": 200704
+ },
  "ayto-lloret-de-mar/leg11": {
-  "huella": "81c006f9b501041802378afa234b25df178284b321b227bf7879954375812844",
-  "votaciones": 381,
-  "iniciativas": 293,
-  "fichas": 0,
-  "bytes": 438272
+  "huella": "58134c40d1af17dcf7b34928dadfe332d0c996cb028b20e36a5a5b6a7b34457f",
+  "votaciones": 390,
+  "iniciativas": 300,
+  "fichas": 300,
+  "bytes": 602112
  },
  "ayto-lloret-de-mar/leg12": {
-  "huella": "34bd3f5e5bef63f6ec415a32201e36a89c844a028a4a441e8f34bcc1f1a0a974",
+  "huella": "b74800c13b694711a2de5b06ba570f79450663f406055749a21a9c50f5c12444",
   "votaciones": 360,
   "iniciativas": 288,
-  "fichas": 107,
-  "bytes": 483328
+  "fichas": 288,
+  "bytes": 565248
+ },
+ "ayto-olot/leg10": {
+  "huella": "64c19252acee81be860b402c8c37a50921a62d9e9d86ce074876c9311e29df46",
+  "votaciones": 22,
+  "iniciativas": 21,
+  "fichas": 21,
+  "bytes": 172032
  },
  "ayto-olot/leg11": {
-  "huella": "e19a7bf1a40cde7ec9abaf74c134b0c46d3e17b8a0971c6c9d6cba2ee2c4c512",
-  "votaciones": 396,
-  "iniciativas": 334,
-  "fichas": 60,
-  "bytes": 442368
+  "huella": "effcf6f9c4b878f363a5fa921d307476873df81636fd1c09484aa5a53093867c",
+  "votaciones": 501,
+  "iniciativas": 426,
+  "fichas": 426,
+  "bytes": 659456
  },
  "ayto-olot/leg12": {
-  "huella": "d257e596d3df3d2aef16e45d37f502680f9e011cc034b2da4d75ba5a95983b6d",
-  "votaciones": 80,
-  "iniciativas": 72,
-  "fichas": 72,
-  "bytes": 237568
+  "huella": "9735a987ab264245ca9002c29c7496363ec78da1d3939fde0113b89ef42eca49",
+  "votaciones": 98,
+  "iniciativas": 89,
+  "fichas": 89,
+  "bytes": 253952
  },
  "ayto-palafrugell/leg11": {
-  "huella": "f53443e99b266446b2e9dfd0e020f4ae0236b672b38d7950ccf4e67c8c51e65e",
-  "votaciones": 346,
-  "iniciativas": 221,
-  "fichas": 221,
-  "bytes": 487424
+  "huella": "12e6b76d532d6c04dc36099c2f1da1084a0d5757e2c8a145850ac90bf4684ea4",
+  "votaciones": 372,
+  "iniciativas": 235,
+  "fichas": 235,
+  "bytes": 516096
  },
  "ayto-palafrugell/leg12": {
   "huella": "3df23b7b4c9eed355a1f81a07e92b50f15a2c00586027c6228d70dd4e3c13953",
@@ -1501,12 +1774,19 @@
   "fichas": 248,
   "bytes": 573440
  },
+ "ayto-roses/leg10": {
+  "huella": "f8a8fa6950a8ebc4d8d8e487109970fcb6b9e13403b3b02373c6c9b7ca4b19a3",
+  "votaciones": 35,
+  "iniciativas": 35,
+  "fichas": 35,
+  "bytes": 188416
+ },
  "ayto-roses/leg11": {
-  "huella": "3df1fe8a4272c23565c8d9f78cae3cc4d8b2c697cc07b069554e341ce11f4bd1",
-  "votaciones": 531,
-  "iniciativas": 449,
-  "fichas": 427,
-  "bytes": 704512
+  "huella": "ebc1f8ec43c8638f6e53d9b77010ec2862f229282f60874a708a30c940de9a95",
+  "votaciones": 646,
+  "iniciativas": 550,
+  "fichas": 550,
+  "bytes": 847872
  },
  "ayto-roses/leg12": {
   "huella": "590e4921b71353c91d51e70dc757148e3db9bb43e11e41a5709c92929a64d7ae",
@@ -1515,12 +1795,19 @@
   "fichas": 479,
   "bytes": 757760
  },
+ "ayto-salt/leg10": {
+  "huella": "6211208b9e794e8497261b9dbcfbc15e1d19df830584e2ae66895330d31af6d8",
+  "votaciones": 16,
+  "iniciativas": 16,
+  "fichas": 16,
+  "bytes": 172032
+ },
  "ayto-salt/leg11": {
-  "huella": "787b3a213f3cd7d39ef81be2a8230ef3a5ee8beebc65a2417ca5fb1c4653ab69",
-  "votaciones": 311,
-  "iniciativas": 297,
-  "fichas": 291,
-  "bytes": 524288
+  "huella": "45a8d909ccc1c0923522e8145087eb43ee5c32c7698fd7954019e0b58396d2c4",
+  "votaciones": 397,
+  "iniciativas": 373,
+  "fichas": 373,
+  "bytes": 618496
  },
  "ayto-salt/leg12": {
   "huella": "0c12d9aad350229b394f45800483c84e9834f6a5d16e12b5b9020fdd85fef7b8",
@@ -1530,11 +1817,11 @@
   "bytes": 565248
  },
  "ayto-sant-feliu-de-guixols/leg11": {
-  "huella": "b54ed0db0fc0a269de805a7664963dbff555476b23d745928090f09b6b6222a1",
-  "votaciones": 397,
-  "iniciativas": 340,
-  "fichas": 330,
-  "bytes": 581632
+  "huella": "d63fda0dc3efa62c8810be1d882ea42c3b862374a2446790261802b40ba7d0f5",
+  "votaciones": 465,
+  "iniciativas": 401,
+  "fichas": 401,
+  "bytes": 671744
  },
  "ayto-sant-feliu-de-guixols/leg12": {
   "huella": "c81e47242957a963e95b27ca4379e88206df2f1defcf0742e724db967b3c0a95",
@@ -1544,18 +1831,18 @@
   "bytes": 790528
  },
  "ayto-lleida/leg11": {
-  "huella": "c4efaca34373c8979b63f1d9abe15506fdcd2e3710b66af27a24948c02b8f292",
-  "votaciones": 1046,
-  "iniciativas": 854,
-  "fichas": 815,
-  "bytes": 1470464
+  "huella": "94bd447b60014669e9936788cf5e4d591b6a6caa1d97212c62f4bfac2d0794e1",
+  "votaciones": 1084,
+  "iniciativas": 891,
+  "fichas": 891,
+  "bytes": 1531904
  },
  "ayto-lleida/leg12": {
-  "huella": "3d62ec2471e6ea89da7394e79793e529990047da90908ef600948ff7e40d71bc",
-  "votaciones": 1203,
-  "iniciativas": 716,
-  "fichas": 716,
-  "bytes": 1441792
+  "huella": "67c5eb916dc2144c769707259e5257f1712e34c65b7e5be9c9d0ea727d4498b5",
+  "votaciones": 1216,
+  "iniciativas": 728,
+  "fichas": 728,
+  "bytes": 1454080
  },
  "ayto-malaga/leg11": {
   "huella": "c64f455e7f915f98f9ed067ac029071f1aa1fbf0fd64239bf997a85eb75ec907",
@@ -1600,25 +1887,32 @@
   "bytes": 581632
  },
  "ayto-amposta/leg11": {
-  "huella": "b85ee557adcb9ea4ad036fa02e8fb68403b6e6a963e5909f9fa10a9d4d1fe21e",
-  "votaciones": 516,
-  "iniciativas": 452,
-  "fichas": 435,
-  "bytes": 720896
+  "huella": "db000b0157ddc4fed2bf8d03ec7236868fe657dac67ef595fad0e0ff35cd8bd8",
+  "votaciones": 554,
+  "iniciativas": 489,
+  "fichas": 489,
+  "bytes": 770048
  },
  "ayto-amposta/leg12": {
-  "huella": "ccae55e08019ca31ab112a9481b048b5fd5d75a2956df1fd23f09e109eb025f2",
-  "votaciones": 426,
-  "iniciativas": 383,
-  "fichas": 383,
-  "bytes": 610304
+  "huella": "d2c9ae56238be8ef62f6021752d3b07c33fecd88a88edc460588ea7789b3289e",
+  "votaciones": 519,
+  "iniciativas": 461,
+  "fichas": 461,
+  "bytes": 704512
+ },
+ "ayto-calafell/leg10": {
+  "huella": "38f1e4abef62ddae3ff13a6c7c46fa881b78d77c2f3d161eecbb6bce09fc0a7e",
+  "votaciones": 36,
+  "iniciativas": 35,
+  "fichas": 33,
+  "bytes": 204800
  },
  "ayto-calafell/leg11": {
-  "huella": "d0291a0bac45b502fe8566d323f40eb6c3f0899ab33c5c45e4c06f99f1799b9e",
-  "votaciones": 387,
-  "iniciativas": 316,
-  "fichas": 294,
-  "bytes": 647168
+  "huella": "5b5f6ac2f01bf765e65ad452604fa44af6b6bdfaf2b4782b6fbf3b89a2337921",
+  "votaciones": 521,
+  "iniciativas": 431,
+  "fichas": 431,
+  "bytes": 831488
  },
  "ayto-calafell/leg12": {
   "huella": "6156a330b92da4decd001c26e35aa32decce0ce0ec66e3a84e341f2056625ba4",
@@ -1627,33 +1921,47 @@
   "fichas": 277,
   "bytes": 569344
  },
+ "ayto-cambrils/leg10": {
+  "huella": "46695e284a0ecbbe080a50da51e93dd964637edacc6417bc9dd65de110165346",
+  "votaciones": 54,
+  "iniciativas": 54,
+  "fichas": 54,
+  "bytes": 233472
+ },
  "ayto-cambrils/leg11": {
-  "huella": "73d356de9e41a7760b4117ea4f50db4148b1775df6a99afb6471cc4c1d1b0a1a",
-  "votaciones": 461,
-  "iniciativas": 431,
-  "fichas": 408,
-  "bytes": 737280
+  "huella": "353ecbeb38525c769f9f419953ec5e3469391274b62f28321da41638c2e7fc7f",
+  "votaciones": 564,
+  "iniciativas": 529,
+  "fichas": 529,
+  "bytes": 888832
  },
  "ayto-cambrils/leg12": {
-  "huella": "223aa511a3a668eb5512d12f56b1a8258c7a3f11a45de178568f5cdd31e2704c",
-  "votaciones": 1131,
-  "iniciativas": 1044,
-  "fichas": 1044,
-  "bytes": 1744896
+  "huella": "aaacd5bfa909af5dd4b564936364a401dbc89bb599c2bd6d0f3dd7b3c28796cd",
+  "votaciones": 1146,
+  "iniciativas": 1059,
+  "fichas": 1059,
+  "bytes": 1765376
+ },
+ "ayto-reus/leg10": {
+  "huella": "660375743d913b382d46ee2d31c2a420c3ae9810b89724383e7124fd4aaff043",
+  "votaciones": 28,
+  "iniciativas": 22,
+  "fichas": 22,
+  "bytes": 188416
  },
  "ayto-reus/leg11": {
-  "huella": "f822a7b954f168296eee999e54b0a9c748b2df081ff2765e4cfa2313ba4a37eb",
-  "votaciones": 591,
-  "iniciativas": 498,
-  "fichas": 472,
-  "bytes": 872448
+  "huella": "17057930f840bd2ccc02655189b405ac687e74262858f08b54741f4948af29bc",
+  "votaciones": 774,
+  "iniciativas": 640,
+  "fichas": 640,
+  "bytes": 1093632
  },
  "ayto-reus/leg12": {
-  "huella": "49d966467d86a3de46204b5325df95304bb6230533e5fc77f08aefbc1546c60a",
-  "votaciones": 599,
-  "iniciativas": 536,
-  "fichas": 536,
-  "bytes": 950272
+  "huella": "f9002c49a2dedf63cb95bd2a1582e7f7a7735c74ba556e46d58db5fce528e6b3",
+  "votaciones": 611,
+  "iniciativas": 547,
+  "fichas": 547,
+  "bytes": 970752
  },
  "ayto-tarragona/leg11": {
   "huella": "e156c12680d358d23701b7f3266e39ae3037f25798dcb7f658494fc4f9e422b8",
@@ -1669,12 +1977,19 @@
   "fichas": 245,
   "bytes": 450560
  },
+ "ayto-tortosa/leg10": {
+  "huella": "f2075d312aff7deb8ea1db4b8097f9bc18fe5456c76aaaac41ce78348c384292",
+  "votaciones": 35,
+  "iniciativas": 31,
+  "fichas": 31,
+  "bytes": 192512
+ },
  "ayto-tortosa/leg11": {
-  "huella": "a49e549ec26e7b1c4cd4eefbec721142a63779b8fbc36cceb1d0cc4b419bffe6",
-  "votaciones": 563,
-  "iniciativas": 484,
-  "fichas": 445,
-  "bytes": 811008
+  "huella": "3e039c2fb8f34612825cce5c7194e80323d40685b3ad17a5c6ab66992d931d8d",
+  "votaciones": 702,
+  "iniciativas": 606,
+  "fichas": 606,
+  "bytes": 995328
  },
  "ayto-tortosa/leg12": {
   "huella": "fcf7b9735e26c07be6fa21795b44085159a0460dd9e93aeb9277d8340a5b8815",
@@ -1683,12 +1998,19 @@
   "fichas": 327,
   "bytes": 606208
  },
+ "ayto-valls/leg10": {
+  "huella": "63ad1605953eb9de4b0c315baae1fd1f06540df2da91580e673accf984e848cb",
+  "votaciones": 19,
+  "iniciativas": 19,
+  "fichas": 19,
+  "bytes": 159744
+ },
  "ayto-valls/leg11": {
-  "huella": "42ab219203cdb925c5943cce57055878105524e2a670f885b1259e4b44cb4907",
-  "votaciones": 214,
-  "iniciativas": 199,
-  "fichas": 179,
-  "bytes": 393216
+  "huella": "6f007afbae0769624c0d53a9f7f7d07e7f6fdc8bae6bc829bd90a6d99ddae091",
+  "votaciones": 259,
+  "iniciativas": 238,
+  "fichas": 238,
+  "bytes": 454656
  },
  "ayto-valls/leg12": {
   "huella": "488665aac6102f61bd0944a045be2a74d0fba9f632df2442c0f6ee0a17ddcbc0",
@@ -1698,11 +2020,11 @@
   "bytes": 421888
  },
  "ayto-el-vendrell/leg11": {
-  "huella": "58359db60c05eef3128501c5cb64735eede952e5302243b546ca5b8f0599674e",
-  "votaciones": 177,
-  "iniciativas": 150,
-  "fichas": 150,
-  "bytes": 327680
+  "huella": "186897395ae97d436a7dc0a4c3bed3946ffe5d6ced79a07626d502692d808c47",
+  "votaciones": 199,
+  "iniciativas": 168,
+  "fichas": 168,
+  "bytes": 372736
  },
  "ayto-el-vendrell/leg12": {
   "huella": "da3dd0fcb069814087320d5cab644a6d5ae1c637c086fa2886f6b902423532fb",
@@ -1711,26 +2033,40 @@
   "fichas": 179,
   "bytes": 425984
  },
+ "ayto-vila-seca/leg10": {
+  "huella": "52dfe525feb0348234866586a453c25fc2ba5788b743a7a88001229a7561b110",
+  "votaciones": 17,
+  "iniciativas": 17,
+  "fichas": 17,
+  "bytes": 167936
+ },
  "ayto-vila-seca/leg11": {
-  "huella": "6815bd04f101585514d993240af5534773bcfaf6631968c5c77314d2eb4e8d4e",
-  "votaciones": 301,
-  "iniciativas": 285,
-  "fichas": 269,
-  "bytes": 483328
+  "huella": "8c199c59a67d77e3e210f345bfaf1997675158ff9e6bd9978a0980a5213911aa",
+  "votaciones": 347,
+  "iniciativas": 330,
+  "fichas": 330,
+  "bytes": 544768
  },
  "ayto-vila-seca/leg12": {
-  "huella": "db0d0ccaa76f6439098344b0b024632d9fe56270ac1c61784009cde91bee6851",
-  "votaciones": 220,
-  "iniciativas": 203,
-  "fichas": 203,
+  "huella": "7a126a5377ffcae8d7b4d2786f1521b6ce0d6e8ed4177967bce577f4d95c7806",
+  "votaciones": 226,
+  "iniciativas": 209,
+  "fichas": 209,
   "bytes": 389120
  },
+ "ayto-salou/leg10": {
+  "huella": "ce1b0f3ab3978593cfc1198d058e45bcdb78141249e9e298c84a8692791539ba",
+  "votaciones": 30,
+  "iniciativas": 29,
+  "fichas": 16,
+  "bytes": 176128
+ },
  "ayto-salou/leg11": {
-  "huella": "778c4dc55c26fee8f93e626075ebde583ee98f4bca6ae8c5b62083e989cc3244",
-  "votaciones": 344,
-  "iniciativas": 282,
-  "fichas": 262,
-  "bytes": 536576
+  "huella": "a4610c9db9cec9f639b679db10f68a52a282f7eb21b198a8a8fb5a58da70580e",
+  "votaciones": 414,
+  "iniciativas": 338,
+  "fichas": 338,
+  "bytes": 618496
  },
  "ayto-salou/leg12": {
   "huella": "1d0a8630b5df7bdccdebf3b020ebbc97793419a0f493a02f06eb115d30df83fb",
@@ -1754,11 +2090,11 @@
   "bytes": 602112
  },
  "ayto-valencia/leg12": {
-  "huella": "fd74eb054c59d10c9b5abea9f92abab636298f305ce45f2cda05756ed01bd1b2",
-  "votaciones": 838,
+  "huella": "f4a937e304e0c67dbda7f8fb6c8a6cb02d104bac031b00c13fa266186749b27e",
+  "votaciones": 889,
   "iniciativas": 657,
   "fichas": 657,
-  "bytes": 1085440
+  "bytes": 1114112
  },
  "ayto-valladolid/leg10": {
   "huella": "5a1f81ae892ac01d672fbfe9cd7f3db4090b7a2190e951fd42cba902fd6a6bea",

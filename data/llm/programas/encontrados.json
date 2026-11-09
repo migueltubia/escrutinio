@@ -11,6 +11,18 @@
       "origen": "web-partido",
       "url_oficial": null,
       "encontrado": "2026-11-04"
+    },
+    {
+      "id": "generales-2026-cc",
+      "eleccion": "generales-2026",
+      "fecha_eleccion": "2026-11-29",
+      "cuerpo": "congreso",
+      "partido": "CC",
+      "titulo": "Programa electoral (CCA-26-Programa_Electoral-29NOV.pdf)",
+      "url": "https://coalicioncanaria.org/wp-content/uploads/2026/11/CCA-26-Programa_Electoral-29NOV.pdf",
+      "origen": "web-partido",
+      "url_oficial": null,
+      "encontrado": "2026-11-09"
     }
   ],
   "descartar": [

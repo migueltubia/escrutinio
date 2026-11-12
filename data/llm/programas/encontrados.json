@@ -35,6 +35,18 @@
       "origen": "web-partido",
       "url_oficial": null,
       "encontrado": "2026-11-11"
+    },
+    {
+      "id": "generales-2026-teruel-existe",
+      "eleccion": "generales-2026",
+      "fecha_eleccion": "2026-11-29",
+      "cuerpo": "congreso",
+      "partido": "Teruel Existe",
+      "titulo": "Programa electoral (Programa-Elecciones-Generales-2026.pdf)",
+      "url": "https://teruelexiste.info/wp-content/uploads/2026/11/Programa-Elecciones-Generales-2026.pdf",
+      "origen": "web-partido",
+      "url_oficial": null,
+      "encontrado": "2026-11-12"
     }
   ],
   "descartar": [

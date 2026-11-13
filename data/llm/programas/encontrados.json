@@ -47,6 +47,18 @@
       "origen": "web-partido",
       "url_oficial": null,
       "encontrado": "2026-11-12"
+    },
+    {
+      "id": "generales-2026-bng-doc2",
+      "eleccion": "generales-2026",
+      "fecha_eleccion": "2026-11-29",
+      "cuerpo": "congreso",
+      "partido": "BNG",
+      "titulo": "Programa electoral (26_bng_xerais_documentos_programa_electoral.pdf)",
+      "url": "https://www.bng.gal/media/bnggaliza/files/2026/11/12/26_bng_xerais_documentos_programa_electoral.pdf",
+      "origen": "web-partido",
+      "url_oficial": null,
+      "encontrado": "2026-11-13"
     }
   ],
   "descartar": [

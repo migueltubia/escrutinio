@@ -71,6 +71,30 @@
       "origen": "web-partido",
       "url_oficial": null,
       "encontrado": "2026-11-13"
+    },
+    {
+      "id": "generales-2026-psoe",
+      "eleccion": "generales-2026",
+      "fecha_eleccion": "2026-11-29",
+      "cuerpo": "congreso",
+      "partido": "PSOE",
+      "titulo": "Programa electoral (PROGRAMAPSOE29N26.pdf)",
+      "url": "https://www.psoe.es/media-content/2026/11/PROGRAMAPSOE29N26.pdf",
+      "origen": "web-partido",
+      "url_oficial": null,
+      "encontrado": "2026-11-16"
+    },
+    {
+      "id": "generales-2026-pp-doc2",
+      "eleccion": "generales-2026",
+      "fecha_eleccion": "2026-11-29",
+      "cuerpo": "congreso",
+      "partido": "PP",
+      "titulo": "Programa electoral (PROGRAMA-ELECTORAL-PP-2026-RECONSTRUCCION-NACIONAL.pdf)",
+      "url": "https://www.pp.es/wp-content/uploads/2026/11/PROGRAMA-ELECTORAL-PP-2026-RECONSTRUCCION-NACIONAL.pdf",
+      "origen": "web-partido",
+      "url_oficial": null,
+      "encontrado": "2026-11-16"
     }
   ],
   "descartar": [

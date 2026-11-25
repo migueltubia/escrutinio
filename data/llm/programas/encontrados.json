@@ -107,6 +107,18 @@
       "origen": "web-partido",
       "url_oficial": null,
       "encontrado": "2026-11-20"
+    },
+    {
+      "id": "generales-2026-pp-doc3",
+      "eleccion": "generales-2026",
+      "fecha_eleccion": "2026-11-29",
+      "cuerpo": "congreso",
+      "partido": "PP",
+      "titulo": "Programa electoral (PROGRAMA-ELECTORAL-PP-2026-RECONSTRUCCION-NACIONAL.pdf)",
+      "url": "https://www.pp.es/storage/2026/11/PROGRAMA-ELECTORAL-PP-2026-RECONSTRUCCION-NACIONAL.pdf",
+      "origen": "web-partido",
+      "url_oficial": null,
+      "encontrado": "2026-11-25"
     }
   ],
   "descartar": [

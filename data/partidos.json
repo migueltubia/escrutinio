@@ -45,6 +45,16 @@
       "desde": "2024",
       "fuente": "Fundado en febrero de 2024; de cara al 29-N negocia una coalición de centro",
       "nota": "Color PROVISIONAL. OJO: 'cree' es palabra común; si diera falsos positivos, afina el patrón."
+    },
+    {
+      "patron": "unidad del pueblo canario|\\bupc\\b",
+      "siglas": "UPC",
+      "color": "#e2001a",
+      "nombre": "Unidad del Pueblo Canario",
+      "ambito": "Canarias",
+      "desde": "2026",
+      "fuente": "Concurre a las generales del 29-N de 2026; programa en el comparador de RTVE",
+      "nota": "Color provisional: confirmar con su web oficial."
     }
   ]
 }

@@ -398,7 +398,9 @@ def _formato(crudo):
 
 # Programas cuyo PDF se lee mejor en el orden interno del documento (pdftotext -raw): los del PNV de 2019 meten
 # los rótulos laterales («› IGUALDAD») y las viñetas en medio de las palabras con la extracción normal.
-EXTRACCION = {"generales-2019-04-pnv": "raw", "generales-2019-11-pnv": "raw"}
+# El de Adelante Andalucía de 2026 va a dos columnas con el título de cada propuesta partido en dos tamaños de letra:
+# la extracción normal intercala unas propuestas con otras.
+EXTRACCION = {"generales-2019-04-pnv": "raw", "generales-2019-11-pnv": "raw", "generales-2026-adelante-andalucia": "raw"}
 
 
 def _texto(crudo, id_=None):

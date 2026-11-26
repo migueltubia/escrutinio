@@ -243,28 +243,6 @@
       "eleccion": "generales-2026",
       "fecha_eleccion": "2026-11-29",
       "cuerpo": "congreso",
-      "id": "generales-2026-d21-espana-limpia",
-      "partido": "Democracia 21",
-      "titulo": "España limpia (limpieza política radical)",
-      "url": "https://democracia21.es/docs/espana-limpia-democracia21.pdf",
-      "origen": "web-partido",
-      "url_oficial": null
-    },
-    {
-      "eleccion": "generales-2026",
-      "fecha_eleccion": "2026-11-29",
-      "cuerpo": "congreso",
-      "id": "generales-2026-d21-vivienda",
-      "partido": "Democracia 21",
-      "titulo": "Vivienda, prioridad nº 1",
-      "url": "https://democracia21.es/docs/vivienda-prioridad-1-democracia21.pdf",
-      "origen": "web-partido",
-      "url_oficial": null
-    },
-    {
-      "eleccion": "generales-2026",
-      "fecha_eleccion": "2026-11-29",
-      "cuerpo": "congreso",
       "id": "generales-2026-pnv",
       "partido": "PNV",
       "titulo": "Programa elecciones generales 2026",
@@ -347,6 +325,61 @@
       "titulo": "La España que merecemos. Programa electoral",
       "url": "https://mi.democracia21.es/docs/programa/programa-democracia21.pdf",
       "origen": "web-partido",
+      "url_oficial": null
+    },
+    {
+      "eleccion": "generales-2026",
+      "fecha_eleccion": "2026-11-29",
+      "cuerpo": "congreso",
+      "id": "generales-2026-erc",
+      "partido": "ERC",
+      "titulo": "Pel país. Per la gent. Pel futur. Programa electoral, eleccions al Congrés 2026",
+      "url": "https://asistentes.rtve.es/elections/programs/programas_generales_2026/erc_2026.pdf",
+      "origen": "copia-prensa",
+      "url_oficial": null
+    },
+    {
+      "eleccion": "generales-2026",
+      "fecha_eleccion": "2026-11-29",
+      "cuerpo": "congreso",
+      "id": "generales-2026-junts",
+      "partido": "Junts",
+      "titulo": "Junts per Catalunya. Programa electoral 29N",
+      "url": "https://asistentes.rtve.es/elections/programs/programas_generales_2026/junts_2026.pdf",
+      "origen": "copia-prensa",
+      "url_oficial": null
+    },
+    {
+      "eleccion": "generales-2026",
+      "fecha_eleccion": "2026-11-29",
+      "cuerpo": "congreso",
+      "id": "generales-2026-adelante-andalucia",
+      "partido": "Adelante Andalucía",
+      "titulo": "Un programa para frenar a las derechas. Programa electoral generales 29N",
+      "url": "https://asistentes.rtve.es/elections/programs/programas_generales_2026/adelante_andalucia_2026.pdf",
+      "origen": "copia-prensa",
+      "url_oficial": null
+    },
+    {
+      "eleccion": "generales-2026",
+      "fecha_eleccion": "2026-11-29",
+      "cuerpo": "congreso",
+      "id": "generales-2026-ara-mes",
+      "partido": "Més",
+      "titulo": "Ara Més-Front Ampli. Programa electoral, eleccions 29 novembre 2026",
+      "url": "https://asistentes.rtve.es/elections/programs/programas_generales_2026/ara_mes_front_ampli_2026.pdf",
+      "origen": "copia-prensa",
+      "url_oficial": null
+    },
+    {
+      "eleccion": "generales-2026",
+      "fecha_eleccion": "2026-11-29",
+      "cuerpo": "congreso",
+      "id": "generales-2026-upc",
+      "partido": "UPC",
+      "titulo": "Unidad del Pueblo Canario. Programa electoral, elecciones generales 2026",
+      "url": "https://asistentes.rtve.es/elections/programs/programas_generales_2026/unidad_del_pueblo_canario_2026.pdf",
+      "origen": "copia-prensa",
       "url_oficial": null
     }
   ]

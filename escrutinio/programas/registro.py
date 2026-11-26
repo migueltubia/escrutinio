@@ -9,6 +9,10 @@ hecho para que nadie lo repita, sea GitHub Actions o una persona en su equipo:
   («generales-2023-psoe-2»); la lectura anterior no se borra.
 - Un cambio de prompt no relee nada por sí solo: releer es una orden explícita (`programas-releer`).
 - Los fallos quedan como «error» con el motivo y solo se reintentan al pedirlo.
+- Un mismo programa no cuenta dos veces. Si un partido cuelga el mismo fichero con otro nombre, entra como
+  «duplicado» y no se lee. Si cuelga una versión nueva casi igual (maquetada de otra forma o corregida) como
+  documento aparte, la anterior queda con «sustituido_por» y deja de usarse en cuanto la nueva está leída
+  (marcar_repetidos). Lo leído de la anterior no se borra.
 
 El texto extraído se guarda en data/raw/programas/<id>.txt, versionado, con un salto de página (\\f)
 entre páginas: la cita de cada compromiso sigue siendo comprobable aunque el partido retire el PDF.
@@ -22,6 +26,7 @@ import json
 import re
 import subprocess
 import tempfile
+import unicodedata
 from datetime import date
 from pathlib import Path
 
@@ -221,11 +226,68 @@ def guardar_registro(entradas):
 
 
 def vigentes(entradas):
-    """La última entrada de cada programa del catálogo (las anteriores se conservan, pero no se usan)."""
+    """La última entrada de cada programa del catálogo (las anteriores se conservan, pero no se usan), sin los
+    duplicados ni los sustituidos por otro documento que ya está leído."""
     por_base = {}
     for e in entradas:
         por_base[e["base"]] = e
-    return list(por_base.values())
+    leidos = {e["base"] for e in por_base.values() if e["estado"] == "leido"}
+    return [e for e in por_base.values() if e["estado"] != "duplicado" and e.get("sustituido_por") not in leidos]
+
+
+# Dos documentos del mismo partido y la misma elección se repiten si casi todas las secuencias de cuatro palabras
+# del más corto están en el otro. Con un tamaño parecido son el mismo programa (vale el último); si uno es mucho
+# más corto, es un capítulo publicado aparte (vale el completo). Un resumen redactado de otra forma no se repite.
+MIN_TAMANO_REPETIDO, MIN_COMUN_REPETIDO = 0.7, 0.8
+
+
+def _trozos(id_):
+    plano = unicodedata.normalize("NFKD", texto(id_)).encode("ascii", "ignore").decode().lower()
+    palabras = re.findall(r"[a-z0-9]+", plano)
+    return {hash(tuple(palabras[i:i + 4])) for i in range(len(palabras) - 3)}
+
+
+def marcar_repetidos(log=print):
+    """Apunta «sustituido_por» en los documentos que repiten otro del mismo partido y elección: si es el mismo
+    fichero, sobra el último en llegar; si es casi el mismo texto, el más antiguo; si es un capítulo de otro, el
+    capítulo. Devuelve cuántos ha marcado."""
+    entradas = leer_registro()
+    ultimas = {}
+    for e in entradas:
+        ultimas[e["base"]] = e
+    grupos = {}
+    for e in ultimas.values():
+        if e["estado"] in ("leido", "pendiente") and not e.get("sustituido_por"):
+            grupos.setdefault((e["eleccion"], e["partido"]), []).append(e)
+    marcados = 0
+    for grupo in grupos.values():
+        trozos = {}
+        for i, a in enumerate(grupo):
+            for b in grupo[i + 1:]:
+                if a.get("sustituido_por") or b.get("sustituido_por"):
+                    continue
+                if a["sha256"] == b["sha256"]:
+                    sobra, queda = b, a
+                else:
+                    ca, cb = a.get("caracteres") or 0, b.get("caracteres") or 0
+                    try:
+                        for x in (a, b):
+                            if x["id"] not in trozos:
+                                trozos[x["id"]] = _trozos(x["id"])
+                    except OSError:  # falta el texto de alguno
+                        continue
+                    ta, tb = trozos[a["id"]], trozos[b["id"]]
+                    if not ta or not tb or len(ta & tb) < MIN_COMUN_REPETIDO * min(len(ta), len(tb)):
+                        continue
+                    sobra, queda = a, b
+                    if min(ca, cb) < MIN_TAMANO_REPETIDO * max(ca, cb):  # un capítulo suelto: vale el completo
+                        sobra, queda = (a, b) if ca < cb else (b, a)
+                sobra["sustituido_por"] = queda["base"]
+                marcados += 1
+                log(f"  {sobra['id']}: repite {queda['id']}; deja de contar")
+    if marcados:
+        guardar_registro(entradas)
+    return marcados
 
 
 def actualizar_entrada(entrada):
@@ -374,6 +436,9 @@ def descargar(ids=None, forzar=False, log=print):
             igual = next(e for e in previas if e["sha256"] == sha)
             if not ruta_texto(igual["id"]).exists():  # clon nuevo sin el texto: se regenera, el registro no cambia
                 ruta_texto(igual["id"]).write_text(_texto(crudo, p["id"]), encoding="utf-8")
+            if igual["url"] != p["url"]:  # el mismo fichero, que el partido ha movido: solo cambia la dirección
+                igual["url"] = p["url"]
+                actualizar_entrada(igual)
             log(f"  {igual['id']}: ya registrado ({igual['estado']}), sin cambios")
             continue
         id_ = p["id"] if not previas else f"{p['id']}-{len(previas) + 1}"
@@ -391,6 +456,11 @@ def descargar(ids=None, forzar=False, log=print):
             "estado": "error" if escaneado else "pendiente",
             "motivo": "sin capa de texto (escaneado): decidir aparte si merece la pena el OCR" if escaneado else None,
         }
+        # El mismo fichero que otro documento de ese partido para esa elección (colgado con otro nombre): no se lee.
+        mismo = next((e for e in entradas if e["sha256"] == sha and e["eleccion"] == p["eleccion"]
+                      and e["partido"] == p["partido"]), None)
+        if mismo and not escaneado:
+            entrada.update(estado="duplicado", motivo=f"mismo fichero que {mismo['id']}", sustituido_por=mismo["base"])
         entradas.append(entrada)
         nuevos.append(entrada)
         log(f"  {id_}: registrado ({paginas} páginas, {caracteres:_} caracteres, {entrada['estado']})".replace("_", "."))

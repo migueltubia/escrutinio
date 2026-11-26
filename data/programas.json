@@ -26,6 +26,9 @@
     "no exigir el año de la elección en el enlace: partidos nuevos que no lo ponen, como Democracia 21).",
     "Comprobación a mano: python -m escrutinio programas-buscar. Un PDF encontrado que no es el programa se borra de",
     "encontrados.json y se pone su URL en «descartar» de ese mismo fichero.",
+    "El mismo programa no cuenta dos veces: si el partido mueve el PDF de dirección se sigue usando el que ya estaba;",
+    "si lo cuelga otra vez con otro nombre o corregido, el anterior queda en el registro con «sustituido_por» y deja",
+    "de contar; las versiones en otro idioma de un programa que ya está no entran.",
     "Si un partido publica el programa en otro sitio (o con otro nombre), se da de alta abajo, en «programas»:",
     "lo puesto a mano manda sobre lo encontrado."
   ],
@@ -255,6 +258,94 @@
       "partido": "Democracia 21",
       "titulo": "Vivienda, prioridad nº 1",
       "url": "https://democracia21.es/docs/vivienda-prioridad-1-democracia21.pdf",
+      "origen": "web-partido",
+      "url_oficial": null
+    },
+    {
+      "eleccion": "generales-2026",
+      "fecha_eleccion": "2026-11-29",
+      "cuerpo": "congreso",
+      "id": "generales-2026-pnv",
+      "partido": "PNV",
+      "titulo": "Programa elecciones generales 2026",
+      "url": "https://www.eaj-pnv.eus/es/adjuntos-documentos/21765/pdf/programa-electoral-29n",
+      "origen": "web-partido",
+      "url_oficial": null
+    },
+    {
+      "eleccion": "generales-2026",
+      "fecha_eleccion": "2026-11-29",
+      "cuerpo": "congreso",
+      "id": "generales-2026-sumar",
+      "partido": "Sumar",
+      "titulo": "Programa del Frente Amplio. Elecciones generales 2026",
+      "url": "https://frenteamplio.info/pdf/ProgramaFrenteAmplio.pdf",
+      "origen": "web-partido",
+      "url_oficial": null
+    },
+    {
+      "eleccion": "generales-2026",
+      "fecha_eleccion": "2026-11-29",
+      "cuerpo": "congreso",
+      "id": "generales-2026-bildu",
+      "partido": "Bildu",
+      "titulo": "Programa de EH Bildu. Elecciones generales 2026",
+      "url": "https://posibleegin.ehbildu.eus/wp-content/uploads/2026/11/PROGRAMA-CAS.pdf",
+      "origen": "web-partido",
+      "url_oficial": null
+    },
+    {
+      "eleccion": "generales-2026",
+      "fecha_eleccion": "2026-11-29",
+      "cuerpo": "congreso",
+      "id": "generales-2026-compromis",
+      "partido": "Compromís",
+      "titulo": "Programa electoral. Front València",
+      "url": "https://compromis.net/wp-content/uploads/2026/11/PROGRAMA-ELECTORAL-FRONTVALENCIA.pdf",
+      "origen": "web-partido",
+      "url_oficial": null
+    },
+    {
+      "eleccion": "generales-2026",
+      "fecha_eleccion": "2026-11-29",
+      "cuerpo": "congreso",
+      "id": "generales-2026-cree",
+      "partido": "Cree",
+      "titulo": "Programa electoral de Cree. Reformas para una nueva etapa de España",
+      "url": "https://drive.google.com/uc?export=download&id=1R8WAYD3M24Q_nkAUfmi4goV4DpwE4N4d",
+      "origen": "web-partido",
+      "url_oficial": "https://drive.google.com/file/d/1R8WAYD3M24Q_nkAUfmi4goV4DpwE4N4d/view"
+    },
+    {
+      "eleccion": "generales-2026",
+      "fecha_eleccion": "2026-11-29",
+      "cuerpo": "congreso",
+      "id": "generales-2026-vox",
+      "partido": "VOX",
+      "titulo": "Programa electoral. 29 de noviembre de 2026",
+      "url": "https://www.voxespana.es/",
+      "origen": "web-partido",
+      "url_oficial": null
+    },
+    {
+      "eleccion": "generales-2026",
+      "fecha_eleccion": "2026-11-29",
+      "cuerpo": "congreso",
+      "id": "generales-2026-salf",
+      "partido": "SALF",
+      "titulo": "Contrato electoral simplificado. Generales 2026",
+      "url": "https://seacabolafiesta.es/",
+      "origen": "web-partido",
+      "url_oficial": null
+    },
+    {
+      "eleccion": "generales-2026",
+      "fecha_eleccion": "2026-11-29",
+      "cuerpo": "congreso",
+      "id": "generales-2026-d21",
+      "partido": "Democracia 21",
+      "titulo": "La España que merecemos. Programa electoral",
+      "url": "https://mi.democracia21.es/docs/programa/programa-democracia21.pdf",
       "origen": "web-partido",
       "url_oficial": null
     }

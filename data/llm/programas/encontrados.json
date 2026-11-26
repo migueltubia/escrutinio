@@ -119,6 +119,18 @@
       "origen": "web-partido",
       "url_oficial": null,
       "encontrado": "2026-11-25"
+    },
+    {
+      "id": "generales-2026-podemos",
+      "eleccion": "generales-2026",
+      "fecha_eleccion": "2026-11-29",
+      "cuerpo": "congreso",
+      "partido": "Podemos",
+      "titulo": "Programa electoral (29N-programa-Podemos.-Paz-casa-y-trabajo.pdf)",
+      "url": "https://podemos.info/wp-content/uploads/2026/11/29N-programa-Podemos.-Paz-casa-y-trabajo.pdf",
+      "origen": "web-partido",
+      "url_oficial": null,
+      "encontrado": "2026-11-26"
     }
   ],
   "descartar": [

@@ -32,9 +32,10 @@ def actualizar(con, ia=True, limite_compromisos=300, log=print):
     from .verificar import verificar
 
     try:  # sin IA también: encontrar y bajar el PDF no cuesta nada
-        buscar(log=log)
-        if registro.sin_registrar():
-            registro.descargar(ids=registro.sin_registrar(), log=log)
+        ids = set(buscar(log=log)) | set(registro.sin_registrar())  # lo que ha cambiado de dirección también se baja
+        if ids:
+            registro.descargar(ids=ids, forzar=True, log=log)
+        registro.marcar_repetidos(log)  # el mismo programa colgado dos veces no cuenta dos veces
     except Exception as e:
         log(f"  ! Búsqueda de programas: {type(e).__name__}: {e}")
     if ia and deepseek.disponible():

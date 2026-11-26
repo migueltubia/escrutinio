@@ -293,13 +293,16 @@ def _anadir(e, respuesta, paginas, desde, compromisos, usados):
         compromisos.append({"id": c.pop("id"), **c, "modelo": respuesta["modelo"]})
 
 
-def leer(ids=None, reintentar=False, limite=None, modelo=None, releer=False, log=print):
+def leer(ids=None, reintentar=False, limite=None, modelo=None, releer=False, solo_cache=False, log=print):
     """Lee los programas pendientes (y, con reintentar, los que fallaron). Lo ya leído no se vuelve a leer.
+
+    Con solo_cache no se llama a DeepSeek: se usan las respuestas que ya están en la caché local de trozos, que puede
+    haber escrito otro modelo con el mismo prompt (SISTEMA). Pasan la misma comprobación de citas.
 
     Se leen varios programas a la vez (PROGRAMAS_A_LA_VEZ), cada uno con sus trozos en paralelo: en un programa
     corto, el trozo más lento marca el paso y el resto de hilos quedaría parado.
     """
-    if not deepseek.disponible():
+    if not solo_cache and not deepseek.disponible():
         raise SystemExit("Falta DEEPSEEK_API_KEY (en .env o como variable de entorno)")
     estados = ("pendiente", "error") if reintentar else ("pendiente",)
     cola = [e for e in registro.vigentes(registro.leer_registro())
@@ -314,9 +317,10 @@ def leer(ids=None, reintentar=False, limite=None, modelo=None, releer=False, log
     def uno(e):
         if plazo.agotado(deepseek.MINIMO_PARA_LLAMAR):
             return
-        log(f"  {e['id']}: leyendo con {modelo} ({VERSION_PROMPT})")
+        log(f"  {e['id']}: leyendo con {'la caché local' if solo_cache else modelo} ({VERSION_PROMPT})")
         try:
-            compromisos, t_in, t_out, descartados = _leer_programa(e, modelo, lambda m: log(f"  {e['id']}{m}"))
+            compromisos, t_in, t_out, descartados = _leer_programa(e, modelo, lambda m: log(f"  {e['id']}{m}"),
+                                                                   solo_cache=solo_cache)
         except deepseek.SinTiempo:  # no es un error del programa: lo leído está en la caché y se sigue otro día
             log(f"  {e['id']}: se ha acabado el tiempo; se sigue leyendo en la próxima ejecución")
             return

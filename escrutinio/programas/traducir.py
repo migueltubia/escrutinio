@@ -33,7 +33,8 @@ _PROPIAS = {
                r"garantirem|impulsarem|farem|crearem|serà|seran|aquells|llur|cal|caldrà|nostre|nostra|per|i|dret|drets|"
                r"[ldsmn]'[a-zàèéíòóú]\w*",  # l'Estat, d'un: el apóstrofo solo lo usa el catalán
     "euskera": r"eta|dira|dute|bat|izango|ditu|ere|euskal|herria|beharko|egingo|bidez|gure|baita|behar",
-    "gallego": r"unha|coa|xa|tamén|polo|pola|nunha|galiza|mellorar|cidadanía|dereito|dereitos",
+    "gallego": r"unha|coa|xa|tamén|polo|pola|nunha|galiza|mellorar|cidadanía|dereito|dereitos|"
+               r"da|das|ao|aos|na|nas|dun|dunha|ou|máis|súa|súas|lei|servizo|servizos|galego|galega|público|pública",
 }
 # Solo palabras que no existen en las otras tres («el», «del», «una», «para» o «con» sí existen y no sirven).
 _CASTELLANO = r"los|las|y|sus|más|también|será|serán|mediante|ley|leyes|nuestro|nuestra|hacia|hasta|garantizar|ciudadanía"
